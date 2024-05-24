@@ -41,22 +41,35 @@ export default function AddBook() {
   }
   return (
     <div className='container'>
-      <form onSubmit={handleSubmit(savedata)} className='jumbotron mt-4'>
-        <label htmlFor="imageUpload" className='block h-52 w-52 bg-slate-50 bg-contain bg-no-repeat bg-center' style={{ backgroundImage: 'url(' + preview + ')' }}>chooseImg</label>
-        <input type='file' onChange={onSelectFile} id="imageUpload" className='hidden'/>
+      <form onSubmit={handleSubmit(savedata)} className='grid grid-cols-3 gap-4 jumbotron mt-4'>
+        <div className='flex flex-column items-center gap-2'>
+            <label htmlFor="imageUpload" className='block h-52 w-52 bg-slate-50 bg-contain bg-no-repeat bg-center' style={{ backgroundImage: 'url(' + preview + ')' }}></label>
+            <input type='file' onChange={onSelectFile} id="imageUpload" className='hidden' />
+          <label htmlFor="imageUpload" className='block border px-2 py-1 bg-slate-50 rounded'>New Image</label>
+        </div>
 
-        <label htmlFor='nm'><b>Book Name: </b></label>
-        <input id='nm' type='text' className='form-control' placeholder='eg. Atomic Habits' {...register('name')} /><br />
-        <label htmlFor='anm'><b>Author Name: </b></label>
-        <input id='anm' type='text' className='form-control' placeholder='eg. James Clear' {...register('a_name')} /><br />
-        <label htmlFor='avb'><b>Avaibility: </b></label>
-        <select {...register('avaibility')} id='avb' className='form-control'>
-          <option value="Available">Available</option>
-          <option value="Not Available">Not Available</option>
-        </select>
-        <br />
-        <input type='submit' className='btn btn-success' value="Add" /> &nbsp;
-        <input type='reset' className='btn btn-warning' />
+        <div>
+          <label htmlFor='nm'><b>Book Name: </b></label>
+          <input id='nm' type='text' className='form-control' placeholder='eg. Atomic Habits' {...register('Title')} /><br />
+          <label htmlFor='anm'><b>Author Name: </b></label>
+          <input id='anm' type='text' className='form-control' placeholder='eg. James Clear' {...register('Author')} /><br />
+          <label htmlFor='avb'><b>Description: </b></label>
+          <input id='avb' type='text' className='form-control' placeholder='eg. James Clear' {...register('Description')} /><br />
+        </div>
+        <div>
+          <label htmlFor='cat'><b>Category: </b></label>
+          <select {...register('Category')} id='cat' className='form-control'>
+            <option value="Available">Available</option>
+            <option value="Not Available">Not Available</option>
+          </select>
+          <br />
+          <label htmlFor='genr'><b>Genre: </b></label>
+          <select {...register('Genre')} id='genr' className='form-control'>
+            <option value="Available">Available</option>
+            <option value="Not Available">Not Available</option>
+          </select>
+          <input type='submit' className='btn btn-success mt-12' value="Save" /> &nbsp;
+        </div>
       </form>
     </div>
   )

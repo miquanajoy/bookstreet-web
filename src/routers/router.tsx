@@ -1,6 +1,5 @@
 import { Navigate, createBrowserRouter, useRoutes } from "react-router-dom"
 import AuthGuard from "../guards/AuthGuard";
-import UpdateBook from "../Pages/UpdateBook";
 import AuthenPage from "../Components/authen";
 import RoleBasedGuard from "../guards/RoleBaseGuard";
 import { FC } from "react";
@@ -58,7 +57,7 @@ const router =
                     path: 'update/:id', element: (
                         <AuthGuard>
                             <RoleBasedGuard accessibleRoles={["admin", "grand", "store"]}>
-                                <UpdateBook />
+                                <AddBook />
                             </RoleBasedGuard >
                         </AuthGuard>
                     ),

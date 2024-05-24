@@ -29,7 +29,11 @@ export default function ShowBook() {
       </div>
       <div className="grid grid-cols-5 gap-4">
         {
-          [1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map(_ => (<div key={_} className="h-52 bg-slate-100">{_}</div>))
+          [1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map(_ => (
+            <Link to={"update/"+ _}>
+              <div key={_} className="h-52 bg-slate-100">{_}</div>
+            </Link>
+          ))
         }
       </div>
       <nav className="mt-4">

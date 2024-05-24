@@ -1,8 +1,14 @@
 export interface BookInterface {
-    title: string,
-    author: string,
-    description: string,
-    category: string,
-    genre: string,
-    bookImage: string
+    BookId: number,
+    CategoryId: number,
+    Title: string,
+    AuthorId: string,
+    Description: string,
+    GenreId: string,
+    BookCover: string,
+    PublicDay: string,
+    PublisherId: string,
+    Price: Float32Array,
+    Isbn: string,
+    DistributorId: number
 }
