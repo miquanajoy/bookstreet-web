@@ -64,6 +64,50 @@ const router =
                 },
             ],
         },
+        {
+            path: '/user-management',
+            element: <HomePage />,
+            children: [
+                {
+                    path: '',
+                    element: (
+                        <AuthGuard>
+                            <RoleBasedGuard accessibleRoles={["admin", "grand", "store"]}>
+                                <ShowBook />
+                            </RoleBasedGuard>
+                        </AuthGuard>
+                    ),
+                },
+                {
+                    path: 'list',
+                    element: (
+                        <AuthGuard>
+                            <RoleBasedGuard accessibleRoles={["admin"]}>
+                                <ShowBook />
+                            </RoleBasedGuard>
+                        </AuthGuard>
+                    ),
+                },
+                {
+                    path: 'create', element: (
+                        <AuthGuard>
+                            <RoleBasedGuard accessibleRoles={["admin", "grand"]}>
+                                <AddBook />
+                            </RoleBasedGuard >
+                        </AuthGuard>
+                    ),
+                },
+                {
+                    path: 'update/:id', element: (
+                        <AuthGuard>
+                            <RoleBasedGuard accessibleRoles={["admin", "grand", "store"]}>
+                                <AddBook />
+                            </RoleBasedGuard >
+                        </AuthGuard>
+                    ),
+                },
+            ],
+        },
         { path: '*', element: <>Not found the page</> }
     ]);
 

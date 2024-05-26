@@ -21,7 +21,7 @@ export default function ShowBook() {
     <div className='px-6'>
       <div className="flex items-center justify-between mb-0">
         <h1 className='title'>
-          BRAND BOOK MANAGEMENT
+          BOOK MANAGEMENT
         </h1>
         <Link to="create">
           <button className='bg-black text-white rounded-lg px-3 py-0.5'>CREATE NEW BOOK</button>
@@ -30,8 +30,11 @@ export default function ShowBook() {
       <div className="grid grid-cols-5 gap-4">
         {
           [1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map(_ => (
-            <Link to={"update/"+ _}>
-              <div key={_} className="h-52 bg-slate-100">{_}</div>
+            <Link to={"update/" + _}>
+              <div key={_} className="h-52" style={{ backgroundImage: `url('book1.jpg')`, backgroundSize: 'contain', backgroundPosition: 'center' , backgroundRepeat: 'no-repeat'}}>              
+              </div>
+              <p>Book name {_}</p>
+              <h5>Author: Admin</h5>
             </Link>
           ))
         }

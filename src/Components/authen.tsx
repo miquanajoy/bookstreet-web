@@ -97,7 +97,7 @@ export default function AuthenPage() {
                     <p className="text-center mt-3">or:</p>
                   </div>
 
-                  <MDBInput wrapperClass='mb-4' label='Email address' id='form1' name="email" type='email' />
+                  <MDBInput wrapperClass='mb-4' label='Email address' id='form1' name="email" type='text' />
                   <MDBInput wrapperClass='mb-4' label='Password' id='form2' name="password" type='password' />
 
                   <div className="d-flex justify-content-between mx-4 mb-4">

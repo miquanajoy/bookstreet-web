@@ -4,7 +4,7 @@ import { Link, NavLink, Outlet } from "react-router-dom";
 import { useLocation, useParams } from 'react-router-dom';
 import SidebarPage, { LinkInterface } from './sidebar';
 import { Book } from '../assets/icon/book';
-import { Store } from '../assets/icon/store';
+import { UserManagementIcon } from '../assets/icon/store';
 import { Medal } from '../assets/icon/medal';
 import { Address } from '../assets/icon/address';
 import { Calender } from '../assets/icon/calendar';
@@ -28,9 +28,9 @@ export default function HomePage() {
     url: '/dashboard'
   },
   {
-    logo: <Store />,
-    name: 'Store',
-    url: '/dashboard'
+    logo: <UserManagementIcon />,
+    name: 'User',
+    url: '/user-management'
   },
   {
     logo: <Medal />,
