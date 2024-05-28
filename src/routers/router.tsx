@@ -1,9 +1,9 @@
 import { Navigate, createBrowserRouter, useRoutes } from "react-router-dom"
 import AuthGuard from "../guards/AuthGuard";
-import AuthenPage from "../Components/authen";
+import AuthenPage from "../Components/authen.component";
 import RoleBasedGuard from "../guards/RoleBaseGuard";
 import { FC } from "react";
-import HomePage from "../Components/home";
+import HomePage from "../Components/home.component";
 import ShowBook from "../Pages/ShowBook";
 import AddBook from "../Pages/AddBook";
 

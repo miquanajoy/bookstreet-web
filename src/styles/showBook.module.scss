@@ -1,0 +1,10 @@
+.book-detail {
+   .trash-box {
+      display: none;
+   }
+   &:hover {
+      .trash-box {
+         display: block;
+      }
+   }
+}

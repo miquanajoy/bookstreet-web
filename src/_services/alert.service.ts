@@ -5,7 +5,7 @@ const alertSubject = new Subject();
 const defaultId = 'default-alert';
 
 export const alertService = {
-    onAlert,
+    // onAlert,
     success,
     error,
     info,
@@ -21,7 +21,7 @@ export const AlertType = {
     Warning: 'Warning'
 }
 
-function onAlert(id = defaultId) {
+export function onAlert(id = defaultId) {
     return alertSubject.asObservable().pipe(filter((x:any) => x && x.id === id));
 }
 

@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react'
 import axios from 'axios'
 import { useForm } from 'react-hook-form'
 import { useNavigate } from 'react-router-dom'
+import { alertService, onAlert } from '../_services';
 
 export default function AddBook() {
   const { register, handleSubmit } = useForm();
@@ -36,6 +37,23 @@ export default function AddBook() {
 
 
   const savedata = data => {
+    alertService.alert({
+      id: 1,
+      autoClose: false
+    })
+    // console.log('alertService.onAlert :>> ', alertService.onAlert());
+    onAlert().subscribe({
+      next(value) {
+        console.log('value :>> ', value);
+      },
+      complete() {
+        console.log(5000);
+      },
+      error(err) {
+        console.log('err :>> ', err);
+      },
+    }
+    )
     console.log(data);
     // axios.post('http://localhost:5000/books',data)
   }
@@ -43,8 +61,8 @@ export default function AddBook() {
     <div className='container'>
       <form onSubmit={handleSubmit(savedata)} className='grid grid-cols-3 gap-4 jumbotron mt-4'>
         <div className='flex flex-column items-center gap-2'>
-            <label htmlFor="imageUpload" className='block h-52 w-52 bg-slate-50 bg-contain bg-no-repeat bg-center' style={{ backgroundImage: 'url(' + preview + ')' }}></label>
-            <input type='file' onChange={onSelectFile} id="imageUpload" className='hidden' />
+          <label htmlFor="imageUpload" className='block h-52 w-52 bg-slate-50 bg-contain bg-no-repeat bg-center' style={{ backgroundImage: 'url(' + preview + ')' }}></label>
+          <input type='file' onChange={onSelectFile} id="imageUpload" className='hidden' />
           <label htmlFor="imageUpload" className='block border px-2 py-1 bg-slate-50 rounded'>New Image</label>
         </div>
 

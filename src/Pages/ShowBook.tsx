@@ -1,7 +1,7 @@
-import React from 'react'
-import axios from 'axios'
 import { useEffect, useState } from 'react'
-import { Link, NavLink } from 'react-router-dom'
+import { Link } from 'react-router-dom'
+import { Trash } from '../assets/icon/trash';
+import showBookStyle from './../styles/showBook.module.scss';
 
 export default function ShowBook() {
   const [books, setBooks] = useState([]);
@@ -19,7 +19,7 @@ export default function ShowBook() {
 
   return (
     <div className='px-6'>
-      <div className="flex items-center justify-between mb-0">
+      <div className="flex items-center justify-between mb-2">
         <h1 className='title'>
           BOOK MANAGEMENT
         </h1>
@@ -30,11 +30,17 @@ export default function ShowBook() {
       <div className="grid grid-cols-5 gap-4">
         {
           [1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map(_ => (
-            <Link to={"update/" + _}>
-              <div key={_} className="h-52" style={{ backgroundImage: `url('book1.jpg')`, backgroundSize: 'contain', backgroundPosition: 'center' , backgroundRepeat: 'no-repeat'}}>              
+            <Link key={_} to={"update/" + _}>
+              <div className={`${showBookStyle['book-detail']} position-relative`}>
+                <div className="h-52 bg-contain bg-no-repeat bg-center" style={{ backgroundImage: `url('book1.jpg')` }}></div>
+                <div className={`${showBookStyle['trash-box']} position-absolute top-0 right-0 bg-slate-400 rounded px-2 py-1 opacity-50 hover:!opacity-100`} >
+                  <Trash />
+                </div>
               </div>
-              <p>Book name {_}</p>
-              <h5>Author: Admin</h5>
+              <div className="px-2">
+                <h6>Book name {_}</h6>
+                <small>Author: Admin</small>
+              </div>
             </Link>
           ))
         }
