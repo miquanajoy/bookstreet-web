@@ -6,6 +6,8 @@ import { FC } from "react";
 import HomePage from "../Components/home.component";
 import ShowBook from "../Pages/ShowBook";
 import AddBook from "../Pages/AddBook";
+import ShowUserPage from "../Pages/user/User-manager.page";
+import AddUser from "../Pages/user/addUser.component";
 
 const router =
     createBrowserRouter([
@@ -21,7 +23,7 @@ const router =
             ],
         },
         {
-            path: '/dashboard',
+            path: '/books',
             element: <HomePage />,
             children: [
                 {
@@ -73,17 +75,7 @@ const router =
                     element: (
                         <AuthGuard>
                             <RoleBasedGuard accessibleRoles={["admin", "grand", "store"]}>
-                                <ShowBook />
-                            </RoleBasedGuard>
-                        </AuthGuard>
-                    ),
-                },
-                {
-                    path: 'list',
-                    element: (
-                        <AuthGuard>
-                            <RoleBasedGuard accessibleRoles={["admin"]}>
-                                <ShowBook />
+                                <ShowUserPage />
                             </RoleBasedGuard>
                         </AuthGuard>
                     ),
@@ -92,7 +84,7 @@ const router =
                     path: 'create', element: (
                         <AuthGuard>
                             <RoleBasedGuard accessibleRoles={["admin", "grand"]}>
-                                <AddBook />
+                                <AddUser />
                             </RoleBasedGuard >
                         </AuthGuard>
                     ),
@@ -101,7 +93,7 @@ const router =
                     path: 'update/:id', element: (
                         <AuthGuard>
                             <RoleBasedGuard accessibleRoles={["admin", "grand", "store"]}>
-                                <AddBook />
+                                <AddUser />
                             </RoleBasedGuard >
                         </AuthGuard>
                     ),

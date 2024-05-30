@@ -48,7 +48,7 @@ export default function AuthenPage() {
     }
     console.log('value :>> ', value);
     login(value.email, value.password)
-    window.location.href = '/dashboard';
+    window.location.href = '/books';
 
   }
   return (

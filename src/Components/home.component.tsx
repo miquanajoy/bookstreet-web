@@ -25,30 +25,31 @@ function useCurrentURL() {
 export default function HomePage() {
   const [routerList, setRouterList] = useState<LinkInterface[]>([]);
   useEffect(() => {
-    setRouterList([{
-      logo: <Book />,
-      name: 'Book',
-      url: '/dashboard'
-    },
+    setRouterList([
     {
       logo: <UserManagementIcon />,
       name: 'User',
       url: '/user-management'
     },
     {
+      logo: <Book />,
+      name: 'Book',
+      url: '/books'
+    },
+    {
       logo: <Medal />,
       name: 'Brand',
-      url: '/dashboard'
+      url: '/books'
     },
     {
       logo: <Address />,
       name: 'Address',
-      url: '/dashboard'
+      url: '/books'
     },
     {
       logo: <Calender />,
       name: 'Calender',
-      url: '/dashboard'
+      url: '/books'
     }])
   }, [])
 
