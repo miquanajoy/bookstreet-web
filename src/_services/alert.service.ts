@@ -5,7 +5,7 @@ const alertSubject = new Subject();
 const defaultId = 'default-alert';
 
 export const alertService = {
-    // onAlert,
+    onAlert,
     success,
     error,
     info,
@@ -22,7 +22,7 @@ export const AlertType = {
 }
 
 export function onAlert(id = defaultId) {
-    return alertSubject.asObservable().pipe(filter((x:any) => x && x.id === id));
+    return alertSubject
 }
 
 function success(message, options) {
@@ -42,9 +42,8 @@ function warn(message, options) {
 }
 
 function alert(alert) {
-    alert.id = alert.id || defaultId;
-    alert.autoClose = (alert.autoClose === undefined ? true : alert.autoClose);
     alertSubject.next(alert);
+
 }
 
 function clear(id = defaultId) {

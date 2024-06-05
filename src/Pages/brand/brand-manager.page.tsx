@@ -1,82 +1,89 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { Trash } from '../assets/icon/trash';
-import listStyle from './../styles/listStyle.module.scss';
-import { alertService } from '../_services/alert.service';
+import { Trash } from '../../assets/icon/trash';
+import ListComponent from '../../Components/list.component';
+import listStyle from './../../styles/listStyle.module.scss';
+import { alertService } from '../../_services/alert.service';
 
-export default function ShowBook() {
+export default function BrandmanagerPage() {
   const [data, setData] = useState([{
     id: "1",
-    name: "The book ",
-    author: "",
+    name: "Nhà sản xuất Kim Đồng",
+    userName: "",
   }, {
     id: "2",
-    name: "The book ",
-    author: "",
+    name: "Nhà sản xuất Kim Đồng",
+    userName: "",
   }, {
     id: "3",
-    name: "The book ",
-    author: "",
+    name: "Nhà sản xuất Kim Đồng",
+    userName: "",
   }, {
     id: "4",
-    name: "The book ",
-    author: "",
+    name: "Nhà sản xuất Kim Đồng",
+    userName: "",
   }, {
     id: "5",
-    name: "The book ",
-    author: "",
+    name: "Nhà sản xuất Kim Đồng",
+    userName: "",
   }, {
     id: "6",
-    name: "The book ",
-    author: "",
+    name: "Nhà sản xuất Kim Đồng",
+    userName: "",
   },]);
-  async function fetchAllBooks() {
-    // const result = await axios.get('http://localhost:5000/books')
-    // setBooks(result.data)
-    // setData([])
-  }
 
-  useEffect(() => {
-    fetchAllBooks();
-  }, []);
+  const headers = [
+    "id",
+    "name",
+    "userName",
+    "action"
+  ]
 
   function deleteItem(val) {
     alertService.alert(({
-      content: "Remove success"
+       content: "Remove success"
     }))
   }
+
+  async function fetchAllUsers() {
+    // const result = await axios.get('http://localhost:5000/users')
+    // setUsers(result.data)
+  }
+
+  useEffect(() => {
+    fetchAllUsers();
+  }, []);
+
 
   return (
     <div className='px-6'>
       <div className="flex items-center justify-between mb-2">
         <h1 className='title'>
-          BOOK MANAGEMENT
+          BRAND MANAGEMENT
         </h1>
         <Link to="create">
-          <button className='bg-black text-white rounded-lg px-3 py-0.5'>CREATE NEW BOOK</button>
+          <button className='bg-black text-white rounded-lg px-3 py-0.5'>CREATE NEW BRAND</button>
         </Link>
       </div>
       <div className="grid grid-cols-5 gap-4">
         {
           data.map(val => (
             <div key={val.id} className={`${listStyle['book-detail']} position-relative`}>
-              <Link to={"update/" + val.id}>
-                <div className="h-52 bg-contain bg-no-repeat bg-center" style={{ backgroundImage: `url('book1.jpg')` }}></div>
+              <Link to={"/books"}>
+                <div className="h-52 bg-contain bg-no-repeat bg-center" style={{ backgroundImage: `url('logo-brand.png')` }}></div>
               </Link>
               <div onClick={(event: any) => {
                 deleteItem(val)
               }} className={`${listStyle['trash-box']} position-absolute top-0 right-0 bg-slate-400 rounded px-2 py-1 opacity-50 hover:!opacity-100`} >
                 <Trash />
               </div>
-              <Link to={"update/" + val.id}>
+              <Link to={"/books"}>
                 <div className="px-2">
-                  <h6>{val.name + val.id}</h6>
-                  <small>Author: Admin</small>
+                  <h6 className='text-dark'>{val.name}</h6>
                 </div>
               </Link>
             </div>
           ))
-
         }
       </div>
       <nav className="mt-4">
@@ -115,6 +122,6 @@ export default function ShowBook() {
         </ul>
       </nav>
 
-    </div>
+    </div >
   )
 }

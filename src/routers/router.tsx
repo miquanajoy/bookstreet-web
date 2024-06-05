@@ -6,8 +6,10 @@ import { FC } from "react";
 import HomePage from "../Components/home.component";
 import ShowBook from "../Pages/ShowBook";
 import AddBook from "../Pages/AddBook";
-import ShowUserPage from "../Pages/user/User-manager.page";
 import AddUser from "../Pages/user/addUser.component";
+import BrandmanagerPage from "../Pages/brand/brand-manager.page";
+import ShowUserPage from "../Pages/user/user-manager.page";
+import HandleBrand from "../Pages/brand/handle-brand.page";
 
 const router =
     createBrowserRouter([
@@ -30,7 +32,17 @@ const router =
                     path: '',
                     element: (
                         <AuthGuard>
-                            <RoleBasedGuard accessibleRoles={["admin", "grand", "store"]}>
+                            <RoleBasedGuard accessibleRoles={["admin", "grand"]}>
+                                <ShowBook />
+                            </RoleBasedGuard>
+                        </AuthGuard>
+                    ),
+                },
+                {
+                    path: 'detail/:id',
+                    element: (
+                        <AuthGuard>
+                            <RoleBasedGuard accessibleRoles={["admin", "grand"]}>
                                 <ShowBook />
                             </RoleBasedGuard>
                         </AuthGuard>
@@ -58,7 +70,7 @@ const router =
                 {
                     path: 'update/:id', element: (
                         <AuthGuard>
-                            <RoleBasedGuard accessibleRoles={["admin", "grand", "store"]}>
+                            <RoleBasedGuard accessibleRoles={["admin", "grand"]}>
                                 <AddBook />
                             </RoleBasedGuard >
                         </AuthGuard>
@@ -74,7 +86,7 @@ const router =
                     path: '',
                     element: (
                         <AuthGuard>
-                            <RoleBasedGuard accessibleRoles={["admin", "grand", "store"]}>
+                            <RoleBasedGuard accessibleRoles={["admin", "grand"]}>
                                 <ShowUserPage />
                             </RoleBasedGuard>
                         </AuthGuard>
@@ -94,6 +106,40 @@ const router =
                         <AuthGuard>
                             <RoleBasedGuard accessibleRoles={["admin", "grand", "store"]}>
                                 <AddUser />
+                            </RoleBasedGuard >
+                        </AuthGuard>
+                    ),
+                },
+            ],
+        },
+        {
+            path: '/brand-management',
+            element: <HomePage />,
+            children: [
+                {
+                    path: '',
+                    element: (
+                        <AuthGuard>
+                            <RoleBasedGuard accessibleRoles={["admin", "grand"]}>
+                                <BrandmanagerPage />
+                            </RoleBasedGuard>
+                        </AuthGuard>
+                    ),
+                },
+                {
+                    path: 'create', element: (
+                        <AuthGuard>
+                            <RoleBasedGuard accessibleRoles={["admin", "grand"]}>
+                                <HandleBrand />
+                            </RoleBasedGuard >
+                        </AuthGuard>
+                    ),
+                },
+                {
+                    path: 'detail/:id', element: (
+                        <AuthGuard>
+                            <RoleBasedGuard accessibleRoles={["admin", "grand"]}>
+                                <ShowBook />
                             </RoleBasedGuard >
                         </AuthGuard>
                     ),

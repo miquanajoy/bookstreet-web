@@ -37,23 +37,11 @@ export default function AddBook() {
 
 
   const savedata = data => {
-    alertService.alert({
-      id: 1,
-      autoClose: false
-    })
+    alertService.alert(({
+      content: "Create success"
+    }))
     // console.log('alertService.onAlert :>> ', alertService.onAlert());
-    onAlert().subscribe({
-      next(value) {
-        console.log('value :>> ', value);
-      },
-      complete() {
-        console.log(5000);
-      },
-      error(err) {
-        console.log('err :>> ', err);
-      },
-    }
-    )
+    
     console.log(data);
     // axios.post('http://localhost:5000/books',data)
   }

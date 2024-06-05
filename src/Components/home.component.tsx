@@ -2,7 +2,7 @@ import React, { useContext, useEffect, useState } from 'react';
 import { Link, NavLink, Outlet } from "react-router-dom";
 
 import { useLocation, useParams } from 'react-router-dom';
-import SidebarPage, { LinkInterface } from './sidebar';
+import SidebarPage, { LinkInterface } from './sidebar.component';
 import { Book } from '../assets/icon/book';
 import { UserManagementIcon } from '../assets/icon/store';
 import { Medal } from '../assets/icon/medal';
@@ -10,6 +10,8 @@ import { Address } from '../assets/icon/address';
 import { Calender } from '../assets/icon/calendar';
 import AlertContext from './alert.component';
 import LoadingComponent from './loading.component';
+import { alertService } from '../_services';
+import { AlertModel } from '../models/AlertModel';
 
 function useCurrentURL() {
   const location = useLocation();
@@ -24,41 +26,53 @@ function useCurrentURL() {
 
 export default function HomePage() {
   const [routerList, setRouterList] = useState<LinkInterface[]>([]);
+  const [isShowAlert, setIsShowAlert] = useState({});
+
   useEffect(() => {
     setRouterList([
-    {
-      logo: <UserManagementIcon />,
-      name: 'User',
-      url: '/user-management'
-    },
-    {
-      logo: <Book />,
-      name: 'Book',
-      url: '/books'
-    },
-    {
-      logo: <Medal />,
-      name: 'Brand',
-      url: '/books'
-    },
-    {
-      logo: <Address />,
-      name: 'Address',
-      url: '/books'
-    },
-    {
-      logo: <Calender />,
-      name: 'Calender',
-      url: '/books'
-    }])
+      {
+        logo: <UserManagementIcon />,
+        name: 'User',
+        url: '/user-management'
+      },
+      {
+        logo: <Book />,
+        name: 'Book',
+        url: '/books'
+      },
+      {
+        logo: <Medal />,
+        name: 'Brand',
+        url: '/brand-management'
+      },
+      {
+        logo: <Address />,
+        name: 'Address',
+        url: '/address'
+      },
+      {
+        logo: <Calender />,
+        name: 'Calender',
+        url: '/calender'
+      }])
+
+
+    alertService.onAlert().subscribe({
+      next: (v: AlertModel) => {
+        setIsShowAlert({
+          content: v.content
+        });
+        setTimeout(() => {
+          setIsShowAlert({})
+        }, 2500);
+      }
+    });
   }, [])
 
-  const [isShowAlert, setIsShowAlert] = useState(!false);
-  // setIsShowAlert(!isShowAlert)
   return (
     <div>
-      {/* <LoadingComponent onLoading={true} />
-      <AlertContext onAlert={isShowAlert} content="Demo alert" /> */}
+      {/* <LoadingComponent onLoading={true} /> */}
+      <AlertContext onAlert={isShowAlert} content="Demo alert" /> 
       <div className="grid grid-cols-12 grid-flow-row">
         <div className="lg:col-span-1 col-span-2 row-span-12">
           <SidebarPage routerList={routerList} />

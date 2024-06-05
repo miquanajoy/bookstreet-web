@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom'
 import { Trash } from '../assets/icon/trash';
 import showBookStyle from './../styles/showBook.module.scss';
 import { MDBBadge, MDBBtn, MDBTable, MDBTableHead, MDBTableBody } from 'mdb-react-ui-kit';
+import { EditIcon } from '../assets/icon/edit';
 
 export default function ListComponent(props) {
     return (
@@ -19,7 +20,7 @@ export default function ListComponent(props) {
                     </Link>)
                 }
             </div>
-            <MDBTable align='middle'>
+            <MDBTable align='middle' hover>
                 <MDBTableHead>
                     <tr>
                         {
@@ -36,7 +37,7 @@ export default function ListComponent(props) {
                                 {
                                     v.map((td, i) => (
                                         <td key={i}>
-                                            <div className='d-flex align-items-center'>
+                                            <div className='d-flex align-items-center text-dark'>
                                                 {
                                                     i == 0 &&
                                                     <img
@@ -55,11 +56,20 @@ export default function ListComponent(props) {
                                 }
                                 <td>
                                     <div className='d-flex align-items-center'>
-
                                         <div className='ms-3'>
-                                            <p className='fw-bold mb-1'>
+                                            <Link to={"update/" + v.id}>
+                                                <p className='fw-bold mb-1'>
+                                                    <EditIcon />
+                                                </p>
+                                            </Link>
+
+                                        </div>
+                                        <div className='ms-3'>
+                                            <div className='fw-bold mb-1' onClick={(event: any) => {
+                                                props.deleteItem(v)
+                                            }}>
                                                 <Trash fill="#000" />
-                                            </p>
+                                            </div>
                                         </div>
                                     </div>
                                 </td>

@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react'
 import axios from 'axios'
 import { useForm } from 'react-hook-form'
 import { useNavigate } from 'react-router-dom'
+import { alertService } from '../../_services/alert.service';
 // import { alertService, onAlert } from '../_services';
 
 export default function AddUser() {
@@ -54,9 +55,13 @@ export default function AddUser() {
     //   },
     // }
     // )
+    alertService.alert(({
+      content: "Create success"
+    }))
     console.log(data);
     // axios.post('http://localhost:5000/Users',data)
   }
+
   return (
     <div className='container'>
       <h1 className='title'>Account Manager</h1>
@@ -77,6 +82,7 @@ export default function AddUser() {
           <label className='uppercase' htmlFor='avb'><b>NAME: </b></label>
           <input id='avb' type='text' className='form-control' placeholder='eg. James Clear' {...register('Description')} /><br /><label className='uppercase' htmlFor='avb'><b>ROLE: </b></label>
           <input id='avb' type='text' className='form-control' placeholder='eg. James Clear' {...register('Description')} /><br />
+          <input type='submit' className='btn btn-dark mt-2' value="Save" /> &nbsp;
 
         </div>
       </form>
