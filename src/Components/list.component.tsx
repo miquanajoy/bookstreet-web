@@ -22,12 +22,13 @@ export default function ListComponent(props) {
             </div>
             <MDBTable align='middle' hover>
                 <MDBTableHead>
-                    <tr>
+                    <tr className='text-center'>
                         {
                             props.header.map(v => (
                                 <th key={v} scope='col'>{v}</th>
                             ))
                         }
+                        <th scope='col'>Actions</th>
                     </tr>
                 </MDBTableHead>
                 <MDBTableBody>
@@ -36,27 +37,26 @@ export default function ListComponent(props) {
                             <tr key={index}>
                                 {
                                     v.map((td, i) => (
-                                        <td key={i}>
-                                            <div className='d-flex align-items-center text-dark'>
+                                        <td key={i} className='flex-inline items-center text-dark p-2'>
+                                            <div >
                                                 {
                                                     i == 0 &&
-                                                    <img
-                                                        src='https://mdbootstrap.com/img/new/avatars/8.jpg'
-                                                        alt=''
-                                                        style={{ width: '45px', height: '45px' }}
-                                                        className='rounded-circle'
-                                                    />
+                                                    <div className="relative">
+                                                        <div className="w-20 h-20 bg-contain bg-no-repeat bg-center" style={{ backgroundImage: `url('${td.image ?? 'https://mdbootstrap.com/img/new/avatars/8.jpg'}')` }}></div>
+                                                    </div>
                                                 }
-                                                <div className='ms-3'>
-                                                    <p className='fw-bold mb-1'>{td[props.header[i]]}</p>
-                                                </div>
+                                                {
+                                                    i != 0 &&
+                                                    <p className='text-center'>{td[props.header[i]]}</p>
+                                                }
+
                                             </div>
                                         </td>
                                     ))
                                 }
                                 <td>
-                                    <div className='d-flex align-items-center'>
-                                        <div className='ms-3'>
+                                    <div className='flex items-center gap-4'>
+                                        <div className=''>
                                             <Link to={"update/" + v.id}>
                                                 <p className='fw-bold mb-1'>
                                                     <EditIcon />
@@ -64,7 +64,7 @@ export default function ListComponent(props) {
                                             </Link>
 
                                         </div>
-                                        <div className='ms-3'>
+                                        <div className=''>
                                             <div className='fw-bold mb-1' onClick={(event: any) => {
                                                 props.deleteItem(v)
                                             }}>

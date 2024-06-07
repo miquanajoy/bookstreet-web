@@ -33,8 +33,7 @@ export default function ShowUserPage() {
   const headers = [
     "name",
     "userName",
-    "role",
-    "action"
+    "role"
   ]
 
   async function fetchAllUsers() {

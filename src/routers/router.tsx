@@ -6,10 +6,12 @@ import { FC } from "react";
 import HomePage from "../Components/home.component";
 import ShowBook from "../Pages/ShowBook";
 import AddBook from "../Pages/AddBook";
-import AddUser from "../Pages/user/addUser.component";
+import AddUser from "../Pages/user/addUser.page";
 import BrandmanagerPage from "../Pages/brand/brand-manager.page";
 import ShowUserPage from "../Pages/user/user-manager.page";
 import HandleBrand from "../Pages/brand/handle-brand.page";
+import HandleCalenderPage from "../Pages/calender/handle-calender.page";
+import CalenderManagerPage from "../Pages/calender/calender-manager.page";
 
 const router =
     createBrowserRouter([
@@ -104,7 +106,7 @@ const router =
                 {
                     path: 'update/:id', element: (
                         <AuthGuard>
-                            <RoleBasedGuard accessibleRoles={["admin", "grand", "store"]}>
+                            <RoleBasedGuard accessibleRoles={["admin", "grand"]}>
                                 <AddUser />
                             </RoleBasedGuard >
                         </AuthGuard>
@@ -140,6 +142,40 @@ const router =
                         <AuthGuard>
                             <RoleBasedGuard accessibleRoles={["admin", "grand"]}>
                                 <ShowBook />
+                            </RoleBasedGuard >
+                        </AuthGuard>
+                    ),
+                },
+            ],
+        },
+        {
+            path: '/calender-management',
+            element: <HomePage />,
+            children: [
+                {
+                    path: '',
+                    element: (
+                        <AuthGuard>
+                            <RoleBasedGuard accessibleRoles={["admin", "grand"]}>
+                                <CalenderManagerPage />
+                            </RoleBasedGuard>
+                        </AuthGuard>
+                    ),
+                },
+                {
+                    path: 'create', element: (
+                        <AuthGuard>
+                            <RoleBasedGuard accessibleRoles={["admin", "grand"]}>
+                                <HandleCalenderPage />
+                            </RoleBasedGuard >
+                        </AuthGuard>
+                    ),
+                },
+                {
+                    path: 'update/:id', element: (
+                        <AuthGuard>
+                            <RoleBasedGuard accessibleRoles={["admin", "grand"]}>
+                                <HandleCalenderPage />
                             </RoleBasedGuard >
                         </AuthGuard>
                     ),

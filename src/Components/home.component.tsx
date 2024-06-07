@@ -48,12 +48,12 @@ export default function HomePage() {
       {
         logo: <Address />,
         name: 'Address',
-        url: '/address'
+        url: '/address-management'
       },
       {
         logo: <Calender />,
         name: 'Calender',
-        url: '/calender'
+        url: '/calender-management'
       }])
 
 
