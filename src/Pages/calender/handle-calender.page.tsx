@@ -7,6 +7,7 @@ import { DateRangePicker } from "./DateRangePicker";
 import { DatePicker } from "./DatePicker";
 import { today, now, getLocalTimeZone } from "@internationalized/date";
 import { ChakraProvider, Box, Heading, Link } from "@chakra-ui/react";
+import style from "./../../styles/calender.module.scss";
 
 export default function HandleCalenderPage() {
   const { register, handleSubmit } = useForm();
@@ -84,8 +85,7 @@ export default function HandleCalenderPage() {
           <input id='avb' type='text' className='form-control' placeholder='eg. James Clear' {...register('Description')} /><br />
           <label className='uppercase' htmlFor='avb'><b>select date/time: </b></label>
           <ChakraProvider>
-            <Box marginLeft="12">
-
+            <Box>
               <DateRangePicker
                 label="Date and time range"
                 minValue={today(getLocalTimeZone())}
@@ -96,6 +96,7 @@ export default function HandleCalenderPage() {
               />
             </Box>
           </ChakraProvider>
+          <input type='submit' className='btn btn-dark mt-2' value="Save" /> &nbsp;
 
         </div>
       </form>

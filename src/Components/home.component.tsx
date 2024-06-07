@@ -42,8 +42,8 @@ export default function HomePage() {
       },
       {
         logo: <Medal />,
-        name: 'Brand',
-        url: '/brand-management'
+        name: 'Publisher',
+        url: '/publisher-management'
       },
       {
         logo: <Address />,

@@ -23,7 +23,11 @@ export function RangeCalendar(props) {
     nextButtonProps,
     title
   } = useRangeCalendar(props, state, ref);
-
+(() => {
+  setTimeout(() => {
+    console.log('state :>> ', state.value);
+  }, 6000);
+})()
   return (
     <div {...calendarProps} ref={ref}>
       <Box display="flex" alignItems="center" paddingBottom="4">

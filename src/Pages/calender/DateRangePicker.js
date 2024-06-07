@@ -34,7 +34,7 @@ export function DateRangePicker(props) {
     <Box position="relative" display="inline-flex" flexDirection="column">
       <FormLabel {...labelProps}>{props.label}</FormLabel>
       <InputGroup {...groupProps} ref={ref} width="auto" display="inline-flex">
-        <StyledField pr="5.5rem">
+        <StyledField pr="3rem">
           <DateField {...startFieldProps} />
           <Box as="span" aria-hidden="true" paddingX="2">
             –

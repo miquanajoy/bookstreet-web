@@ -2,9 +2,11 @@ import React, { useEffect, useState } from 'react'
 import axios from 'axios'
 import { useForm } from 'react-hook-form'
 import { useNavigate } from 'react-router-dom'
-// import { alertService, onAlert } from '../_services';
+import { Editor } from "react-draft-wysiwyg";
+import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css";
+import { EditorState } from 'draft-js';
 
-export default function HandleBrand() {
+export default function HandlePublisher() {
   const { register, handleSubmit } = useForm();
   const navigate = useNavigate();
 
@@ -54,13 +56,12 @@ export default function HandleBrand() {
     //   },
     // }
     // )
-    console.log(data);
     // axios.post('http://localhost:5000/Users',data)
   }
   return (
     <div className='container'>
-      <div className="col-6 mx-auto">
-        <h1 className='title'>Brand Manager</h1>
+      <div className="col-10 mx-auto">
+        <h1 className='title'>Publisher Manager</h1>
         <form onSubmit={handleSubmit(savedata)} className='grid grid-cols-2 gap-2 jumbotron mt-4'>
           <div className='flex flex-column items-center gap-2'>
             <label htmlFor="imageUpload" className='block h-52 w-52 bg-slate-50 bg-contain bg-no-repeat bg-center' style={{ backgroundImage: 'url(' + preview + ')' }}></label>
@@ -71,6 +72,12 @@ export default function HandleBrand() {
           <div>
             <label className='uppercase' htmlFor='nm'><b>BRAND NAME: </b></label>
             <input id='nm' type='text' className='form-control' {...register('Title')} /><br />
+            <label className='uppercase' htmlFor='nm'><b>Description: </b></label>
+            <Editor
+              toolbarClassName="toolbarClassName"
+              wrapperClassName="wrapperClassName"
+              editorClassName="editorClassName"
+            />
             <input type='submit' className='btn btn-dark mt-2' value="Save" /> &nbsp;
           </div>
 

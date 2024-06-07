@@ -3,6 +3,9 @@ import axios from 'axios'
 import { useForm } from 'react-hook-form'
 import { useNavigate } from 'react-router-dom'
 import { alertService, onAlert } from '../_services';
+import { Editor } from "react-draft-wysiwyg";
+import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css";
+import { EditorState } from 'draft-js';
 
 export default function AddBook() {
   const { register, handleSubmit } = useForm();
@@ -41,14 +44,14 @@ export default function AddBook() {
       content: "Create success"
     }))
     // console.log('alertService.onAlert :>> ', alertService.onAlert());
-    
+
     console.log(data);
     // axios.post('http://localhost:5000/books',data)
   }
   return (
     <div className='container'>
-      <form onSubmit={handleSubmit(savedata)} className='grid grid-cols-3 gap-4 jumbotron mt-4'>
-        <div className='flex flex-column items-center gap-2'>
+      <form onSubmit={handleSubmit(savedata)} className='grid grid-cols-3 gap-2 jumbotron mt-4'>
+        <div className='row-span-2 flex flex-column items-center gap-2'>
           <label htmlFor="imageUpload" className='block h-52 w-52 bg-slate-50 bg-contain bg-no-repeat bg-center' style={{ backgroundImage: 'url(' + preview + ')' }}></label>
           <input type='file' onChange={onSelectFile} id="imageUpload" className='hidden' />
           <label htmlFor="imageUpload" className='block border px-2 py-1 bg-slate-50 rounded'>New Image</label>
@@ -59,8 +62,7 @@ export default function AddBook() {
           <input id='nm' type='text' className='form-control' placeholder='eg. Atomic Habits' {...register('Title')} /><br />
           <label htmlFor='anm'><b>Author Name: </b></label>
           <input id='anm' type='text' className='form-control' placeholder='eg. James Clear' {...register('Author')} /><br />
-          <label htmlFor='avb'><b>Description: </b></label>
-          <input id='avb' type='text' className='form-control' placeholder='eg. James Clear' {...register('Description')} /><br />
+
         </div>
         <div>
           <label htmlFor='cat'><b>Category: </b></label>
@@ -74,7 +76,16 @@ export default function AddBook() {
             <option value="Available">Available</option>
             <option value="Not Available">Not Available</option>
           </select>
+        </div>
+        <div className='col-start-2 col-span-2'>
+          <label htmlFor='avb'><b>Description: </b></label>
+          <Editor
+            toolbarClassName="toolbarClassName"
+            wrapperClassName="wrapperClassName"
+            editorClassName="editorClassName"
+          />
           <input type='submit' className='btn btn-success mt-12' value="Save" /> &nbsp;
+
         </div>
       </form>
     </div>

@@ -26,3 +26,9 @@ body {
   background: #D9D9D9;
 }
 
+.rdw-editor-wrapper { border: 1px solid #f6f6f6}
+@media only screen and (max-width: 2000px) {
+  .css-zio6zr {
+    top: unset !important
+  }
+}

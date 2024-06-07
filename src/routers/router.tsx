@@ -7,11 +7,11 @@ import HomePage from "../Components/home.component";
 import ShowBook from "../Pages/ShowBook";
 import AddBook from "../Pages/AddBook";
 import AddUser from "../Pages/user/addUser.page";
-import BrandmanagerPage from "../Pages/brand/brand-manager.page";
-import ShowUserPage from "../Pages/user/user-manager.page";
-import HandleBrand from "../Pages/brand/handle-brand.page";
 import HandleCalenderPage from "../Pages/calender/handle-calender.page";
 import CalenderManagerPage from "../Pages/calender/calender-manager.page";
+import ShowUserPage from "../Pages/user/User-manager.page";
+import BrandmanagerPage from "../Pages/publisher/publisher-manager.page";
+import HandlePublisher from "../Pages/publisher/handle-publisher.page";
 
 const router =
     createBrowserRouter([
@@ -115,7 +115,7 @@ const router =
             ],
         },
         {
-            path: '/brand-management',
+            path: '/publisher-management',
             element: <HomePage />,
             children: [
                 {
@@ -132,7 +132,7 @@ const router =
                     path: 'create', element: (
                         <AuthGuard>
                             <RoleBasedGuard accessibleRoles={["admin", "grand"]}>
-                                <HandleBrand />
+                                <HandlePublisher />
                             </RoleBasedGuard >
                         </AuthGuard>
                     ),
