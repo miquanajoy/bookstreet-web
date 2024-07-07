@@ -2,6 +2,7 @@ import config from '../config';
 import { accountService } from '../_services';
 
 export const fetchWrapper = {
+    getByValue,
     get,
     post,
     put,
@@ -16,14 +17,22 @@ function get(url) {
     return fetch(url, requestOptions).then(handleResponse);
 }
 
-function post(url, body) {
-    const requestOptions:any = {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', ...authHeader(url) },
-        credentials: 'include',
-        body: JSON.stringify(body)
+function getByValue(url, value) {
+    const requestOptions = {
+        method: 'GET',
+        headers: authHeader(url),
+        // body: "value"
     };
     return fetch(url, requestOptions).then(handleResponse);
+}
+
+function post(url, body) {
+    const requestOptions: any = {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', ...authHeader(url) },
+        body: JSON.stringify(body)
+    };
+    return fetch(url, requestOptions).then((response) => response.json());
 }
 
 function put(url, body) {
@@ -32,7 +41,7 @@ function put(url, body) {
         headers: { 'Content-Type': 'application/json', ...authHeader(url) },
         body: JSON.stringify(body)
     };
-    return fetch(url, requestOptions).then(handleResponse);    
+    return fetch(url, requestOptions).then(handleResponse);
 }
 
 function _delete(url) {
@@ -44,12 +53,13 @@ function _delete(url) {
 }
 
 function authHeader(url) {
-    const user = accountService.userValue;
-    const isLoggedIn = user && user.jwtToken;
+    const user = JSON.parse(localStorage.getItem("userInfo"));
+    const isLoggedIn = user && user.token;
     const isApiUrl = url.startsWith(config.apiUrl);
     if (isLoggedIn && isApiUrl) {
-        return { Authorization: `Bearer ${user.jwtToken}` };
+        return { Authorization: `Bearer ${user.token}` };
     } else {
+        console.log(63);
         return {};
     }
 }
@@ -57,10 +67,10 @@ function authHeader(url) {
 function handleResponse(response) {
     return response.text().then(text => {
         const data = text && JSON.parse(text);
-        
+
         if (!response.ok) {
             if ([401, 403].includes(response.status) && accountService.userValue) {
-                accountService.logout();
+                // accountService.logout();
             }
 
             const error = (data && data.message) || response.statusText;

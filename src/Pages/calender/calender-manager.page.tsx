@@ -3,6 +3,8 @@ import { Link } from 'react-router-dom'
 import { Trash } from '../../assets/icon/trash';
 import ListComponent from '../../Components/list.component';
 import { alertService } from '../../_services/alert.service';
+import { fetchWrapper } from '../../_helpers/fetch-wrapper';
+import config from '../../config';
 
 
 export default function CalenderManagerPage() {
@@ -67,13 +69,15 @@ export default function CalenderManagerPage() {
     "END_TIME",
   ]
 
-  async function fetchAllUsers() {
-    // const result = await axios.get('http://localhost:5000/users')
-    // setUsers(result.data)
+  async function fetAllData() {
+    const result = fetchWrapper.get(config.apiUrl + 'Event')
+    result.then(val => {
+      console.log('val 75:>> ', val);
+    })
   }
 
   useEffect(() => {
-    fetchAllUsers();
+    fetAllData();
   }, []);
 
   function deleteItem(val) {
@@ -84,7 +88,7 @@ export default function CalenderManagerPage() {
 
   return (
     <><ListComponent
-      title="Account Manager"
+      title="EVENT MANAGEMENT"
       buttonName="Create new account"
       linkEdit=""
       deleteItem={deleteItem}

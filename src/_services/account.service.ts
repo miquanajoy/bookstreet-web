@@ -3,14 +3,13 @@ import { BehaviorSubject } from 'rxjs';
 import config from '../config';
 import { fetchWrapper } from '../_helpers/fetch-wrapper';
 
-const userSubject = new BehaviorSubject(null);
-const baseUrl = `${config.apiUrl}/accounts`;
+var userSubject = new BehaviorSubject(null);
+var baseUrl = `${config.apiUrl}Auth/`;
 
 export const accountService = {
     login,
     logout,
     refreshToken,
-    register,
     verifyEmail,
     forgotPassword,
     validateResetToken,
@@ -21,26 +20,34 @@ export const accountService = {
     update,
     delete: _delete,
     user: userSubject.asObservable(),
-    get userValue () { return userSubject.value }
+    get userValue() {
+        console.log('val 26:>> ', userSubject);
+        return userSubject.value
+    }
 };
 
 export function login(email, password) {
-    // return fetchWrapper.post(`${baseUrl}/authenticate`, { email, password })
-    //     .then(user => {
-        userSubject.next({email, password});
-        // userSubject.next(user);
-        localStorage.setItem("userInfo", `{"username": "Duc", "email": "${email}", "role": "admin"}`)
-            // return 
+    return fetchWrapper.post(`${baseUrl}Login`, { username: email, password: password })
+        .then((result) => {
+            const convertToString = JSON.stringify(result.data)
+            if (result.statusCode === 200) {
+                userSubject.next(result.data);
 
-            // return user;
-        // });
+                localStorage.setItem("userInfo", `${convertToString}`)
+            }
+            return result
+        });
+
 }
 
-function logout() {
-    fetchWrapper.post(`${baseUrl}/revoke-token`, {});
-    stopRefreshTokenTimer();
+export function logout() {
+    localStorage.removeItem("userInfo")
+
+    // fetchWrapper.post(`${baseUrl}/revoke-token`, {});
+    // stopRefreshTokenTimer();
     userSubject.next(null);
     // history.push('/account/login');
+    return true
 }
 
 function refreshToken() {
@@ -52,8 +59,8 @@ function refreshToken() {
         });
 }
 
-function register(params) {
-    return fetchWrapper.post(`${baseUrl}/register`, params);
+export function registerHandle(params) {
+    return fetchWrapper.post(`${config.apiUrl}Auth`, params);
 }
 
 function verifyEmail(token) {

@@ -43,7 +43,6 @@ function warn(message, options) {
 
 function alert(alert) {
     alertSubject.next(alert);
-
 }
 
 function clear(id = defaultId) {

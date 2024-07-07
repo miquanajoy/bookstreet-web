@@ -1,24 +1,16 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { Trash } from '../../assets/icon/trash';
-import ListComponent from '../../Components/list.component';
-import listStyle from './../../styles/listStyle.module.scss';
+import listStyle from '../../styles/listStyle.module.scss';
 import { alertService } from '../../_services/alert.service';
 import { fetchWrapper } from '../../_helpers/fetch-wrapper';
 import config from '../../config';
 
-export default function BrandmanagerPage() {
+export default function ListStore() {
   const [data, setData] = useState([]);
 
-  const headers = [
-    "publisherId",
-    "name",
-    "description",
-    "action"
-  ]
-
   function deleteItem(val) {
-    const result = fetchWrapper.delete(config.apiUrl + 'Publisher/' + val.publisherId)
+    const result = fetchWrapper.delete(config.apiUrl + 'Store/' + val.storeId)
     result.then(val => {
       alertService.alert(({
         content: "Remove success"
@@ -28,7 +20,7 @@ export default function BrandmanagerPage() {
   }
 
   async function fetAllData() {
-    const result = fetchWrapper.get(config.apiUrl + 'Publisher')
+    const result = fetchWrapper.get(config.apiUrl + 'Store')
     result.then(val => {
       setData(val);
     })
@@ -38,36 +30,37 @@ export default function BrandmanagerPage() {
     fetAllData();
   }, []);
 
-
   return (
     <div className='px-6'>
       <div className="flex items-center justify-between mb-2">
         <h1 className='title'>
-          Publisher MANAGEMENT
+          STORE MANAGEMENT
         </h1>
         <Link to="create">
-          <button className='bg-black text-white rounded-lg px-3 py-0.5'>CREATE NEW PUBLISHER </button>
+          <button className='bg-black text-white rounded-lg px-3 py-0.5'>CREATE NEW STORE</button>
         </Link>
       </div>
       <div className="grid grid-cols-5 gap-4">
         {
           data.map(val => (
-            <div key={val.publisherId} className={`${listStyle['book-detail']} position-relative`}>
-              <Link to={"update/" + val.publisherId}>
-                <div className="h-52 bg-contain bg-no-repeat bg-center" style={{ backgroundImage: `url('logo-brand.png')` }}></div>
+            <div key={val.id} className={`${listStyle['book-detail']} position-relative`}>
+              <Link to={"update/" + val.id}>
+                <div className="h-52 bg-contain bg-no-repeat bg-center" style={{ backgroundImage: `url('book1.jpg')` }}></div>
               </Link>
               <div onClick={(event: any) => {
                 deleteItem(val)
               }} className={`${listStyle['trash-box']} position-absolute top-0 right-0 bg-slate-400 rounded px-2 py-1 opacity-50 hover:!opacity-100`} >
                 <Trash />
               </div>
-              <Link to={"/books"}>
+              <Link to={"update/" + val.id}>
                 <div className="px-2">
-                  <h6 className='text-dark'>{val.name}</h6>
+                  <h6>{val.name + val.id}</h6>
+                  <small>Author: Admin</small>
                 </div>
               </Link>
             </div>
           ))
+
         }
       </div>
       <nav className="mt-4">
@@ -106,6 +99,6 @@ export default function BrandmanagerPage() {
         </ul>
       </nav>
 
-    </div >
+    </div>
   )
 }

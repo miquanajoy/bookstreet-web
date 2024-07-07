@@ -1,50 +1,63 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { Trash } from '../assets/icon/trash';
-import listStyle from './../styles/listStyle.module.scss';
-import { alertService } from '../_services/alert.service';
+import { Trash } from '../../assets/icon/trash';
+import listStyle from '../../styles/listStyle.module.scss';
+import { alertService } from '../../_services/alert.service';
+import { fetchWrapper } from '../../_helpers/fetch-wrapper';
+import config from '../../config';
 
 export default function ShowBook() {
-  const [data, setData] = useState([{
-    id: "1",
-    name: "The book ",
-    author: "",
-  }, {
-    id: "2",
-    name: "The book ",
-    author: "",
-  }, {
-    id: "3",
-    name: "The book ",
-    author: "",
-  }, {
-    id: "4",
-    name: "The book ",
-    author: "",
-  }, {
-    id: "5",
-    name: "The book ",
-    author: "",
-  }, {
-    id: "6",
-    name: "The book ",
-    author: "",
-  },]);
-  async function fetchAllBooks() {
-    // const result = await axios.get('http://localhost:5000/books')
-    // setBooks(result.data)
-    // setData([])
+  const [data, setData] = useState([]);
+
+  function deleteItem(val) {
+    const result = fetchWrapper.delete(config.apiUrl + 'Book/' + val.bookId)
+    result.then(val => {
+      alertService.alert(({
+        content: "Remove success"
+      }))
+      fetAllData()
+    })
+  }
+
+  async function fetAllData() {
+    const result = fetchWrapper.get(config.apiUrl + 'Book')
+    result.then(val => {
+      if (!val.length) {
+        const data = {
+          bookId: 0,
+          categoryId: 0,
+          distributorId: 0,
+          publisherId: 0,
+          genreId: 0,
+          title: "string",
+          bookCover: "string",
+          description: "string",
+          publicDay: "2024-07-01T13:23:45.275Z",
+          price: 0,
+          isbn: "string"
+        };
+        const data_list = [];
+        for (let i = 0; i < 15; i++) {
+          const new_data = { ...data };  // Spread operator to copy object
+          new_data.bookId = i;
+          new_data.title = `Anime best seller (#${i + 1})`;
+          new_data.bookCover = i % 2 ? 'book1.png' : 'book1.jpg'
+          new_data.description = `Description of book ${i + 1}`;
+          new_data.price = Math.floor(Math.random() * 91) + 10;  // Random price between 10 and 100
+          new_data.isbn = `ISBN ${i + 1}`;
+          data_list.push(new_data);
+        }
+        setData(data_list);
+      }
+      else {
+        setData(val);
+      }
+    })
   }
 
   useEffect(() => {
-    fetchAllBooks();
+    fetAllData();
   }, []);
-
-  function deleteItem(val) {
-    alertService.alert(({
-      content: "Remove success"
-    }))
-  }
 
   return (
     <div className='px-6'>
@@ -59,18 +72,18 @@ export default function ShowBook() {
       <div className="grid grid-cols-5 gap-4">
         {
           data.map(val => (
-            <div key={val.id} className={`${listStyle['book-detail']} position-relative`}>
-              <Link to={"update/" + val.id}>
-                <div className="h-52 bg-contain bg-no-repeat bg-center" style={{ backgroundImage: `url('book1.jpg')` }}></div>
+            <div key={val.bookId} className={`${listStyle['book-detail']} position-relative`}>
+              <Link to={"update/" + val.bookId}>
+                <div className="h-60 bg-cover bg-no-repeat bg-center" style={{ backgroundImage: `url(${val.bookCover})` }}></div>
               </Link>
               <div onClick={(event: any) => {
                 deleteItem(val)
               }} className={`${listStyle['trash-box']} position-absolute top-0 right-0 bg-slate-400 rounded px-2 py-1 opacity-50 hover:!opacity-100`} >
                 <Trash />
               </div>
-              <Link to={"update/" + val.id}>
-                <div className="px-2">
-                  <h6>{val.name + val.id}</h6>
+              <Link to={"update/" + val.bookId}>
+                <div className='mt-1 text-dark'>
+                  <h6 className="mb-0">{val.title}</h6>
                   <small>Author: Admin</small>
                 </div>
               </Link>

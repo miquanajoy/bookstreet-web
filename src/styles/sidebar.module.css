@@ -1,13 +1,25 @@
+.link {
+    transition: all 0.2s;
+    cursor: pointer;
+}
+
 .link a {
     color: #000;
 
     display: flex;
     align-items: center;
-    justify-content: center;
-    gap: 0.5rem;
+    gap: 1rem;
 }
 
-.link a:hover {
-    text-decoration: underline;
-    text-decoration-style: dotted;
+a.active {
+    box-shadow:0px 0px 100px 0px inset #fff;
+}
+
+.link:hover {
+    box-shadow:0px 0px 100px 0px inset #fff;
+    transition: all 0.2s;
+}
+
+.link a span {
+    
 }

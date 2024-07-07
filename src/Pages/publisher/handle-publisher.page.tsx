@@ -1,19 +1,44 @@
 import React, { useEffect, useState } from 'react'
 import axios from 'axios'
 import { useForm } from 'react-hook-form'
-import { useNavigate } from 'react-router-dom'
+import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import { Editor } from "react-draft-wysiwyg";
 import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css";
-import { EditorState } from 'draft-js';
+import { EditorState, convertToRaw, ContentState, convertFromHTML, convertFromRaw } from 'draft-js';
+import draftToHtml from 'draftjs-to-html';
+import { fetchWrapper } from '../../_helpers/fetch-wrapper';
+import config from '../../config';
 
 export default function HandlePublisher() {
   const { register, handleSubmit } = useForm();
+  const [editorState, setEditorState] = useState(() => {
+
+    return EditorState.createWithContent(convertValueForEditor(""));
+  });
+
+  const [data, setData] = useState<any>();
+  const location = useLocation();
   const navigate = useNavigate();
+  const params = useParams();
+
 
   const [selectedFile, setSelectedFile] = useState()
   const [preview, setPreview] = useState()
 
-  // create a preview as a side effect, whenever selected file is changed
+  function fetAllData() {
+    if (!params.id) return
+    const result = fetchWrapper.get(config.apiUrl + 'Publisher/' + params.id)
+    result.then(val => {
+      (document.getElementById("nm") as HTMLInputElement).value = val.name
+      setData({ ...val })
+      setEditorState(EditorState.createWithContent(convertValueForEditor(val.description)))
+    })
+  }
+
+  useEffect(() => {
+    fetAllData();
+  }, []);
+
   useEffect(() => {
     if (!selectedFile) {
       setPreview(undefined)
@@ -38,25 +63,27 @@ export default function HandlePublisher() {
   }
 
 
-  const savedata = data => {
-    // alertService.alert({
-    //   id: 1,
-    //   autoClose: false
-    // })
-    // // console.log('alertService.onAlert :>> ', alertService.onAlert());
-    // onAlert().subscribe({
-    //   next(value) {
-    //     console.log('value :>> ', value);
-    //   },
-    //   complete() {
-    //     console.log(5000);
-    //   },
-    //   error(err) {
-    //     console.log('err :>> ', err);
-    //   },
-    // }
-    // )
-    // axios.post('http://localhost:5000/Users',data)
+  const savedata = (val) => {
+    const dataPost = {
+      ...data,
+      ...val,
+      description: draftToHtml(convertToRaw(editorState.getCurrentContent())),
+    }
+
+    if (params.id) {
+      fetchWrapper.put(config.apiUrl + 'Publisher/' + params.id, dataPost)
+    } else {
+      fetchWrapper.post(config.apiUrl + 'Publisher', dataPost)
+    }
+  }
+
+  function convertValueForEditor(val) {
+    const sampleMarkup = val;
+    const blocksFromHTML = convertFromHTML(sampleMarkup);
+
+    return ContentState.createFromBlockArray(
+      blocksFromHTML.contentBlocks,
+      blocksFromHTML.entityMap)
   }
   return (
     <div className='container'>
@@ -71,13 +98,15 @@ export default function HandlePublisher() {
 
           <div>
             <label className='uppercase' htmlFor='nm'><b>BRAND NAME: </b></label>
-            <input id='nm' type='text' className='form-control' {...register('Title')} /><br />
-            <label className='uppercase' htmlFor='nm'><b>Description: </b></label>
+            <input id='nm' type='text' className='form-control' {...register('name')} /><br />
+            <label className='uppercase' htmlFor='Description'><b>Description: </b></label>
             <Editor
-              toolbarClassName="toolbarClassName"
-              wrapperClassName="wrapperClassName"
-              editorClassName="editorClassName"
+              editorState={editorState}
+              wrapperClassName="demo-wrapper"
+              editorClassName="demo-editor"
+              onEditorStateChange={setEditorState}
             />
+
             <input type='submit' className='btn btn-dark mt-2' value="Save" /> &nbsp;
           </div>
 

@@ -1,4 +1,6 @@
 export const Role = {
-        Admin: 'Admin',
-        Grand: 'Grand'    
+        Admin: 'ADMINISTRATOR',
+        Store: 'STORE'
 }
+
+export const Roles = [Role.Admin, Role.Store]

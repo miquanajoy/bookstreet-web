@@ -1,30 +1,22 @@
 import React, { useEffect, useState } from 'react'
 import axios from 'axios'
 import { useForm } from 'react-hook-form'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useParams } from 'react-router-dom'
 import { alertService } from '../../_services/alert.service';
+import config from '../../config';
+import { fetchWrapper } from '../../_helpers/fetch-wrapper';
+import { Role, Roles } from '../../models/Role';
 // import { alertService, onAlert } from '../_services';
 
 export default function AddUser() {
-  const { register, handleSubmit } = useForm();
+  const { register, handleSubmit, setValue } = useForm();
+  const [errForm, setErrForm] = useState<any>();
+  const params = useParams();
+  const [data, setData] = useState<any>();
   const navigate = useNavigate();
 
   const [selectedFile, setSelectedFile] = useState()
   const [preview, setPreview] = useState()
-
-  // create a preview as a side effect, whenever selected file is changed
-  useEffect(() => {
-    if (!selectedFile) {
-      setPreview(undefined)
-      return
-    }
-
-    const objectUrl: any = URL.createObjectURL(selectedFile)
-    setPreview(objectUrl)
-
-    // free memory when ever this component is unmounted
-    return () => URL.revokeObjectURL(objectUrl)
-  }, [selectedFile])
 
   const onSelectFile = e => {
     if (!e.target.files || e.target.files.length === 0) {
@@ -32,34 +24,67 @@ export default function AddUser() {
       return
     }
 
-    // I've kept this example simple by using the first image instead of multiple
+    let reader = new FileReader();
+    let base64String;
+
+    reader.onload = function () {
+      base64String = reader.result
+      setPreview(base64String);
+    }
+    reader.readAsDataURL(e.target.files[0]);
     setSelectedFile(e.target.files[0])
   }
 
 
-  const savedata = data => {
-    // alertService.alert({
-    //   id: 1,
-    //   autoClose: false
-    // })
-    // // console.log('alertService.onAlert :>> ', alertService.onAlert());
-    // onAlert().subscribe({
-    //   next(value) {
-    //     console.log('value :>> ', value);
-    //   },
-    //   complete() {
-    //     console.log(5000);
-    //   },
-    //   error(err) {
-    //     console.log('err :>> ', err);
-    //   },
-    // }
-    // )
-    alertService.alert(({
-      content: "Create success"
-    }))
-    console.log(data);
-    // axios.post('http://localhost:5000/Users',data)
+  function fetAllData() {
+    if (!params.id) return
+    const result = fetchWrapper.get(config.apiUrl + 'Auth/' + params.id)
+    result.then(val => {
+      setValue("username", val.username)
+      setValue("fullName", val.fullName)
+      setValue("password", "")
+      setValue("email", val.email)
+      setValue("phone", val.phone)
+      setValue("address", val.address)
+      setValue("avatar", val.avatar)
+      setValue("role", val.role)
+
+      setData(val)
+    })
+  }
+
+  useEffect(() => {
+    fetAllData();
+  }, []);
+
+  const savedata = (val) => {
+    setErrForm([])
+    const dataPost = {
+      ...data,
+      ...val,
+      "avatar": preview
+    }
+    const connectApi = params.id ? fetchWrapper.put(config.apiUrl + 'Auth/' + params.id, dataPost) : fetchWrapper.post(config.apiUrl + 'Auth', dataPost);
+    connectApi.then(res => {
+      if (res.errors) {
+        let listErr = {}
+        for (const key in res.errors) {
+          const element = res.errors[key];
+          listErr = {
+            ...listErr,
+            [key]: element[0],
+          }
+        };
+        setErrForm(listErr)
+
+        return;
+      }
+      alertService.alert(({
+        content: params.id ? "Update success" : "Create success" 
+      }))
+      navigate('/user-management', { replace: true });
+    })
+
   }
 
   return (
@@ -72,16 +97,40 @@ export default function AddUser() {
           <label htmlFor="imageUpload" className='block border px-2 py-1 bg-slate-50 rounded'>New Image</label>
         </div>
 
-        <div>
-          <label className='uppercase' htmlFor='nm'><b>Username: </b></label>
-          <input id='nm' type='text' className='form-control' placeholder='eg. Atomic Habits' {...register('Title')} /><br />
-          <label className='uppercase' htmlFor='anm'><b>Password: </b></label>
-          <input id='anm' type='text' className='form-control' placeholder='eg. James Clear' {...register('Author')} /><br />
-          <label className='uppercase' htmlFor='avb'><b>Confirm password: </b></label>
-          <input id='avb' type='text' className='form-control' placeholder='eg. James Clear' {...register('Description')} /><br />
-          <label className='uppercase' htmlFor='avb'><b>NAME: </b></label>
-          <input id='avb' type='text' className='form-control' placeholder='eg. James Clear' {...register('Description')} /><br /><label className='uppercase' htmlFor='avb'><b>ROLE: </b></label>
-          <input id='avb' type='text' className='form-control' placeholder='eg. James Clear' {...register('Description')} /><br />
+        <div className='grid grid-cols-2 gap-4'>
+          <label className='uppercase' htmlFor='nm'><b>Username: </b>
+            <input id='nm' type='text' className='form-control' placeholder='' {...register('username')} />
+            <p className='text-danger'>{errForm?.Username}</p>
+          </label>
+          <label className='uppercase' htmlFor='fullName'><b>Full name: </b>
+            <input id='fullName' type='text' className='form-control' placeholder='' {...register('fullName')} />
+            <p className='text-danger'>{errForm?.FullName}</p>
+          </label>
+          <label className='uppercase' htmlFor='anm'><b>Password: </b>
+            <input id='anm' type='password' className='form-control' placeholder='' {...register('password')} />
+          </label>
+
+          <label className='uppercase' htmlFor='avb'><b>Email: </b>
+            <input id='avb' type='text' className='form-control' placeholder='' {...register('email')} />
+            <p className='text-danger'>{errForm?.Email}</p>
+
+          </label>
+          <label className='uppercase' htmlFor='phone'><b>Phone: </b>
+            <input id='phone' type='text' className='form-control' placeholder='' {...register('phone')} />
+          </label>
+          <label className='uppercase' htmlFor='addr'><b>Address: </b>
+            <input id='addr' type='text' className='form-control' placeholder='' {...register('address')} />
+          </label>
+
+          <label className='uppercase' htmlFor='role'><b>Role: </b>
+            <select {...register('role')} id='role' className='form-control'>
+              {
+                Roles.map(v => (
+                  <option key={v} value={v}>{v}</option>
+                ))
+              }
+            </select>
+          </label>
           <input type='submit' className='btn btn-dark mt-2' value="Save" /> &nbsp;
 
         </div>

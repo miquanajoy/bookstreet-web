@@ -6,6 +6,9 @@ import { MDBBadge, MDBBtn, MDBTable, MDBTableHead, MDBTableBody } from 'mdb-reac
 import { EditIcon } from '../assets/icon/edit';
 
 export default function ListComponent(props) {
+    (() => {
+        console.log(props)
+    })()
     return (
         <div className='px-6'>
             <div className="flex items-center justify-between mb-2">
@@ -57,7 +60,7 @@ export default function ListComponent(props) {
                                 <td>
                                     <div className='flex items-center gap-4'>
                                         <div className=''>
-                                            <Link to={"update/" + v.id}>
+                                            <Link to={"update/" + v[0].id}>
                                                 <p className='fw-bold mb-1'>
                                                     <EditIcon />
                                                 </p>
@@ -66,7 +69,7 @@ export default function ListComponent(props) {
                                         </div>
                                         <div className=''>
                                             <div className='fw-bold mb-1' onClick={(event: any) => {
-                                                props.deleteItem(v)
+                                                props.deleteItem(v[0])
                                             }}>
                                                 <Trash fill="#000" />
                                             </div>

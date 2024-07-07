@@ -1,4 +1,4 @@
 const config = {
-    apiUrl: 'http://localhost:vcl'
+    apiUrl: process.env.REACT_APP_API_BASE
 };
 export default config;
