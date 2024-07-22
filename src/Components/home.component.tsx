@@ -13,6 +13,8 @@ import LoadingComponent from './loading.component';
 import { alertService, logout } from '../_services';
 import { AlertModel } from '../models/AlertModel';
 import { Role } from '../models/Role';
+import { LocationIcon } from '../assets/icon/location';
+import { AreaIcon } from '../assets/icon/area';
 
 function useCurrentURL() {
   const location = useLocation();
@@ -60,7 +62,20 @@ export default function HomePage() {
         name: 'Event',
         url: '/event-management',
         roles: [Role.Admin]
-      }])
+      },
+      {
+        logo: <AreaIcon />,
+        name: 'Area',
+        url: '/area',
+        roles: [Role.Admin]
+      },
+      {
+        logo: <LocationIcon />,
+        name: 'Location',
+        url: '/location',
+        roles: [Role.Admin]
+      }
+    ])
 
 
     alertService.onAlert().subscribe({

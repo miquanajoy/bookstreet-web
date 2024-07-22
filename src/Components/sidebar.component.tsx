@@ -31,7 +31,7 @@ export default function SidebarPage(prop) {
                                 {link.name}
                             </NavLink >
                         </li>
-                        : <></>
+                        : <div key={link.url}></div>
                 ))}
             </ul>
         </div>
