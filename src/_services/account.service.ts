@@ -3,8 +3,8 @@ import { BehaviorSubject } from 'rxjs';
 import config from '../config';
 import { fetchWrapper } from '../_helpers/fetch-wrapper';
 
-var userSubject = new BehaviorSubject(null);
-var baseUrl = `${config.apiUrl}Auth/`;
+const userSubject = new BehaviorSubject(null);
+const baseUrl = `${config.apiUrl}Auth/`;
 
 export const accountService = {
     login,

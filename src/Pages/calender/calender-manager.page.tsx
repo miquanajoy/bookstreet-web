@@ -105,7 +105,7 @@ export default function CalenderManagerPage() {
   return (
     <><ListComponent
       title="EVENT MANAGEMENT"
-      buttonName="Create new account"
+      buttonName="Create new event"
       linkEdit=""
       deleteItem={deleteItem}
       header={headers} data={data}></ListComponent></>

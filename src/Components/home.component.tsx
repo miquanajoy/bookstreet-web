@@ -15,6 +15,7 @@ import { AlertModel } from '../models/AlertModel';
 import { Role } from '../models/Role';
 import { LocationIcon } from '../assets/icon/location';
 import { AreaIcon } from '../assets/icon/area';
+import { ROUTER } from '../models/const';
 
 function useCurrentURL() {
   const location = useLocation();
@@ -41,20 +42,18 @@ export default function HomePage() {
       },
       {
         logo: <Book />,
-        name: 'Book',
-        url: '/books',
+        ...ROUTER.souvenir,
+        roles: [Role.Admin]
+      },
+      {
+        logo: <Book />,
+        ...ROUTER.book,
         roles: [Role.Admin]
       },
       {
         logo: <Medal />,
         name: 'Publisher',
         url: '/publisher-management',
-        roles: [Role.Admin]
-      },
-      {
-        logo: <Address />,
-        name: 'Address',
-        url: '/address-management',
         roles: [Role.Admin]
       },
       {

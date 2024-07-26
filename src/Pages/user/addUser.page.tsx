@@ -6,6 +6,7 @@ import { alertService } from '../../_services/alert.service';
 import config from '../../config';
 import { fetchWrapper } from '../../_helpers/fetch-wrapper';
 import { Role, Roles } from '../../models/Role';
+import { fileService } from '../../_services/file.service';
 // import { alertService, onAlert } from '../_services';
 
 export default function AddUser() {
@@ -15,7 +16,7 @@ export default function AddUser() {
   const [data, setData] = useState<any>();
   const navigate = useNavigate();
 
-  const [selectedFile, setSelectedFile] = useState()
+  const [selectedFile, setSelectedFile] = useState<any>()
   const [preview, setPreview] = useState()
 
   const onSelectFile = e => {
@@ -57,13 +58,23 @@ export default function AddUser() {
     fetAllData();
   }, []);
 
-  const savedata = (val) => {
+  const savedata = async (val) => {
     setErrForm([])
     const dataPost = {
       ...data,
       ...val,
-      "avatar": preview
+      "avatar": val.urlImage
     }
+    const formData = new FormData();
+    formData.append(
+      "files",
+      new Blob([selectedFile], { type: "image/png" }),
+      selectedFile.name
+    );
+    console.log("selectedFile", selectedFile)
+    await fileService.postFile(formData).then((result) => {
+      dataPost.avatar = result;
+    });
     const connectApi = params.id ? fetchWrapper.put(config.apiUrl + 'Auth/' + params.id, dataPost) : fetchWrapper.post(config.apiUrl + 'Auth', dataPost);
     connectApi.then(res => {
       if (res.errors) {

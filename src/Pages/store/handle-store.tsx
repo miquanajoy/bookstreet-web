@@ -16,7 +16,7 @@ export default function HandleStore() {
   const navigate = useNavigate();
   const params = useParams();
 
-  const [selectedFile, setSelectedFile] = useState();
+  const [selectedFile, setSelectedFile] = useState<any>();
   const [preview, setPreview] = useState();
   const [streets, setStreets] = useState([]);
   const [areas, setAreas] = useState([]);

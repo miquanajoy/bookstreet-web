@@ -8,7 +8,10 @@ import { fetchWrapper } from "../../_helpers/fetch-wrapper";
 import config from "../../config";
 
 export default function ShowUserPage() {
-  const [data, setData] = useState([]);
+  const [data, setData] = useState({
+    list: [],
+    totalPage: 0,
+  });
 
   const headers = [
     {
@@ -41,10 +44,13 @@ export default function ShowUserPage() {
     },
   ];
 
-  async function fetAllData() {
-    const result = fetchWrapper.get(config.apiUrl + "Auth");
-    result.then((val) => {
-      const convertedData = val.map((val) => {
+  async function fetAllData(pageNumber = 1) {
+    const result = fetchWrapper.Post2GetByPaginate(
+      config.apiUrl + "Auth",
+      pageNumber
+    );
+    result.then((res) => {
+      const convertedData = res.list.map((val) => {
         let p = [];
         p.push({ image: val.avatar });
         for (const key in val) {
@@ -54,8 +60,11 @@ export default function ShowUserPage() {
         }
         return p;
       });
-      console.log('convertedData :>> ', convertedData);
-      setData(convertedData);
+
+      setData({
+        list: convertedData,
+        totalPage: res.totalPage,
+      });
     });
   }
 
@@ -63,8 +72,8 @@ export default function ShowUserPage() {
     fetAllData();
   }, []);
 
-  function deleteItem(val) {
-    const result = fetchWrapper.delete(config.apiUrl + "Auth/" + val.id);
+  function deleteItem(id) {
+    const result = fetchWrapper.delete(config.apiUrl + "Auth/" + id);
     result.then((val) => {
       alertService.alert({
         content: "Remove success",
@@ -81,7 +90,9 @@ export default function ShowUserPage() {
         linkEdit=""
         deleteItem={deleteItem}
         header={headers}
-        data={data}
+        data={data.list}
+        totalPage={data.totalPage}
+        handleChange={fetAllData}
       ></ListComponent>
     </>
   );

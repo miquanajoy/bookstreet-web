@@ -10,7 +10,7 @@ export default function AlertComponent(prop) {
                 </svg>
                 <span className="sr-only">Info</span>
                 <div>
-                    <span className="font-medium">Success alert!</span> {prop.onAlert.content}
+                    <span className="font-medium">Alert!</span> {prop.onAlert.content}
                 </div>
             </div>
         </div>)

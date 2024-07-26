@@ -8,7 +8,6 @@ import AddUser from "../Pages/user/addUser.page";
 import HandleCalenderPage from "../Pages/calender/handle-calender.page";
 import CalenderManagerPage from "../Pages/calender/calender-manager.page";
 import ShowUserPage from "../Pages/user/User-manager.page";
-import BrandmanagerPage from "../Pages/publisher/publisher-manager.page";
 import HandlePublisher from "../Pages/publisher/handle-publisher.page";
 import { Role } from "../models/Role";
 import ShowBook from "../Pages/book/ShowBook";
@@ -19,6 +18,7 @@ import HandleArea from "../Pages/area/handle-area";
 import ShowLocation from "../Pages/location/show-location";
 import HandleLocation from "../Pages/location/handle-location";
 import HandleAreaPage from "../Pages/area/handle-area.page";
+import PublisheranagerPage from "../Pages/publisher/publisher-manager.page";
 
 const router = createBrowserRouter([
   {
@@ -32,6 +32,62 @@ const router = createBrowserRouter([
   },
   {
     path: "/books",
+    element: <HomePage />,
+    children: [
+      {
+        path: "",
+        element: (
+          <AuthGuard>
+            <RoleBasedGuard accessibleRoles={[Role.Admin, "grand"]}>
+              <ShowBook />
+            </RoleBasedGuard>
+          </AuthGuard>
+        ),
+      },
+      {
+        path: "detail/:id",
+        element: (
+          <AuthGuard>
+            <RoleBasedGuard accessibleRoles={[Role.Admin, "grand"]}>
+              <ShowBook />
+            </RoleBasedGuard>
+          </AuthGuard>
+        ),
+      },
+      {
+        path: "list",
+        element: (
+          <AuthGuard>
+            <RoleBasedGuard accessibleRoles={[Role.Admin]}>
+              <ShowBook />
+            </RoleBasedGuard>
+          </AuthGuard>
+        ),
+      },
+      {
+        path: "create",
+        element: (
+          <AuthGuard>
+            <RoleBasedGuard accessibleRoles={[Role.Admin, "grand"]}>
+              <AddBook />
+            </RoleBasedGuard>
+          </AuthGuard>
+        ),
+      },
+      {
+        path: "update/:id",
+        element: (
+          <AuthGuard>
+            <RoleBasedGuard accessibleRoles={[Role.Admin, "grand"]}>
+              <AddBook />
+            </RoleBasedGuard>
+          </AuthGuard>
+        ),
+      },
+    ],
+  },
+  {
+    path: "/souvenir",
     element: <HomePage />,
     children: [
       {
@@ -131,7 +187,7 @@ const router = createBrowserRouter([
         element: (
           <AuthGuard>
             <RoleBasedGuard accessibleRoles={[Role.Admin, "grand"]}>
-              <BrandmanagerPage />
+              <PublisheranagerPage />
             </RoleBasedGuard>
           </AuthGuard>
         ),
@@ -255,7 +311,8 @@ const router = createBrowserRouter([
             </RoleBasedGuard>
           </AuthGuard>
         ),
-      },      {
+      },
+      {
         path: "update/:id",
         element: (
           <AuthGuard>

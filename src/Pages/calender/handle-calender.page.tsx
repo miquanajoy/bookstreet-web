@@ -13,7 +13,7 @@ export default function HandleCalenderPage() {
   const { register, handleSubmit } = useForm();
   const navigate = useNavigate();
 
-  const [selectedFile, setSelectedFile] = useState()
+  const [selectedFile, setSelectedFile] = useState<any>()
   const [preview, setPreview] = useState()
 
   // create a preview as a side effect, whenever selected file is changed

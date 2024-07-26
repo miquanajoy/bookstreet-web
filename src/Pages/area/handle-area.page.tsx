@@ -15,7 +15,7 @@ export default function HandleAreaPage() {
   const [data, setData] = useState<any>();
   const [streets, setStreets] = useState([]);
 
-  const [selectedFile, setSelectedFile] = useState();
+  const [selectedFile, setSelectedFile] = useState<any>();
   const [preview, setPreview] = useState();
 
   const onSelectFile = (e) => {
@@ -56,7 +56,6 @@ export default function HandleAreaPage() {
   }, []);
 
   const savedata = (val) => {
-    console.log('val :>> ', val);
     setErrForm([]);
     const dataPost = {
       ...data,

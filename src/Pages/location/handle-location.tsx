@@ -15,7 +15,7 @@ export default function HandleLocation() {
   const [data, setData] = useState<any>();
   const [areas, setAreas] = useState([]);
 
-  const [selectedFile, setSelectedFile] = useState();
+  const [selectedFile, setSelectedFile] = useState<any>();
   const [preview, setPreview] = useState();
 
   const onSelectFile = (e) => {
