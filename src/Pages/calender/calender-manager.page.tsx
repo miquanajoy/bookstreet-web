@@ -59,14 +59,30 @@ export default function CalenderManagerPage() {
     { END_TIME: "11:30 AM" },
   ]]);
   const headers = [
-    "",
-    "event",
-    "BOOKSTREET",
-    "ZONE",
-    "START_DATE",
-    "START_TIME",
-    "END_DATE",
-    "END_TIME",
+    {
+      key: "event",
+      name: "event",
+    },
+    {
+      key: "BOOKSTREET",
+      name: "BOOKSTREET",
+    },{
+      key: "ZONE",
+      name: "ZONE",
+    },{
+      key: "START_DATE",
+      name: "START_DATE",
+    },{
+      key: "START_TIME",
+      name: "START_TIME",
+    },{
+      key: "END_DATE",
+      name: "END_DATE",
+    },{
+      key: "END_TIME",
+      name: "END_TIME",
+    },
+ 
   ]
 
   async function fetAllData() {

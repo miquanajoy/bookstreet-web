@@ -62,9 +62,7 @@ export default function AddBook() {
     result.then(val => {
       (document.getElementById("nm") as HTMLInputElement).value = val.name
       setData({ ...val })
-      const dv = ContentState.createFromText(
-        val.description
-      );
+      const dv = ContentState.createFromText(val.description ?? '');
       setEditorState(EditorState.createWithContent(dv))
     })
   }
@@ -145,7 +143,7 @@ export default function AddBook() {
             editorClassName="demo-editor"
             onEditorStateChange={setEditorState}
           />
-          <input type='submit' className='btn btn-success mt-12' value="Save" /> &nbsp;
+          <input type='submit' className='btn btn-success mt-12' value="Save" />
 
         </div>
       </form>

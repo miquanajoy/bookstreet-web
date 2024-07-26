@@ -107,7 +107,7 @@ export default function HandlePublisher() {
               onEditorStateChange={setEditorState}
             />
 
-            <input type='submit' className='btn btn-dark mt-2' value="Save" /> &nbsp;
+            <input type='submit' className='btn btn-dark mt-2' value="Save" />
           </div>
 
         </form>

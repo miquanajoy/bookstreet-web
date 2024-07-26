@@ -7,13 +7,13 @@ import config from "../../config";
 import { fetchWrapper } from "../../_helpers/fetch-wrapper";
 // import { alertService, onAlert } from '../_services';
 
-export default function HandleLocation() {
+export default function HandleAreaPage() {
   const navigate = useNavigate();
   const { register, handleSubmit, setValue } = useForm();
   const [errForm, setErrForm] = useState<any>();
   const params = useParams();
   const [data, setData] = useState<any>();
-  const [areas, setAreas] = useState([]);
+  const [streets, setStreets] = useState([]);
 
   const [selectedFile, setSelectedFile] = useState();
   const [preview, setPreview] = useState();
@@ -36,17 +36,17 @@ export default function HandleLocation() {
   };
 
   function fetAllData() {
-    const areas = fetchWrapper.get(config.apiUrl + "Area");
-    areas.then((res) => {
-      setAreas(res);
+    const streets = fetchWrapper.get(config.apiUrl + "Street");
+    streets.then((res) => {
+      setStreets(res);
     });
-    setValue("areaId", '');
+    setValue("streetId", '');
 
     if (!params.id) return;
-    const result = fetchWrapper.get(config.apiUrl + "Location/" + params.id);
+    const result = fetchWrapper.get(config.apiUrl + "Area/" + params.id);
     result.then((val) => {
-      setValue("locationName", val.locationName);
-      setValue("areaId", val.areaId);
+      setValue("areaName", val.areaName);
+      setValue("streetId", val.streetId);
       setData(val);
     });
   }
@@ -61,12 +61,12 @@ export default function HandleLocation() {
     const dataPost = {
       ...data,
       ...val,
-      areaName: areas.find(stressDetail => stressDetail.areaId == val.areaId).areaName,
+      streetName: streets.find(stressDetail => stressDetail.streetId == val.streetId).streetName,
       urlImage: preview,
     };
     const connectApi = params.id
-      ? fetchWrapper.put(config.apiUrl + "Location/" + params.id, dataPost)
-      : fetchWrapper.post(config.apiUrl + "Location", dataPost);
+      ? fetchWrapper.put(config.apiUrl + "Area/" + params.id, dataPost)
+      : fetchWrapper.post(config.apiUrl + "Area", dataPost);
 
     connectApi.then((res) => {
       if (res.errors) {
@@ -85,13 +85,13 @@ export default function HandleLocation() {
       alertService.alert({
         content: params.id ? "Update success" : "Create success",
       });
-      navigate("/location", { replace: true });
+      navigate("/area", { replace: true });
     });
   };
 
   return (
     <div className="container">
-      <h1 className="title">Location Manager</h1>
+      <h1 className="title">Area Manager</h1>
       <form
         onSubmit={handleSubmit(savedata)}
         className="grid grid-cols-2 gap-4 jumbotron mt-4"
@@ -118,25 +118,25 @@ export default function HandleLocation() {
 
         <div className="flex flex-column gap-4">
           <label className="uppercase" htmlFor="nm">
-            <b>Location name: </b>
+            <b>Area name: </b>
             <input
               id="nm"
               type="text"
               className="form-control"
               placeholder=""
-              {...register("locationName")}
+              {...register("areaName")}
             />
           </label>
-          <label className="uppercase" htmlFor="area">
-            <b>Area: </b>
+          <label className="uppercase" htmlFor="street">
+            <b>Street: </b>
             <select
-              {...register("areaId")}
-              id="area"
+              {...register("streetId")}
+              id="street"
               className="form-control"
             >
-              {areas.map((v) => (
-                <option key={v.areaId} value={v.areaId}>
-                  {v.areaName}
+              {streets.map((v) => (
+                <option key={v.streetId} value={v.streetId}>
+                  {v.streetName}
                 </option>
               ))}
             </select>

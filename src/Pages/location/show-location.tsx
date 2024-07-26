@@ -12,44 +12,37 @@ import draftToHtml from "draftjs-to-html";
 import { Trash } from "../../assets/icon/trash";
 import ListComponent from "../../Components/list.component";
 
-export default function ListStore() {
+export default function ShowLocation() {
   const [data, setData] = useState([]);
   const headers = [
     {
       key: "image",
       name: "urlImage",
     },
-    { key: "storeName", name: "storeName" },
-    { key: "locationName", name: "locationName" },
-    { key: "openingHours", name: "openingHours" },
-    { key: "closingHours", name: "closingHours" },
-    { key: "description", name: "description" },
+    {
+      key: "locationName",
+      name: "locationName",
+    },
+    {
+      key: "areaName",
+      name: "areaName",
+    },
   ];
 
   function fetAllData() {
-    const result = fetchWrapper.get(config.apiUrl + "Store");
+    const result = fetchWrapper.get(config.apiUrl + "Location");
     result.then((res) => {
-      const convertedData = res.map((val) => [
-        { id: val.storeId },
-        {
-          image: val.urlImage,
-        },
-        {
-          storeName: val.storeName,
-        },
-        {
-          locationName: val.locationName,
-        },
-        {
-          openingHours: val.openingHours,
-        },
-        {
-          closingHours: val.closingHours,
-        },
-        {
-          description: val.description,
-        },
-      ]);
+      const convertedData = res.map((val) => {
+        let p = [];
+        p.push({ id: val.locationId });
+        p.push({ image: val.urlImage });
+        for (const key in val) {
+          if (!["areaId", "locationId"].includes(key)) {
+            p.push({ [key]: val[key] });
+          }
+        }
+        return p;
+      });
       setData(convertedData);
     });
   }
@@ -59,7 +52,9 @@ export default function ListStore() {
   }, []);
 
   function deleteItem(val) {
-    const result = fetchWrapper.delete(config.apiUrl + "Store/" + val.id);
+    const result = fetchWrapper.delete(
+      config.apiUrl + "Location/" + val.id
+    );
     result.then((val) => {
       alertService.alert({
         content: "Remove success",
@@ -71,8 +66,8 @@ export default function ListStore() {
   return (
     <>
       <ListComponent
-        title="Store Manager"
-        buttonName="Create new store"
+        title="Location Manager"
+        buttonName="Create new location"
         linkEdit=""
         deleteItem={deleteItem}
         header={headers}
