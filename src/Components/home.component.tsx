@@ -15,7 +15,7 @@ import { AlertModel } from '../models/AlertModel';
 import { Role } from '../models/Role';
 import { LocationIcon } from '../assets/icon/location';
 import { AreaIcon } from '../assets/icon/area';
-import { ROUTER } from '../models/const';
+import { ROUTER } from '../_helpers/const/const';
 
 function useCurrentURL() {
   const location = useLocation();
@@ -35,41 +35,47 @@ export default function HomePage() {
   useEffect(() => {
     setRouterList([
       {
-        logo: <UserManagementIcon />,
+        logo: '',
+        //  <UserManagementIcon />,
         name: 'User',
         url: '/user-management',
         roles: [Role.Admin]
       },
       {
-        logo: <Book />,
+        logo: '',
+        //  <Book />,
         ...ROUTER.souvenir,
         roles: [Role.Admin]
       },
       {
-        logo: <Book />,
+        logo: '',
+        //  <Book />,
         ...ROUTER.book,
         roles: [Role.Admin]
       },
       {
-        logo: <Medal />,
+        logo: '',
+        //  <Medal />,
         name: 'Publisher',
         url: '/publisher-management',
         roles: [Role.Admin]
       },
       {
-        logo: <Calender />,
-        name: 'Event',
-        url: '/event-management',
+        logo: '',
+        //  <Calender />,
+        ...ROUTER.event,
         roles: [Role.Admin]
       },
       {
-        logo: <AreaIcon />,
+        logo: '',
+        //  <AreaIcon />,
         name: 'Area',
         url: '/area',
         roles: [Role.Admin]
       },
       {
-        logo: <LocationIcon />,
+        logo: '',
+        //  <LocationIcon />,
         name: 'Location',
         url: '/location',
         roles: [Role.Admin]

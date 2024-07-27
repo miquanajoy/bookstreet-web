@@ -1,19 +1,16 @@
-import React, { useEffect, useState } from "react";
-import axios from "axios";
-import { useFieldArray, useForm } from "react-hook-form";
-import { Link, useNavigate, useParams } from "react-router-dom";
+import { useEffect, useState } from "react";
 import { alertService, onAlert } from "../../_services";
-import { Editor } from "react-draft-wysiwyg";
 import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css";
-import { EditorState, convertToRaw, ContentState } from "draft-js";
 import { fetchWrapper } from "../../_helpers/fetch-wrapper";
 import config from "../../config";
-import draftToHtml from "draftjs-to-html";
-import { Trash } from "../../assets/icon/trash";
 import ListComponent from "../../Components/list.component";
+import { AREA } from "../../_helpers/const/const";
 
 export default function HandleArea() {
-  const [data, setData] = useState([]);
+  const [data, setData] = useState({
+    list: [],
+    totalPage: 0,
+  });
   const headers = [
     {
       key: "image",
@@ -23,12 +20,14 @@ export default function HandleArea() {
     { key: "streetName", name: "streetName" },
   ];
 
-  function fetAllData() {
-    const result = fetchWrapper.get(config.apiUrl + "Area");
-    result.then((val) => {
-      const convertedData = val.map((val) => {
+  async function fetAllData(pageNumber = 1) {
+    const result = fetchWrapper.Post2GetByPaginate(
+      config.apiUrl + AREA,
+      pageNumber
+    );
+    result.then((res) => {
+      const convertedData = res.list.map((val) => {
         let p = [];
-        p.push({ id: val.areaId });
         p.push({ image: val.urlImage });
         for (const key in val) {
           if (!["streetId", "urlImage"].includes(key)) {
@@ -37,7 +36,11 @@ export default function HandleArea() {
         }
         return p;
       });
-      setData(convertedData);
+
+      setData({
+        list: convertedData,
+        totalPage: res.totalPage,
+      });
     });
   }
 
@@ -45,9 +48,9 @@ export default function HandleArea() {
     fetAllData();
   }, []);
 
-  function deleteItem(val) {
+  function deleteItem(id) {
     const result = fetchWrapper.delete(
-      config.apiUrl + "Area/" + val.id
+      config.apiUrl + AREA + "/" + id
     );
     result.then((val) => {
       alertService.alert({
@@ -63,10 +66,12 @@ export default function HandleArea() {
       <ListComponent
         title="Area Manager"
         buttonName="Create new area"
-        linkEdit=""
+        
         deleteItem={deleteItem}
         header={headers}
-        data={data}
+        data={data.list}
+        totalPage={data.totalPage}
+        handleChange={fetAllData}
       ></ListComponent>
     </>
   );

@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import axios from "axios";
 import { useForm } from "react-hook-form";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { Editor } from "react-draft-wysiwyg";
@@ -9,20 +8,36 @@ import {
   convertToRaw,
   ContentState,
   convertFromHTML,
-  convertFromRaw,
 } from "draft-js";
 import draftToHtml from "draftjs-to-html";
 import { fetchWrapper } from "../../_helpers/fetch-wrapper";
 import config from "../../config";
 import { fileService } from "../../_services/file.service";
+import { PUBLISHER } from "../../_helpers/const/const";
 
 export default function HandlePublisher() {
-  const { register, handleSubmit } = useForm();
+  const [data, setData] = useState<any>({
+    publisherName: "",
+    description: "",
+    publisherNumber: "0",
+    website: "",
+    year: new Date().getFullYear(),
+    urlImage: "",
+  });
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm({
+    defaultValues: async () => {
+      return await fetAllData();
+    },
+  });
   const [editorState, setEditorState] = useState(() => {
     return EditorState.createWithContent(convertValueForEditor(""));
   });
 
-  const [data, setData] = useState<any>();
   const location = useLocation();
   const navigate = useNavigate();
   const params = useParams();
@@ -30,21 +45,23 @@ export default function HandlePublisher() {
   const [selectedFile, setSelectedFile] = useState<any>();
   const [preview, setPreview] = useState();
 
-  function fetAllData() {
-    if (!params.id) return;
-    const result = fetchWrapper.get(config.apiUrl + "Publisher/" + params.id);
-    result.then((val) => {
-      (document.getElementById("nm") as HTMLInputElement).value = val.name;
-      setData({ ...val });
-      setEditorState(
-        EditorState.createWithContent(convertValueForEditor(val.description))
-      );
-    });
-  }
+  async function fetAllData() {
+    if (!params.id) return data;
+    const result = await fetchWrapper.get(
+      config.apiUrl + PUBLISHER + "/" + params.id
+    );
+    setData(result);
+    console.log('data :>> ', data);
 
-  useEffect(() => {
-    fetAllData();
-  }, []);
+    setPreview(result.urlImage);
+    const blocksFromHTML = convertFromHTML(result.description);
+    const state = ContentState.createFromBlockArray(
+      blocksFromHTML.contentBlocks,
+      blocksFromHTML.entityMap
+    );
+    setEditorState(EditorState.createWithContent(state));
+    return result;
+  }
 
   useEffect(() => {
     if (!selectedFile) {
@@ -69,27 +86,30 @@ export default function HandlePublisher() {
     setSelectedFile(e.target.files[0]);
   };
 
-  const savedata = (val) => {
-    const formData = new FormData();
-    formData.append(
-      "files",
-      new Blob([selectedFile], { type: "image/png" }),
-      "file.png"
-    );
-
-    fileService.postFile(formData).then((result) => {
-      console.log("result :>> ", result);
-    });
+  const savedata = async (val) => {
     const dataPost = {
-      ...data,
+      publisherId: params.id,
       ...val,
       description: draftToHtml(convertToRaw(editorState.getCurrentContent())),
+      urlImage: "",
     };
+    const formData = new FormData();
+    console.log("dataPost :>> ", dataPost);
+    if (selectedFile) {
+      formData.append(
+        "files",
+        new Blob([selectedFile], { type: "image/png" }),
+        selectedFile.name
+      );
+      dataPost.urlImage = await fileService.postFile(formData);
+    } else {
+      dataPost.urlImage = preview ?? '';
+    }
 
     if (params.id) {
-      fetchWrapper.put(config.apiUrl + 'Publisher/' + params.id, dataPost)
+      fetchWrapper.put(config.apiUrl + PUBLISHER + "/" + params.id, dataPost);
     } else {
-      fetchWrapper.post(config.apiUrl + 'Publisher', dataPost)
+      fetchWrapper.post(config.apiUrl + PUBLISHER, dataPost);
     }
   };
 
@@ -117,7 +137,7 @@ export default function HandlePublisher() {
               style={{ backgroundImage: "url(" + preview + ")" }}
             ></label>
             <input
-              type="file"
+              type="file" accept="image/png, image/jpeg"
               onChange={onSelectFile}
               id="imageUpload"
               className="hidden"
@@ -130,28 +150,66 @@ export default function HandlePublisher() {
             </label>
           </div>
 
-          <div>
-            <label className="uppercase" htmlFor="nm">
-              <b>Publisher name: </b>
-            </label>
-            <input
-              id="nm"
-              type="text"
-              className="form-control"
-              {...register("name")}
-            />
-            <br />
-            <label className="uppercase" htmlFor="Description">
-              <b>Description: </b>
-            </label>
-            <Editor
-              editorState={editorState}
-              wrapperClassName="demo-wrapper"
-              editorClassName="demo-editor"
-              onEditorStateChange={setEditorState}
-            />
+          <div className="grid grid-cols-2 gap-2 jumbotron mt-4">
+            <div>
+              <label className="uppercase" htmlFor="nm">
+                <b>Publisher name: </b>
+              </label>
+              <input
+                id="nm"
+                type="text"
+                className="form-control"
+                {...register("publisherName", { required: true })}
+              />
+            </div>
+            <div>
+              <label className="uppercase" htmlFor="nm">
+                <b>Publisher number: </b>
+              </label>
+              <input
+                id="nm"
+                type="number"
+                className="form-control"
+                min="0"
+                {...register("publisherNumber", { required: true })}
+              />
+            </div>
+            <div>
+              <label className="uppercase" htmlFor="nm">
+                <b>Website: </b>
+              </label>
+              <input
+                id="nm"
+                type="text"
+                className="form-control"
+                placeholder="http://"
+                {...register("website", { required: true })}
+              />
+            </div>
+            <div>
+              <label className="uppercase" htmlFor="nm">
+                <b>Year: </b>
+              </label>
+              <input
+                id="nm"
+                type="text"
+                className="form-control"
+                {...register("year")}
+              />
+            </div>
+            <div className="col-span-2">
+              <label className="uppercase" htmlFor="Description">
+                <b>Description: </b>
+              </label>
+              <Editor
+                editorState={editorState}
+                wrapperClassName="demo-wrapper"
+                editorClassName="demo-editor"
+                onEditorStateChange={setEditorState}
+              />
 
-            <input type="submit" className="btn btn-dark mt-2" value="Save" />
+              <input type="submit" className="btn btn-dark mt-2" value="Save" />
+            </div>
           </div>
         </form>
       </div>

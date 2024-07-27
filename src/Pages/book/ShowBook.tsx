@@ -7,7 +7,7 @@ import { fetchWrapper } from "../../_helpers/fetch-wrapper";
 import config from "../../config";
 import Pagination from "@mui/material/Pagination";
 import { PAGINATOR } from "../../_helpers/const/paginator.const";
-import { PRODUCT, ROUTER } from "../../models/const";
+import { PRODUCT, ROUTER } from "../../_helpers/const/const";
 
 export default function ShowBook() {
   const { pathname } = useLocation();

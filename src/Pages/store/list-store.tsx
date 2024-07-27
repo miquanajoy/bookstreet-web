@@ -11,9 +11,13 @@ import config from "../../config";
 import draftToHtml from "draftjs-to-html";
 import { Trash } from "../../assets/icon/trash";
 import ListComponent from "../../Components/list.component";
+import { STORE } from "../../_helpers/const/const";
 
 export default function ListStore() {
-  const [data, setData] = useState([]);
+  const [data, setData] = useState({
+    list: [],
+    totalPage: 0,
+  });
   const headers = [
     {
       key: "image",
@@ -26,10 +30,13 @@ export default function ListStore() {
     { key: "description", name: "description" },
   ];
 
-  function fetAllData() {
-    const result = fetchWrapper.get(config.apiUrl + "Store");
+  function fetAllData(pageNumber = 1) {
+    const result = fetchWrapper.Post2GetByPaginate(
+      config.apiUrl + STORE,
+      pageNumber
+    );
     result.then((res) => {
-      const convertedData = res.map((val) => [
+      const convertedData = res.list.map((val) => [
         { id: val.storeId },
         {
           image: val.urlImage,
@@ -50,7 +57,10 @@ export default function ListStore() {
           description: val.description,
         },
       ]);
-      setData(convertedData);
+      setData({
+        list: convertedData,
+        totalPage: res.totalPage,
+      });
     });
   }
 
@@ -73,10 +83,11 @@ export default function ListStore() {
       <ListComponent
         title="Store Manager"
         buttonName="Create new store"
-        linkEdit=""
         deleteItem={deleteItem}
         header={headers}
-        data={data}
+        data={data.list}
+        totalPage={data.totalPage}
+        handleChange={fetAllData}
       ></ListComponent>
     </>
   );

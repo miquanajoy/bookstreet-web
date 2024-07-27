@@ -1,19 +1,16 @@
-import React, { useEffect, useState } from "react";
-import axios from "axios";
-import { useFieldArray, useForm } from "react-hook-form";
-import { Link, useNavigate, useParams } from "react-router-dom";
+import { useEffect, useState } from "react";
 import { alertService, onAlert } from "../../_services";
-import { Editor } from "react-draft-wysiwyg";
 import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css";
-import { EditorState, convertToRaw, ContentState } from "draft-js";
 import { fetchWrapper } from "../../_helpers/fetch-wrapper";
 import config from "../../config";
-import draftToHtml from "draftjs-to-html";
-import { Trash } from "../../assets/icon/trash";
 import ListComponent from "../../Components/list.component";
+import { LOCATION } from "../../_helpers/const/const";
 
 export default function ShowLocation() {
-  const [data, setData] = useState([]);
+  const [data, setData] = useState({
+    list: [],
+    totalPage: 0,
+  });
   const headers = [
     {
       key: "image",
@@ -29,10 +26,13 @@ export default function ShowLocation() {
     },
   ];
 
-  function fetAllData() {
-    const result = fetchWrapper.get(config.apiUrl + "Location");
+  function fetAllData(pageNumber = 1) {
+    const result = fetchWrapper.Post2GetByPaginate(
+      config.apiUrl + LOCATION,
+      pageNumber
+    );
     result.then((res) => {
-      const convertedData = res.map((val) => {
+      const convertedData = res.list.map((val) => {
         let p = [];
         p.push({ id: val.locationId });
         p.push({ image: val.urlImage });
@@ -43,7 +43,10 @@ export default function ShowLocation() {
         }
         return p;
       });
-      setData(convertedData);
+      setData({
+        list: convertedData,
+        totalPage: res.totalPage,
+      });
     });
   }
 
@@ -52,9 +55,7 @@ export default function ShowLocation() {
   }, []);
 
   function deleteItem(val) {
-    const result = fetchWrapper.delete(
-      config.apiUrl + "Location/" + val.id
-    );
+    const result = fetchWrapper.delete(config.apiUrl + LOCATION + "/" + val.id);
     result.then((val) => {
       alertService.alert({
         content: "Remove success",
@@ -68,10 +69,11 @@ export default function ShowLocation() {
       <ListComponent
         title="Location Manager"
         buttonName="Create new location"
-        linkEdit=""
         deleteItem={deleteItem}
         header={headers}
-        data={data}
+        data={data.list}
+        totalPage={data.totalPage}
+        handleChange={fetAllData}
       ></ListComponent>
     </>
   );

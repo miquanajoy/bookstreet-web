@@ -5,11 +5,12 @@ import { useNavigate, useParams } from "react-router-dom";
 import { alertService, onAlert } from "../../_services";
 import { Editor } from "react-draft-wysiwyg";
 import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css";
-import { EditorState, convertToRaw, ContentState } from "draft-js";
+import { EditorState, convertToRaw, ContentState, convertFromHTML } from "draft-js";
 import { fetchWrapper } from "../../_helpers/fetch-wrapper";
 import config from "../../config";
 import draftToHtml from "draftjs-to-html";
 import { Role } from "../../models/Role";
+import { fileService } from "../../_services/file.service";
 
 export default function HandleStore() {
   const { register, handleSubmit } = useForm();
@@ -69,29 +70,64 @@ export default function HandleStore() {
     result.then((val) => {
       (document.getElementById("nm") as HTMLInputElement).value = val.name;
       setData({ ...val });
-      const dv = ContentState.createFromText(val.description ?? '');
-      setEditorState(EditorState.createWithContent(dv));
-    });
+      const blocksFromHTML = convertFromHTML(val.description);
+      const state = ContentState.createFromBlockArray(
+        blocksFromHTML.contentBlocks,
+        blocksFromHTML.entityMap
+      );
+      setEditorState(EditorState.createWithContent(state));
+      });
   }
 
   useEffect(() => {
     fetAllData();
   }, []);
 
-  const savedata = (val) => {
-    // const dataPost = {
-    //   ...data,
-    //   ...val,
-    //   "bookCover": preview,
-    //   "publicDay": new Date(),
-    //   "isbn": "string",
-    //   description: draftToHtml(convertToRaw(editorState.getCurrentContent())),
-    // }
-    // if (params.id) {
-    //   fetchWrapper.put(config.apiUrl + 'Store/' + params.id, dataPost)
-    // } else {
-    //   fetchWrapper.post(config.apiUrl + 'Store', dataPost)
-    // }
+  const savedata = async (val) => {
+    console.log('val :>> ', val);
+    const dataPost = {
+      ...data,
+      ...val,
+      areaName: areas.find(stressDetail => stressDetail.areaId == val.areaId).areaName,
+      urlImage: preview,
+    };
+    const formData = new FormData();
+    if (selectedFile) {
+      formData.append(
+        "files",
+        new Blob([selectedFile], { type: "image/png" }),
+        selectedFile.name
+      );
+      dataPost.urlImage = await fileService.postFile(formData);
+    } else {
+      dataPost.urlImage = preview ?? '';
+    }
+
+    let process;
+    if (params.id) {
+      // dataPost.book = data
+      // process = fetchWrapper.put(config.apiUrl + LOCATION + "/" + params.id, dataPost)
+    } else {
+      // process = fetchWrapper.post(config.apiUrl + LOCATION, dataPost);
+    }
+
+    process.then((res) => {
+      if (res.errors) {
+        let listErr = {};
+        for (const key in res.errors) {
+          const element = res.errors[key];
+          listErr = {
+            ...listErr,
+            [key]: element[0],
+          };
+        }
+        return;
+      }
+      alertService.alert({
+        content: params.id ? "Update success" : "Create success",
+      });
+      navigate("/location", { replace: true });
+    });
   };
   return (
     <div className="container">

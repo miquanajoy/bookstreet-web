@@ -6,6 +6,7 @@ import { alertService } from "../../_services/alert.service";
 import { Role } from "../../models/Role";
 import { fetchWrapper } from "../../_helpers/fetch-wrapper";
 import config from "../../config";
+import { AUTH } from "../../_helpers/const/const";
 
 export default function ShowUserPage() {
   const [data, setData] = useState({
@@ -46,7 +47,7 @@ export default function ShowUserPage() {
 
   async function fetAllData(pageNumber = 1) {
     const result = fetchWrapper.Post2GetByPaginate(
-      config.apiUrl + "Auth",
+      config.apiUrl + AUTH,
       pageNumber
     );
     result.then((res) => {
@@ -73,7 +74,7 @@ export default function ShowUserPage() {
   }, []);
 
   function deleteItem(id) {
-    const result = fetchWrapper.delete(config.apiUrl + "Auth/" + id);
+    const result = fetchWrapper.delete(config.apiUrl + AUTH + "/" + id);
     result.then((val) => {
       alertService.alert({
         content: "Remove success",
@@ -87,7 +88,7 @@ export default function ShowUserPage() {
       <ListComponent
         title="Account Manager"
         buttonName="Create new account"
-        linkEdit=""
+        
         deleteItem={deleteItem}
         header={headers}
         data={data.list}

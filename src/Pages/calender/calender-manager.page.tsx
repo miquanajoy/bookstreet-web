@@ -1,113 +1,99 @@
-import { useEffect, useState } from 'react'
-import { Link } from 'react-router-dom'
-import { Trash } from '../../assets/icon/trash';
-import ListComponent from '../../Components/list.component';
-import { alertService } from '../../_services/alert.service';
-import { fetchWrapper } from '../../_helpers/fetch-wrapper';
-import config from '../../config';
-
+import { useEffect, useState } from "react";
+import ListComponent from "../../Components/list.component";
+import { alertService } from "../../_services/alert.service";
+import { fetchWrapper } from "../../_helpers/fetch-wrapper";
+import config from "../../config";
+import { EVENT } from "../../_helpers/const/const";
+import dayjs from "dayjs";
 
 export default function CalenderManagerPage() {
-  const [data, setData] = useState([[
-    { image: "book1.jpg" },
-    { event: "GIAO LƯU CÙNG TÁC GIẢ NGUYỄN NHẬT ÁNH" },
-    { BOOKSTREET: "THU DUC CITY BOOKSTREET" },
-    { ZONE: "ZONE A" },
-    { START_DATE: "1/5/2024" },
-    { START_TIME: "10:00 AM" },
-    { END_DATE: "1/5/2024" },
-    { END_TIME: "11:30 AM" },
-  ],
-  [
-    { image: "book1.jpg" },
-    { event: "GIAO LƯU CÙNG NGUYỄN NHẬT ÁNH" },
-    { BOOKSTREET: "THU DUC" },
-    { ZONE: "ZONE A" },
-    { START_DATE: "1/5/2024" },
-    { START_TIME: "10:00 AM" },
-    { END_DATE: "1/5/2024" },
-    { END_TIME: "11:30 AM" },
-  ],
-  [
-    { image: "book1.jpg" },
-    { event: "GIAO LƯU CÙNG TÁC GIẢ ÁNH" },
-    { BOOKSTREET: "THU DUC CITY" },
-    { ZONE: "ZONE E" },
-    { START_DATE: "1/5/2024" },
-    { START_TIME: "10:00 AM" },
-    { END_DATE: "1/5/2024" },
-    { END_TIME: "11:30 AM" },
-  ],
-  [
-    { image: "book1.jpg" },
-    { event: "GIAO LƯU CÙNG TÁC GIẢ NGUYỄN" },
-    { BOOKSTREET: "THU DUC BOOKSTREET" },
-    { ZONE: "ZONE D" },
-    { START_DATE: "1/5/2024" },
-    { START_TIME: "10:00 AM" },
-    { END_DATE: "1/5/2024" },
-    { END_TIME: "11:30 AM" },
-  ],
-  [
-    { image: "book1.jpg" },
-    { event: "GIAO LƯU CÙNG TÁC GIẢ NHẬT ÁNH" },
-    { BOOKSTREET: "THU DUC CITY" },
-    { ZONE: "ZONE C" },
-    { START_DATE: "1/5/2024" },
-    { START_TIME: "10:00 AM" },
-    { END_DATE: "1/5/2024" },
-    { END_TIME: "11:30 AM" },
-  ]]);
+  const [data, setData] = useState({
+    list: [],
+    totalPage: 0,
+  });
   const headers = [
     {
-      key: "event",
-      name: "event",
+      key: "title",
+      name: "Title",
     },
     {
-      key: "BOOKSTREET",
-      name: "BOOKSTREET",
-    },{
-      key: "ZONE",
-      name: "ZONE",
-    },{
-      key: "START_DATE",
-      name: "START_DATE",
-    },{
-      key: "START_TIME",
-      name: "START_TIME",
-    },{
-      key: "END_DATE",
-      name: "END_DATE",
-    },{
-      key: "END_TIME",
-      name: "END_TIME",
+      key: "starDate",
+      name: "Start Date",
     },
- 
-  ]
+    {
+      key: "endDate",
+      name: "End date",
+    },
+    {
+      key: "purpose",
+      name: "Purpose",
+    },
+  ];
 
-  async function fetAllData() {
-    const result = fetchWrapper.get(config.apiUrl + 'Event')
-    result.then(val => {
-      console.log('val 75:>> ', val);
-    })
+  async function fetAllData(pageNumber = 1) {
+    const result = fetchWrapper.Post2GetByPaginate(
+      config.apiUrl + EVENT,
+      pageNumber
+    );
+    result.then((res) => {
+      const convertedData = res.list.map((val) => {
+        return [
+          {
+            image: val.image,
+          },
+          {
+            id: val.id,
+          },
+          {
+            title: val.title,
+          },
+          {
+            starDate: dayjs(val.starDate).format("YYYY-MM-DD"),
+          },
+          {
+            endDate: dayjs(val.endDate).format("YYYY-MM-DD"),
+          },
+          {
+            purpose: val.purpose,
+          },
+          {
+            hostName: val.hostName,
+          },
+        ];
+      });
+      console.log("convertedData :>> ", convertedData);
+      setData({
+        list: convertedData,
+        totalPage: res.totalPage,
+      });
+    });
   }
 
   useEffect(() => {
     fetAllData();
   }, []);
 
-  function deleteItem(val) {
-    alertService.alert(({
-      content: "Remove success"
-    }))
+  function deleteItem(id) {
+    const result = fetchWrapper.delete(config.apiUrl + EVENT + "/" + id);
+    result.then((val) => {
+      alertService.alert({
+        content: "Remove success",
+      });
+      fetAllData();
+    });
   }
 
   return (
-    <><ListComponent
-      title="EVENT MANAGEMENT"
-      buttonName="Create new event"
-      linkEdit=""
-      deleteItem={deleteItem}
-      header={headers} data={data}></ListComponent></>
-  )
+    <>
+      <ListComponent
+        title="EVENT MANAGEMENT"
+        buttonName="Create new event"
+        deleteItem={deleteItem}
+        header={headers}
+        data={data.list}
+        totalPage={data.totalPage}
+        handleChange={fetAllData}
+      ></ListComponent>
+    </>
+  );
 }

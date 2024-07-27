@@ -1,13 +1,11 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { Trash } from "../../assets/icon/trash";
-import ListComponent from "../../Components/list.component";
 import listStyle from "./../../styles/listStyle.module.scss";
 import { alertService } from "../../_services/alert.service";
 import { fetchWrapper } from "../../_helpers/fetch-wrapper";
 import config from "../../config";
 import Pagination from "@mui/material/Pagination";
-import { PAGINATOR } from "../../_helpers/const/paginator.const";
 
 export default function PublisheranagerPage() {
   const [data, setData] = useState({
@@ -36,6 +34,7 @@ export default function PublisheranagerPage() {
     );
     result.then((res: any) => {
       setData(res);
+      console.log('data :>> ', data);
     });
   }
 
@@ -66,7 +65,7 @@ export default function PublisheranagerPage() {
             <Link to={"update/" + val.publisherId}>
               <div
                 className="h-52 bg-contain bg-no-repeat bg-center"
-                style={{ backgroundImage: `url('logo-brand.png')` }}
+                style={{ backgroundImage: `url('${val.urlImage }')` }}
               ></div>
             </Link>
             <div
@@ -79,7 +78,7 @@ export default function PublisheranagerPage() {
             </div>
             <Link to={"/books"}>
               <div className="px-2">
-                <h6 className="text-dark">{val.name}</h6>
+                <h6 className="text-dark">{val.publisherName}</h6>
               </div>
             </Link>
           </div>

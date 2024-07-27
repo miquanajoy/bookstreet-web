@@ -5,6 +5,8 @@ import { useNavigate, useParams } from "react-router-dom";
 import { alertService } from "../../_services/alert.service";
 import config from "../../config";
 import { fetchWrapper } from "../../_helpers/fetch-wrapper";
+import { fileService } from "../../_services/file.service";
+import { LOCATION } from "../../_helpers/const/const";
 // import { alertService, onAlert } from '../_services';
 
 export default function HandleLocation() {
@@ -55,7 +57,7 @@ export default function HandleLocation() {
     fetAllData();
   }, []);
 
-  const savedata = (val) => {
+  const savedata = async (val) => {
     console.log('val :>> ', val);
     setErrForm([]);
     const dataPost = {
@@ -64,11 +66,27 @@ export default function HandleLocation() {
       areaName: areas.find(stressDetail => stressDetail.areaId == val.areaId).areaName,
       urlImage: preview,
     };
-    const connectApi = params.id
-      ? fetchWrapper.put(config.apiUrl + "Location/" + params.id, dataPost)
-      : fetchWrapper.post(config.apiUrl + "Location", dataPost);
+    const formData = new FormData();
+    if (selectedFile) {
+      formData.append(
+        "files",
+        new Blob([selectedFile], { type: "image/png" }),
+        selectedFile.name
+      );
+      dataPost.urlImage = await fileService.postFile(formData);
+    } else {
+      dataPost.urlImage = preview ?? '';
+    }
 
-    connectApi.then((res) => {
+    let process;
+    if (params.id) {
+      // dataPost.book = data
+      process = fetchWrapper.put(config.apiUrl + LOCATION + "/" + params.id, dataPost)
+    } else {
+      process = fetchWrapper.post(config.apiUrl + LOCATION, dataPost);
+    }
+
+    process.then((res) => {
       if (res.errors) {
         let listErr = {};
         for (const key in res.errors) {
@@ -103,7 +121,7 @@ export default function HandleLocation() {
             style={{ backgroundImage: "url(" + preview + ")" }}
           ></label>
           <input
-            type="file"
+            type="file" accept="image/png, image/jpeg"
             onChange={onSelectFile}
             id="imageUpload"
             className="hidden"

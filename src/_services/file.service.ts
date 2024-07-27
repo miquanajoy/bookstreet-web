@@ -14,7 +14,7 @@ class FileService {
         ...this.authHeader(),
       },
     }).then(res => {
-      const urlImg = `https://fptbs.azurewebsites.net/api/File/image/${res.data.data[0]}?resizeIfWider=true&resizeImageAndRatio=true`
+      const urlImg = `https://fptbs.azurewebsites.net/api/File/image/${res.data.data[0]}`
       return urlImg
     });
   }

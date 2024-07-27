@@ -5,6 +5,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { alertService } from "../../_services/alert.service";
 import config from "../../config";
 import { fetchWrapper } from "../../_helpers/fetch-wrapper";
+import { fileService } from "../../_services/file.service";
 // import { alertService, onAlert } from '../_services';
 
 export default function HandleAreaPage() {
@@ -55,14 +56,26 @@ export default function HandleAreaPage() {
     fetAllData();
   }, []);
 
-  const savedata = (val) => {
+  const savedata = async (val) => {
     setErrForm([]);
     const dataPost = {
       ...data,
       ...val,
       streetName: streets.find(stressDetail => stressDetail.streetId == val.streetId).streetName,
-      urlImage: preview,
+      urlImage: "",
     };
+
+    const formData = new FormData();
+    if (selectedFile) {
+      formData.append(
+        "files",
+        new Blob([selectedFile], { type: "image/png" }),
+        selectedFile.name
+      );
+      dataPost.urlImage = await fileService.postFile(formData);
+    } else {
+      dataPost.urlImage = preview ?? '';
+    }
     const connectApi = params.id
       ? fetchWrapper.put(config.apiUrl + "Area/" + params.id, dataPost)
       : fetchWrapper.post(config.apiUrl + "Area", dataPost);
@@ -102,7 +115,7 @@ export default function HandleAreaPage() {
             style={{ backgroundImage: "url(" + preview + ")" }}
           ></label>
           <input
-            type="file"
+            type="file" accept="image/png, image/jpeg"
             onChange={onSelectFile}
             id="imageUpload"
             className="hidden"
