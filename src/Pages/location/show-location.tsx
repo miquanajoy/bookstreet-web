@@ -67,7 +67,7 @@ export default function ShowLocation() {
   return (
     <>
       <ListComponent
-        title="Location Manager"
+        title="Location Management"
         buttonName="Create new location"
         deleteItem={deleteItem}
         header={headers}

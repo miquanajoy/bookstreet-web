@@ -56,10 +56,10 @@ export default function ShowBook() {
     <div className="px-6">
       <div className="flex items-center justify-between mb-2">
         <h1 className="title">
-          {pathname == ROUTER.book.url
+          {(pathname == ROUTER.book.url
             ? ROUTER.book.name
-            : ROUTER.souvenir.name}
-          management
+            : ROUTER.souvenir.name) + " management"}
+          
         </h1>
         <Link to="create">
           <button className="bg-black text-white uppercase rounded-lg px-3 py-0.5">
@@ -94,7 +94,7 @@ export default function ShowBook() {
               <div className="mt-1 text-dark">
                 <h6 className="mb-0 line-clamp-2">{val.productName}</h6>
                 <div className="box-author">
-                  {val.book.authors ? (
+                  {val.book?.authors ? (
                     val.book.authors.map((author) => (
                       <small key={author}>{author}</small>
                     ))

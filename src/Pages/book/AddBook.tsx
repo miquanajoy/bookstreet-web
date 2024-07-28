@@ -29,6 +29,7 @@ export default function AddBook() {
     genreId: "",
     distributorId: "",
     authors: "",
+    publisherId: "",
   });
   // useEffect(() => {
   //   setValue('publicDay', '2021-04-23'); // this will result a type error
@@ -46,6 +47,7 @@ export default function AddBook() {
   const navigate = useNavigate();
   const params = useParams();
   const { pathname } = useLocation();
+  const isBookScreen = pathname.includes(ROUTER.book.url);
   // End Router
 
   const [selectedFile, setSelectedFile] = useState<any>();
@@ -108,7 +110,6 @@ export default function AddBook() {
     );
     setData(result);
     setPreview(result.urlImage);
-    // setSelectedFile(result.urlImage);
 
     const blocksFromHTML = convertFromHTML(result.description);
     const state = ContentState.createFromBlockArray(
@@ -116,10 +117,12 @@ export default function AddBook() {
       blocksFromHTML.entityMap
     );
     setEditorState(EditorState.createWithContent(state));
+
     return {
       ...result,
-      publicDay: dayjs(result.book.publicDay).format("YYYY-MM-DD"),
-      authors: result.book.authors[0],
+      ...result.book,
+      publicDay: dayjs(result.book?.publicDay).format("YYYY-MM-DD"),
+      authors: result.book?.authors[0],
     };
   }
 
@@ -128,30 +131,32 @@ export default function AddBook() {
   }
 
   const savedata = async (val) => {
-    const categoryId = val.categoryId ?? options.categories[0].categoryId;
-    const distributorId =
-      val.distributorId ?? options.distributors[0].distributorId;
-    const publisherId = val.publisherId ?? options.publishers[0].publisherId;
-    const genreId = val.genreId ?? options.genres[0].genreId;
-
+    const categoryId = val.categoryId;
+    const distributorId = val.distributorId;
+    const publisherId = val.publisherId;
+    const genreId = val.genreId;
+    const book = {
+      ...data.book,
+      distributorId: distributorId,
+      publisherId: publisherId,
+      genreId: genreId,
+      publicDay: val.publicDay,
+      authors: [val.authors],
+    };
     let dataPost = {
+      book,
       productId: params.id,
       categoryId: categoryId,
-      productTypeId: pathname.includes(ROUTER.book.url) ? 1 : 2,
+      productTypeId: isBookScreen ? 1 : 2,
       productTypeName: val.productTypeName,
       productName: val.productName,
       description: draftToHtml(convertToRaw(editorState.getCurrentContent())),
       price: val.price,
       urlImage: val.urlImage,
-      book: {
-        ...data.book,
-        distributorId: distributorId,
-        publisherId: publisherId,
-        genreId: genreId,
-        publicDay: val.publicDay,
-        authors: [val.authors],
-      },
     };
+    if (!isBookScreen) {
+      delete dataPost.book;
+    }
     const formData = new FormData();
     if (selectedFile) {
       formData.append(
@@ -161,7 +166,7 @@ export default function AddBook() {
       );
       dataPost.urlImage = await fileService.postFile(formData);
     } else {
-      dataPost.urlImage = preview ?? '';
+      dataPost.urlImage = preview ?? "";
     }
     let process;
     if (params.id) {
@@ -179,12 +184,9 @@ export default function AddBook() {
         alertService.alert({
           content: params.id ? "Update success" : "Create success",
         });
-        navigate(
-          pathname.includes(ROUTER.book.url)
-            ? ROUTER.book.url
-            : ROUTER.souvenir.url,
-          { replace: true }
-        );
+        navigate(isBookScreen ? ROUTER.book.url : ROUTER.souvenir.url, {
+          replace: true,
+        });
       })
       .catch((e) => {});
   };
@@ -215,111 +217,158 @@ export default function AddBook() {
           </label>
         </div>
 
-        <div>
-          <label htmlFor="nm">
-            <b>
-              {(pathname.includes(ROUTER.book.url)
-                ? ROUTER.book.name
-                : ROUTER.souvenir.name) + " Name:"}
-            </b>
-          </label>
-          <input
-            id="nm"
-            type="text"
-            className="form-control"
-            placeholder={
-              (pathname.includes(ROUTER.book.url)
-                ? ROUTER.book.name
-                : ROUTER.souvenir.name) + " name"
-            }
-            {...register("productName", { required: true })}
-          />
-          {errors.productName && <div>This field is required</div>}
-          <br />
-          <label htmlFor="auth">
-            <b>Author: </b>
-          </label>
-          <input
-            id="auth"
-            type="text"
-            className="form-control"
-            {...register("authors")}
-          />
+        <div className="flex flex-column gap-2">
+          <div>
+            <label htmlFor="nm">
+              <b>
+                {(isBookScreen ? ROUTER.book.name : ROUTER.souvenir.name) +
+                  " Name:"}
+              </b>
+            </label>
+            <input
+              id="nm"
+              type="text"
+              className="form-control"
+              placeholder={
+                (isBookScreen ? ROUTER.book.name : ROUTER.souvenir.name) +
+                " name"
+              }
+              {...register("productName", { required: true })}
+            />
+            {errors.productName && <div>This field is required</div>}
+          </div>
 
-          <br />
-          <label htmlFor="genr">
-            <b>Publisher: </b>
-          </label>
-          {options.publishers[0]?.publisherId}
-          <select id="genr" className="form-control">
-            {options.publishers.map((val) => (
-              <option key={val.publisherId} value={val.publisherId}>
-                {val.publisherName}
-              </option>
-            ))}
-          </select>
-          <br />
-
-          <label htmlFor="genr">
-            <b>Genre: </b>
-          </label>
-          <select {...register("genreId")} id="genr" className="form-control">
-            {options.genres.map((val) => (
-              <option key={val.genreId} value={val.genreId}>
-                {val.genreName}
-              </option>
-            ))}
-          </select>
+          {isBookScreen ? (
+            <div>
+              <label htmlFor="auth">
+                <b>Author: </b>
+              </label>
+              <input
+                id="auth"
+                type="text"
+                className="form-control"
+                {...register("authors")}
+              />
+            </div>
+          ) : (
+            <></>
+          )}
+          {isBookScreen ? (
+            <div>
+              <label htmlFor="publisher">
+                <b>Publisher: </b>
+              </label>
+              <select
+                {...register("publisherId")}
+                id="publisher"
+                className="form-control"
+              >
+                {options.publishers.map((val) => (
+                  <option key={val.publisherId} value={val.publisherId}>
+                    {val.publisherName}
+                  </option>
+                ))}
+              </select>
+            </div>
+          ) : (
+            <></>
+          )}
+          {isBookScreen ? (
+            <div>
+              <label htmlFor="genr">
+                <b>Genre: </b>
+              </label>
+              <select
+                {...register("genreId")}
+                id="genr"
+                className="form-control"
+              >
+                {options.genres.map((val) => (
+                  <option key={val.genreId} value={val.genreId}>
+                    {val.genreName}
+                  </option>
+                ))}
+              </select>
+            </div>
+          ) : (
+            <></>
+          )}
         </div>
-        <div>
-          <label htmlFor="pub">
-            <b>Public day: </b>
-          </label>
-          <input
-            id="pub"
-            type="date"
-            className="form-control"
-         
-            {...register("publicDay", { valueAsDate: true })}
-          />
-          <br />
-          <label htmlFor="anm">
-            <b>Price: </b>
-          </label>
-          <input
-            id="anm"
-            type="number"
-            className="form-control"
-            {...register("price")}
-          />
-          <br />
-          <label htmlFor="dis">
-            <b>Distributor: </b>
-          </label>
-          <select
-            {...register("distributorId")}
-            id="dis"
-            className="form-control"
-          >
-            {options.distributors.map((val) => (
-              <option key={val.distributorId} value={val.distributorId}>
-                {val.distriName}
-              </option>
-            ))}
-          </select>
-          <br />
-
-          <label htmlFor="cat">
-            <b>Category: </b>
-          </label>
-          <select id="cat" className="form-control" {...register("categoryId")}>
-            {options.categories.map((val) => (
-              <option key={val.categoryId} value={val.categoryId}>
-                {val.categoryName}
-              </option>
-            ))}
-          </select>
+        <div className="flex flex-column gap-2">
+          <div>
+            <label htmlFor="cat">
+              <b>Category: </b>
+            </label>
+            <select
+              id="cat"
+              className="form-control"
+              {...register("categoryId")}
+            >
+              {options.categories.map((val) => (
+                <option key={val.categoryId} value={val.categoryId}>
+                  {val.categoryName}
+                </option>
+              ))}
+            </select>
+          </div>
+          <div>
+            {isBookScreen ? (
+              <div>
+                <label htmlFor="pub">
+                  <b>Public day: </b>
+                </label>
+                <input
+                  id="pub"
+                  type="date"
+                  className="form-control"
+                  {...register("publicDay", { valueAsDate: true })}
+                />
+              </div>
+            ) : (
+              <></>
+            )}
+          </div>
+          <div>
+            {isBookScreen ? (
+              <div>
+                <label htmlFor="anm">
+                  <b>Price: </b>
+                </label>
+                <input
+                  id="anm"
+                  type="number"
+                  className="form-control"
+                  {...register("price")}
+                />
+              </div>
+            ) : (
+              <></>
+            )}
+          </div>
+          <div>
+            {isBookScreen ? (
+              <div>
+                <label htmlFor="dis">
+                  <b>Distributor: </b>
+                </label>
+                <select
+                  {...register("distributorId")}
+                  id="dis"
+                  className="form-control"
+                >
+                  {options.distributors.map((val) => (
+                    <option key={val.distributorId} value={val.distributorId}>
+                      {val.distriName}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            ) : (
+              <></>
+            )}
+          </div>
         </div>
+
         <div className="col-start-2 col-span-2">
           <label htmlFor="des">
             <b>Description: </b>
