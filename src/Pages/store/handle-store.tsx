@@ -2,25 +2,51 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { useForm } from "react-hook-form";
 import { useNavigate, useParams } from "react-router-dom";
-import { alertService, onAlert } from "../../_services";
 import { Editor } from "react-draft-wysiwyg";
 import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css";
-import { EditorState, convertToRaw, ContentState, convertFromHTML } from "draft-js";
+import {
+  EditorState,
+  convertToRaw,
+  ContentState,
+  convertFromHTML,
+} from "draft-js";
 import { fetchWrapper } from "../../_helpers/fetch-wrapper";
 import config from "../../config";
 import draftToHtml from "draftjs-to-html";
 import { Role } from "../../models/Role";
 import { fileService } from "../../_services/file.service";
+import { alertService } from "../../_services/alert.service";
+import { STORE } from "../../_helpers/const/const";
 
 export default function HandleStore() {
-  const { register, handleSubmit } = useForm();
+  const { register, handleSubmit, watch } = useForm({
+    defaultValues: async () => {
+      return await fetAllData();
+    },
+  });
+  const openingHoursNow = watch("openingHours", "");
+  const closeHoursNow = watch("closingHours", "");
+
+  const [data, setData] = useState<any>({
+    storeId: 0,
+    storeName: "",
+    locationId: 0,
+    locationName: "",
+    description: "",
+    openingHours: "08:00",
+    closingHours: "17:00",
+    userId: 0,
+    userFullName: "",
+    createdAt: new Date(),
+    urlImage: "",
+  });
+
   const navigate = useNavigate();
   const params = useParams();
 
   const [selectedFile, setSelectedFile] = useState<any>();
   const [preview, setPreview] = useState();
   const [streets, setStreets] = useState([]);
-  const [areas, setAreas] = useState([]);
   const [locations, setLocations] = useState([]);
   const [users, setUsers] = useState([]);
   const [editorState, setEditorState] = useState(() => {
@@ -28,7 +54,23 @@ export default function HandleStore() {
     return EditorState.createWithContent(content);
   });
 
-  // create a preview as a side effect, whenever selected file is changed
+  const onSelectFile = (e) => {
+    if (!e.target.files || e.target.files.length === 0) {
+      setSelectedFile(undefined);
+      return;
+    }
+
+    let reader = new FileReader();
+    let base64String;
+
+    reader.onload = function () {
+      base64String = reader.result;
+      setPreview(base64String);
+    };
+    reader.readAsDataURL(e.target.files[0]);
+    setSelectedFile(e.target.files[0]);
+  };
+
   useEffect(() => {
     if (!selectedFile) {
       setPreview(undefined);
@@ -42,55 +84,43 @@ export default function HandleStore() {
     return () => URL.revokeObjectURL(objectUrl);
   }, [selectedFile]);
 
-  const [data, setData] = useState<any>();
-  function fetAllData() {
-    const streets = fetchWrapper.get(config.apiUrl + "Street");
-    streets.then((res) => {
-      setStreets(res);
-    });
+  async function fetAllData() {
+    const streets = await getOption("Street");
+    setStreets(streets);
 
-    const areas = fetchWrapper.get(config.apiUrl + "Area");
-    areas.then((res) => {
-      setAreas(res);
-    });
+    const locations = await getOption("Location");
+    setLocations(locations);
 
-    const locations = fetchWrapper.get(config.apiUrl + "Location");
-    locations.then((res) => {
-      setLocations(res);
-    });
+    const users = await getOption("Auth");
+    setUsers(users.filter((val) => val.role == Role.Store));
 
-    const users = fetchWrapper.get(config.apiUrl + "Auth");
-    users.then((res) => {
-      console.log('res.filter((val) => val.role == Role.Store) :>> ', res.filter((val) => val.role == Role.Store));
-      setUsers(res.filter((val) => val.role == Role.Store));
-    });
-
-    if (!params.id) return;
-    const result = fetchWrapper.get(config.apiUrl + "Store/" + params.id);
-    result.then((val) => {
-      (document.getElementById("nm") as HTMLInputElement).value = val.name;
-      setData({ ...val });
-      const blocksFromHTML = convertFromHTML(val.description);
-      const state = ContentState.createFromBlockArray(
-        blocksFromHTML.contentBlocks,
-        blocksFromHTML.entityMap
-      );
-      setEditorState(EditorState.createWithContent(state));
-      });
+    if (!params.id) return data;
+    const result = await fetchWrapper.get(
+      config.apiUrl + STORE + "/" + params.id
+    );
+    setData(result);
+    setPreview(result.urlImage);
+    const blocksFromHTML = convertFromHTML(result.description ?? "");
+    const state = ContentState.createFromBlockArray(
+      blocksFromHTML.contentBlocks,
+      blocksFromHTML.entityMap
+    );
+    setEditorState(EditorState.createWithContent(state));
+    return result;
   }
 
-  useEffect(() => {
-    fetAllData();
-  }, []);
+  function getOption(url) {
+    return fetchWrapper.get(config.apiUrl + url);
+  }
 
   const savedata = async (val) => {
-    console.log('val :>> ', val);
-    const dataPost = {
-      ...data,
-      ...val,
-      areaName: areas.find(stressDetail => stressDetail.areaId == val.areaId).areaName,
-      urlImage: preview,
-    };
+    console.log("val :>> ", val);
+    val.locationName = locations.find(
+      (location) => val.locationId == location.locationId
+    ).locationName;
+    console.log("users :>> ", users);
+    val.userFullName = users.find((user) => val.userId == user.id).fullName;
+
     const formData = new FormData();
     if (selectedFile) {
       formData.append(
@@ -98,17 +128,18 @@ export default function HandleStore() {
         new Blob([selectedFile], { type: "image/png" }),
         selectedFile.name
       );
-      dataPost.urlImage = await fileService.postFile(formData);
+      val.urlImage = await fileService.postFile(formData);
     } else {
-      dataPost.urlImage = preview ?? '';
+      val.urlImage = preview ?? "";
     }
 
     let process;
     if (params.id) {
-      // dataPost.book = data
-      // process = fetchWrapper.put(config.apiUrl + LOCATION + "/" + params.id, dataPost)
+      val.storeId = params.id;
+      process = fetchWrapper.put(config.apiUrl + STORE + "/" + params.id, val);
     } else {
-      // process = fetchWrapper.post(config.apiUrl + LOCATION, dataPost);
+      delete val.storeId;
+      process = fetchWrapper.post(config.apiUrl + STORE, val);
     }
 
     process.then((res) => {
@@ -131,83 +162,103 @@ export default function HandleStore() {
   };
   return (
     <div className="container">
-      <form onSubmit={handleSubmit(savedata)} className="gap-2 mt-4">
-        <div>
-          <label htmlFor="nm">
-            <b>Store Name: </b>
-          </label>
+      <form
+        onSubmit={handleSubmit(savedata)}
+        className="grid grid-cols-3 gap-2 jumbotron mt-4"
+      >
+        <div className="row-span-2 flex flex-column items-center gap-2">
+          <label
+            htmlFor="imageUpload"
+            className="block h-52 w-52 bg-slate-50 bg-contain bg-no-repeat bg-center"
+            style={{ backgroundImage: "url(" + preview + ")" }}
+          ></label>
           <input
-            id="nm"
-            type="text"
-            className="form-control"
-            placeholder="Store name"
-            {...register("title")}
+            type="file"
+            onChange={onSelectFile}
+            id="imageUpload"
+            accept="image/png, image/jpeg"
+            className="hidden"
           />
-          <br />
-        </div>
-        <div>
-          <label htmlFor="street">
-            <b>Book street: </b>
-          </label>
-          <select
-            {...register("streetId")}
-            id="street"
-            className="form-control"
+          <label
+            htmlFor="imageUpload"
+            className="block border px-2 py-1 bg-slate-50 rounded"
           >
-            {streets.map((v) => (
-              <option key={v.streetId} value={v.streetId}>
-                {v.streetName}
-              </option>
-            ))}
-          </select>
-          <br />
+            New Image
+          </label>
         </div>
         <div>
-          <label htmlFor="area">
-            <b>Area: </b>
-          </label>
-          <select {...register("areaId")} id="area" className="form-control">
-            {areas.map((v) => (
-              <option key={v.areaId} value={v.areaId}>
-                {v.areaName}
-              </option>
-            ))}
-          </select>
-          <br />
+          <div>
+            <label htmlFor="storeName">
+              <b>Store name: </b>
+            </label>
+            <input
+              id="storeName"
+              type="text"
+              className="form-control"
+              placeholder="Store name"
+              {...register("storeName")}
+            />
+            <br />
+          </div>
+          <div>
+            <label htmlFor="User">
+              <b>User: </b>
+            </label>
+            <select {...register("userId")} id="User" className="form-control">
+              {users.map((v) => (
+                <option key={v.id} value={v.id}>
+                  {v.fullName}
+                </option>
+              ))}
+            </select>
+            <br />
+          </div>
         </div>
         <div>
-          <label htmlFor="location">
-            <b>Location: </b>
-          </label>
-          <select
-            {...register("locationId")}
-            id="location"
-            className="form-control"
-          >
-            {locations.map((v) => (
-              <option key={v.locationId} value={v.locationId}>
-                {v.locationName}
-              </option>
-            ))}
-          </select>
-          <br />
-        </div>
-        <div>
-          <label htmlFor="User">
-            <b>User: </b>
-          </label>
-          <select
-            {...register("locationId")}
-            id="User"
-            className="form-control"
-          >
-            {users.map((v) => (
-              <option key={v.id} value={v.id}>
-                {v.fullName}
-              </option>
-            ))}
-          </select>
-          <br />
+          <div>
+            <label htmlFor="location">
+              <b>Location: </b>
+            </label>
+            <select
+              {...register("locationId")}
+              id="location"
+              className="form-control"
+            >
+              {locations.map((v) => (
+                <option key={v.locationId} value={v.locationId}>
+                  {v.locationName}
+                </option>
+              ))}
+            </select>
+            <br />
+          </div>
+
+          <div>
+            <label htmlFor="openH">
+              <b>Open hour: </b>
+            </label>
+            <input
+              type="time"
+              {...register("openingHours")}
+              id="openH"
+              className="form-control"
+              max={closeHoursNow}
+            />
+            <br />
+          </div>
+          <div>
+            <label htmlFor="closH">
+              <b>Close hour: </b>
+            </label>
+            <input
+              type="time"
+              {...register("closingHours")}
+              id="closH"
+              className="form-control"
+              min={openingHoursNow}
+            />
+            <br />
+          </div>
         </div>
 
         <div className="col-start-2 col-span-2">

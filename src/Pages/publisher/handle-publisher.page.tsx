@@ -54,7 +54,7 @@ export default function HandlePublisher() {
     console.log('data :>> ', data);
 
     setPreview(result.urlImage);
-    const blocksFromHTML = convertFromHTML(result.description);
+    const blocksFromHTML = convertFromHTML(result.description ?? "");
     const state = ContentState.createFromBlockArray(
       blocksFromHTML.contentBlocks,
       blocksFromHTML.entityMap

@@ -65,7 +65,7 @@ export default function HandleCalenderPage() {
     setData(result);
     setPreview(result.urlImage);
 
-    const blocksFromHTML = convertFromHTML(result.description);
+    const blocksFromHTML = convertFromHTML(result.description ?? "");
     const state = ContentState.createFromBlockArray(
       blocksFromHTML.contentBlocks,
       blocksFromHTML.entityMap

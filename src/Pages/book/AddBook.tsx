@@ -31,9 +31,7 @@ export default function AddBook() {
     authors: "",
     publisherId: "",
   });
-  // useEffect(() => {
-  //   setValue('publicDay', '2021-04-23'); // this will result a type error
-  // }, []);
+  
   const {
     register,
     handleSubmit,
@@ -111,7 +109,7 @@ export default function AddBook() {
     setData(result);
     setPreview(result.urlImage);
 
-    const blocksFromHTML = convertFromHTML(result.description);
+    const blocksFromHTML = convertFromHTML(result.description ?? "");
     const state = ContentState.createFromBlockArray(
       blocksFromHTML.contentBlocks,
       blocksFromHTML.entityMap
