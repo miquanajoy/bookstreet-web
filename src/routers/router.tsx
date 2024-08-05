@@ -19,6 +19,9 @@ import ShowLocation from "../Pages/location/show-location";
 import HandleLocation from "../Pages/location/handle-location";
 import HandleAreaPage from "../Pages/area/handle-area.page";
 import PublisheranagerPage from "../Pages/publisher/publisher-manager.page";
+import { ROUTER } from "../_helpers/const/const";
+import HandleAuthorPage from "../Pages/author/handle-author.page";
+import ShowAuthorPage from "../Pages/author/show-author.page";
 
 const router = createBrowserRouter([
   {
@@ -355,6 +358,43 @@ const router = createBrowserRouter([
           <AuthGuard>
             <RoleBasedGuard accessibleRoles={[Role.Admin]}>
               <HandleLocation />
+            </RoleBasedGuard>
+          </AuthGuard>
+        ),
+      },
+    ],
+  },
+  // Author
+  {
+    path: ROUTER.author.url,
+    element: <HomePage />,
+    children: [
+      {
+        path: "",
+        element: (
+          <AuthGuard>
+            <RoleBasedGuard accessibleRoles={[Role.Admin]}>
+              <ShowAuthorPage />
+            </RoleBasedGuard>
+          </AuthGuard>
+        ),
+      },
+      {
+        path: "create",
+        element: (
+          <AuthGuard>
+            <RoleBasedGuard accessibleRoles={[Role.Admin]}>
+              <HandleAuthorPage />
+            </RoleBasedGuard>
+          </AuthGuard>
+        ),
+      },
+      {
+        path: "update/:id",
+        element: (
+          <AuthGuard>
+            <RoleBasedGuard accessibleRoles={[Role.Admin]}>
+              <HandleAuthorPage />
             </RoleBasedGuard>
           </AuthGuard>
         ),

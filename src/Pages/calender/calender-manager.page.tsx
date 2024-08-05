@@ -76,10 +76,10 @@ export default function CalenderManagerPage() {
   function deleteItem(id) {
     const result = fetchWrapper.delete(config.apiUrl + EVENT + "/" + id);
     result.then((val) => {
+      fetAllData();
       alertService.alert({
         content: "Remove success",
       });
-      fetAllData();
     });
   }
 

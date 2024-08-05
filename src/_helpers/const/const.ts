@@ -1,5 +1,8 @@
 export const AUTH = "Auth";
 export const STORE = "Store";
+export const AUTHOR = "Author";
+export const IMPORT = "Import";
+export const SAVEBATCH = "SaveBatch";
 
 export const PUBLISHER = "Publisher";
 export const EVENT = "Event";
@@ -21,4 +24,19 @@ export const ROUTER = {
     name: "Event",
     url: "/event-management",
   },
+  publisher: {
+    name: "Publisher",
+    url: "/publisher-management",
+    },
+  store: {
+    name: "Store",
+    url: "/store-management",
+  },
+  author: {
+    name: "Author",
+    url: "/author-management",
+  }
 };
+
+
+export const AVATARDEFAULT = "https://mdbootstrap.com/img/new/avatars/8.jpg";

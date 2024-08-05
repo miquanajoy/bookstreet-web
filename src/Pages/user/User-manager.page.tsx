@@ -73,21 +73,21 @@ export default function ShowUserPage() {
     fetAllData();
   }, []);
 
-  function deleteItem(id) {
-    const result = fetchWrapper.delete(config.apiUrl + AUTH + "/" + id);
+  async function deleteItem(id) {
+    const result = await fetchWrapper.delete(config.apiUrl + AUTH + "/" + id);
     result.then((val) => {
+      fetAllData();
       alertService.alert({
         content: "Remove success",
       });
-      fetAllData();
     });
   }
 
   return (
     <>
       <ListComponent
-        title="Account Manager"
-        buttonName="Create new account"
+        title="User Management"
+        buttonName="Create new user"
         
         deleteItem={deleteItem}
         header={headers}

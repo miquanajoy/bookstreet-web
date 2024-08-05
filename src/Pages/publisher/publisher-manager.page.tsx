@@ -19,11 +19,11 @@ export default function PublisheranagerPage() {
     const result = fetchWrapper.delete(
       config.apiUrl + "Publisher/" + val.publisherId
     );
-    result.then((val) => {
+    result.then(async (val) => {
+      await fetAllData();
       alertService.alert({
         content: "Remove success",
       });
-      fetAllData();
     });
   }
 
@@ -34,7 +34,6 @@ export default function PublisheranagerPage() {
     );
     result.then((res: any) => {
       setData(res);
-      console.log('data :>> ', data);
     });
   }
 
@@ -52,7 +51,7 @@ export default function PublisheranagerPage() {
         <h1 className="title">Publisher MANAGEMENT</h1>
         <Link to="create">
           <button className="bg-black text-white rounded-lg px-3 py-0.5">
-            CREATE NEW PUBLISHER
+            Create new Publisher
           </button>
         </Link>
       </div>
@@ -65,7 +64,7 @@ export default function PublisheranagerPage() {
             <Link to={"update/" + val.publisherId}>
               <div
                 className="h-52 bg-contain bg-no-repeat bg-center"
-                style={{ backgroundImage: `url('${val.urlImage }')` }}
+                style={{ backgroundImage: `url('${val.urlImage}')` }}
               ></div>
             </Link>
             <div

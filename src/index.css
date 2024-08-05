@@ -27,6 +27,11 @@ body {
 }
 
 .rdw-editor-wrapper { border: 1px solid #f6f6f6}
+
+.h-70-screen {
+  height: 70vh;
+}
+
 @media only screen and (max-width: 2000px) {
   .css-zio6zr {
     top: unset !important
@@ -36,4 +41,10 @@ body {
 .title {
   text-transform: uppercase;
   margin-top: 0.5rem
+}
+
+
+.MuiBox-root {
+  border-radius: 5px;
+  border-color: transparent !important;
 }

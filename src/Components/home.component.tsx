@@ -38,40 +38,37 @@ export default function HomePage() {
     setRouterList([
       {
         logo: "",
-        //  <UserManagementIcon />,
         name: "User",
         url: "/user-management",
         roles: [Role.Admin],
       },
       {
         logo: "",
-        //  <UserManagementIcon />,
-        name: "Store",
-        url: "/store-management",
+        ...ROUTER.store,
         roles: [Role.Admin],
       },
       {
         logo: "",
-        //  <Book />,
+        ...ROUTER.author,
+        roles: [Role.Admin],
+      },
+      {
+        logo: "",
         ...ROUTER.souvenir,
         roles: [Role.Admin],
       },
       {
         logo: "",
-        //  <Book />,
         ...ROUTER.book,
         roles: [Role.Admin],
       },
       {
         logo: "",
-        //  <Medal />,
-        name: "Publisher",
-        url: "/publisher-management",
+        ...ROUTER.publisher,
         roles: [Role.Admin],
       },
       {
         logo: "",
-        //  <Calender />,
         ...ROUTER.event,
         roles: [Role.Admin],
       },

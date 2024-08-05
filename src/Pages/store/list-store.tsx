@@ -1,15 +1,8 @@
 import React, { useEffect, useState } from "react";
-import axios from "axios";
-import { useFieldArray, useForm } from "react-hook-form";
-import { Link, useNavigate, useParams } from "react-router-dom";
 import { alertService, onAlert } from "../../_services";
-import { Editor } from "react-draft-wysiwyg";
 import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css";
-import { EditorState, convertToRaw, ContentState } from "draft-js";
 import { fetchWrapper } from "../../_helpers/fetch-wrapper";
 import config from "../../config";
-import draftToHtml from "draftjs-to-html";
-import { Trash } from "../../assets/icon/trash";
 import ListComponent from "../../Components/list.component";
 import { STORE } from "../../_helpers/const/const";
 
@@ -68,9 +61,9 @@ export default function ListStore() {
     fetAllData();
   }, []);
 
-  function deleteItem(val) {
-    const result = fetchWrapper.delete(config.apiUrl + "Store/" + val.id);
-    result.then((val) => {
+  async function deleteItem(id) {
+    const result = await fetchWrapper.delete(config.apiUrl + STORE + "/" + id);
+    result.then((_) => {
       alertService.alert({
         content: "Remove success",
       });
@@ -81,7 +74,7 @@ export default function ListStore() {
   return (
     <>
       <ListComponent
-        title="Store Manager"
+        title="Store Management"
         buttonName="Create new store"
         deleteItem={deleteItem}
         header={headers}

@@ -21,10 +21,10 @@ export default function ShowBook() {
       config.apiUrl + "Product/" + val.productId
     );
     result.then((val) => {
+      fetAllData();
       alertService.alert({
         content: "Remove success",
       });
-      fetAllData();
     });
   }
 
@@ -59,14 +59,14 @@ export default function ShowBook() {
           {(pathname == ROUTER.book.url
             ? ROUTER.book.name
             : ROUTER.souvenir.name) + " management"}
-          
         </h1>
         <Link to="create">
-          <button className="bg-black text-white uppercase rounded-lg px-3 py-0.5">
-            CREATE NEW
-            {pathname == ROUTER.book.url
-              ? ROUTER.book.name
-              : ROUTER.souvenir.name}
+          <button className="bg-black text-white rounded-lg px-3 py-0.5">
+            Create new
+            {" " +
+              (pathname == ROUTER.book.url
+                ? ROUTER.book.name
+                : ROUTER.souvenir.name)}
           </button>
         </Link>
       </div>

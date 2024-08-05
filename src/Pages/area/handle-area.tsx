@@ -49,24 +49,20 @@ export default function HandleArea() {
   }, []);
 
   function deleteItem(id) {
-    const result = fetchWrapper.delete(
-      config.apiUrl + AREA + "/" + id
-    );
+    const result = fetchWrapper.delete(config.apiUrl + AREA + "/" + id);
     result.then((val) => {
+      fetAllData();
       alertService.alert({
         content: "Remove success",
       });
-      fetAllData();
     });
   }
-
 
   return (
     <>
       <ListComponent
         title="Area Management"
         buttonName="Create new area"
-        
         deleteItem={deleteItem}
         header={headers}
         data={data.list}

@@ -73,12 +73,12 @@ function put(url, body) {
   return fetch(url, requestOptions).then(handleResponse);
 }
 
-function _delete(url) {
+async function _delete(url) {
   const requestOptions = {
     method: "DELETE",
     headers: authHeader(url),
   };
-  return fetch(url, requestOptions).then(handleResponse);
+  return await fetch(url, requestOptions).then(handleResponse);
 }
 
 function authHeader(url) {
@@ -110,8 +110,6 @@ function handleResponse(response) {
 }
 
 function handleResponseForPost2Get(response) {
-  console.log("response :>> ", response);
-
   const data = response.data.data;
 
   if (!(response.statusText == "OK")) {

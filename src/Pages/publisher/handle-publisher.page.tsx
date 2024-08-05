@@ -13,7 +13,7 @@ import draftToHtml from "draftjs-to-html";
 import { fetchWrapper } from "../../_helpers/fetch-wrapper";
 import config from "../../config";
 import { fileService } from "../../_services/file.service";
-import { PUBLISHER } from "../../_helpers/const/const";
+import { PUBLISHER, ROUTER } from "../../_helpers/const/const";
 
 export default function HandlePublisher() {
   const [data, setData] = useState<any>({
@@ -51,7 +51,6 @@ export default function HandlePublisher() {
       config.apiUrl + PUBLISHER + "/" + params.id
     );
     setData(result);
-    console.log('data :>> ', data);
 
     setPreview(result.urlImage);
     const blocksFromHTML = convertFromHTML(result.description ?? "");
@@ -72,7 +71,6 @@ export default function HandlePublisher() {
     const objectUrl: any = URL.createObjectURL(selectedFile);
     setPreview(objectUrl);
 
-    // free memory when ever this component is unmounted
     return () => URL.revokeObjectURL(objectUrl);
   }, [selectedFile]);
 
@@ -82,7 +80,6 @@ export default function HandlePublisher() {
       return;
     }
 
-    // I've kept this example simple by using the first image instead of multiple
     setSelectedFile(e.target.files[0]);
   };
 
@@ -94,7 +91,6 @@ export default function HandlePublisher() {
       urlImage: "",
     };
     const formData = new FormData();
-    console.log("dataPost :>> ", dataPost);
     if (selectedFile) {
       formData.append(
         "files",
@@ -107,10 +103,13 @@ export default function HandlePublisher() {
     }
 
     if (params.id) {
-      fetchWrapper.put(config.apiUrl + PUBLISHER + "/" + params.id, dataPost);
+      await fetchWrapper.put(config.apiUrl + PUBLISHER + "/" + params.id, dataPost);
     } else {
-      fetchWrapper.post(config.apiUrl + PUBLISHER, dataPost);
+      await fetchWrapper.post(config.apiUrl + PUBLISHER, dataPost);
     }
+    navigate(ROUTER.publisher.url, {
+      replace: true,
+    });
   };
 
   function convertValueForEditor(val) {
@@ -125,7 +124,7 @@ export default function HandlePublisher() {
   return (
     <div className="container">
       <div className="col-10 mx-auto">
-        <h1 className="title">Publisher Manager</h1>
+        <h1 className="title">Publisher Management</h1>
         <form
           onSubmit={handleSubmit(savedata)}
           className="grid grid-cols-2 gap-2 jumbotron mt-4"

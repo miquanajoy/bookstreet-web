@@ -28,7 +28,6 @@ export default function AddUser() {
     const objectUrl: any = URL.createObjectURL(selectedFile);
     setPreview(objectUrl);
 
-    // free memory when ever this component is unmounted
     return () => URL.revokeObjectURL(objectUrl);
   }, [selectedFile]);
 
@@ -120,7 +119,7 @@ export default function AddUser() {
 
   return (
     <div className="container">
-      <h1 className="title">Account Manager</h1>
+      <h1 className="title">Account Management</h1>
       <form
         onSubmit={handleSubmit(savedata)}
         className="grid grid-cols-2 gap-4 jumbotron mt-4"

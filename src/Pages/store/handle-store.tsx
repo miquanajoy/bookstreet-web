@@ -1,25 +1,23 @@
-import React, { useEffect, useState } from "react";
-import axios from "axios";
+import React, { useEffect, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import { useNavigate, useParams } from "react-router-dom";
 import { Editor } from "react-draft-wysiwyg";
 import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css";
-import {
-  EditorState,
-  convertToRaw,
-  ContentState,
-  convertFromHTML,
-} from "draft-js";
+import { EditorState, ContentState, convertFromHTML } from "draft-js";
 import { fetchWrapper } from "../../_helpers/fetch-wrapper";
 import config from "../../config";
-import draftToHtml from "draftjs-to-html";
 import { Role } from "../../models/Role";
 import { fileService } from "../../_services/file.service";
 import { alertService } from "../../_services/alert.service";
-import { STORE } from "../../_helpers/const/const";
+import { ROUTER, STORE } from "../../_helpers/const/const";
+
+import Box from "@mui/material/Box";
+import Modal from "@mui/material/Modal";
+import { ModelStyle } from "../../_helpers/const/model.const";
+import imgMapLocal from "./map-location.svg";
 
 export default function HandleStore() {
-  const { register, handleSubmit, watch } = useForm({
+  const { register, handleSubmit, watch, getValues } = useForm({
     defaultValues: async () => {
       return await fetAllData();
     },
@@ -39,6 +37,9 @@ export default function HandleStore() {
     userFullName: "",
     createdAt: new Date(),
     urlImage: "",
+    xLocation: 0,
+    yLocation: 0,
+    locationImage: "",
   });
 
   const navigate = useNavigate();
@@ -80,7 +81,6 @@ export default function HandleStore() {
     const objectUrl: any = URL.createObjectURL(selectedFile);
     setPreview(objectUrl);
 
-    // free memory when ever this component is unmounted
     return () => URL.revokeObjectURL(objectUrl);
   }, [selectedFile]);
 
@@ -91,15 +91,29 @@ export default function HandleStore() {
     const locations = await getOption("Location");
     setLocations(locations);
 
-    const users = await getOption("Auth");
-    setUsers(users.filter((val) => val.role == Role.Store));
-
-    if (!params.id) return data;
+    let users = await getOption("Auth");
+    users = users.filter((val) => val.role == Role.Store);
+    setUsers(users);
+    if (!params.id)
+      return {
+        ...data,
+        locationId: locations[0].locationId,
+        userId: users[0].id,
+      };
     const result = await fetchWrapper.get(
       config.apiUrl + STORE + "/" + params.id
     );
     setData(result);
     setPreview(result.urlImage);
+    if (result.xLocation) {
+      const newLocation = {
+        x: result.xLocation,
+        y: result.yLocation,
+        name: result.storeName,
+      };
+      setLocationPin([newLocation]);
+    }
+
     const blocksFromHTML = convertFromHTML(result.description ?? "");
     const state = ContentState.createFromBlockArray(
       blocksFromHTML.contentBlocks,
@@ -114,13 +128,17 @@ export default function HandleStore() {
   }
 
   const savedata = async (val) => {
-    console.log("val :>> ", val);
+    if (locationPin.length) {
+      val.xLocation = locationPin[0].x;
+      val.yLocation = locationPin[0].y;
+    } else {
+      val.xLocation = 0;
+      val.yLocation = 0;
+    }
     val.locationName = locations.find(
       (location) => val.locationId == location.locationId
     ).locationName;
-    console.log("users :>> ", users);
     val.userFullName = users.find((user) => val.userId == user.id).fullName;
-
     const formData = new FormData();
     if (selectedFile) {
       formData.append(
@@ -131,6 +149,13 @@ export default function HandleStore() {
       val.urlImage = await fileService.postFile(formData);
     } else {
       val.urlImage = preview ?? "";
+    }
+
+    if (val.closingHours.split(":").length < 3) {
+      val.closingHours = val.closingHours + ":00";
+    }
+    if (val.openingHours.split(":").length < 3) {
+      val.openingHours = val.openingHours + ":00";
     }
 
     let process;
@@ -157,9 +182,108 @@ export default function HandleStore() {
       alertService.alert({
         content: params.id ? "Update success" : "Create success",
       });
-      navigate("/location", { replace: true });
+      navigate(ROUTER.store.url, { replace: true });
     });
   };
+
+  // Model
+  const [open, setOpen] = useState(false);
+  const handleOpen = () => setOpen(true);
+  const handleClose = () => setOpen(false);
+  // End Model
+
+  const imageCanvas = useRef(null);
+  const [locationPin, setLocationPin] = useState([]);
+  const [canvas, setCanvas] = useState<any>();
+  const [imgMap, setImgMap] = useState<any>();
+
+  function showLocation() {
+    handleOpen();
+    setTimeout(() => {
+      drwMap();
+      setTimeout(() => {
+        if (locationPin.length) {
+          drawLocation(locationPin[0]);
+        }
+      }, 1000);
+    }, 1000);
+  }
+  function drwMap() {
+    const canv = imageCanvas.current.getContext("2d");
+    const img = new Image();
+    img.src = imgMapLocal;
+
+    img.onload = () => {
+      imageCanvas.current.width = img.width;
+      imageCanvas.current.height = img.height;
+
+      canv.drawImage(img, 0, 0);
+    };
+  }
+
+  function drawLocation(pin) {
+    const x = pin.x * imageCanvas.current.width;
+    const y = pin.y * imageCanvas.current.height;
+    const ctx = imageCanvas.current.getContext("2d");
+    ctx.beginPath();
+    ctx.arc(x, y, 5, 0, 2 * Math.PI);
+    ctx.fillStyle = "red";
+    ctx.fill();
+    ctx.closePath();
+    ctx.font = "20px Arial";
+    ctx.fillText(pin.name, x, y);
+  }
+
+  function clearAllLocations() {
+    setLocationPin([]);
+    const canv = imageCanvas.current.getContext("2d");
+    const img = new Image();
+    img.src = imgMapLocal;
+
+    img.onload = () => {
+      imageCanvas.current.width = img.width;
+      imageCanvas.current.height = img.height;
+
+      canv.drawImage(img, 0, 0);
+    };
+  }
+
+  useEffect(() => {
+    if (locationPin.length) {
+      locationPin[0].name = getValues().storeName;
+    }
+  }, [getValues().storeName]);
+
+  function choosePoint(event) {
+    if (locationPin.length) {
+      const cf = window.confirm("delete previous location?");
+      if (cf) {
+        clearAllLocations();
+        return;
+      }
+    }
+    const rect = imageCanvas.current.getBoundingClientRect();
+    const x = event.clientX - rect.left;
+    const y = event.clientY - rect.top;
+    const relativeX = x / imageCanvas.current.width;
+    const relativeY = y / imageCanvas.current.height;
+
+    // const name = prompt("Nhập tên cho vị trí này:");
+    // if (name) {
+    const newLocation = {
+      x: relativeX,
+      y: relativeY,
+      name: getValues().storeName ?? "",
+    };
+    setLocationPin([newLocation]);
+    drawLocation(newLocation);
+    // }
+  }
+
+  function completeChoosePoint() {
+    handleClose();
+  }
+
   return (
     <div className="container">
       <form
@@ -186,7 +310,7 @@ export default function HandleStore() {
             New Image
           </label>
         </div>
-        <div>
+        <div className="d-flex flex-col gap-2">
           <div>
             <label htmlFor="storeName">
               <b>Store name: </b>
@@ -198,24 +322,9 @@ export default function HandleStore() {
               placeholder="Store name"
               {...register("storeName")}
             />
-            <br />
           </div>
-          <div>
-            <label htmlFor="User">
-              <b>User: </b>
-            </label>
-            <select {...register("userId")} id="User" className="form-control">
-              {users.map((v) => (
-                <option key={v.id} value={v.id}>
-                  {v.fullName}
-                </option>
-              ))}
-            </select>
-            <br />
-          </div>
-        </div>
-        <div>
-          <div>
+
+          <div className="h-16">
             <label htmlFor="location">
               <b>Location: </b>
             </label>
@@ -230,9 +339,7 @@ export default function HandleStore() {
                 </option>
               ))}
             </select>
-            <br />
           </div>
-
           <div>
             <label htmlFor="openH">
               <b>Open hour: </b>
@@ -244,7 +351,28 @@ export default function HandleStore() {
               className="form-control"
               max={closeHoursNow}
             />
-            <br />
+          </div>
+        </div>
+        <div className="d-flex flex-col gap-2">
+          <div>
+            <label htmlFor="User">
+              <b>User: </b>
+            </label>
+            <select {...register("userId")} id="User" className="form-control">
+              {users.map((v) => (
+                <option key={v.id} value={v.id}>
+                  {v.fullName}
+                </option>
+              ))}
+            </select>
+          </div>
+          <div className="h-16 d-flex items-end	pb-2">
+            <div
+              className="cursor-pointer bg-info text-white uppercase rounded-lg px-3 py-0.5"
+              onClick={showLocation}
+            >
+              <b>Choose map </b>
+            </div>
           </div>
           <div>
             <label htmlFor="closH">
@@ -257,7 +385,6 @@ export default function HandleStore() {
               className="form-control"
               min={openingHoursNow}
             />
-            <br />
           </div>
         </div>
 
@@ -274,6 +401,44 @@ export default function HandleStore() {
           <input type="submit" className="btn btn-success mt-12" value="Save" />
         </div>
       </form>
+
+      <Modal
+        open={open}
+        onClose={handleClose}
+        aria-labelledby="modal-modal-title"
+        aria-describedby="modal-modal-description"
+      >
+        <div className="p-6">
+          <Box sx={ModelStyle}>
+            <div className="overflow-auto w-100 h-70-screen">
+              <canvas
+                ref={imageCanvas}
+                onClick={choosePoint}
+                // style="image-rendering: auto"
+              ></canvas>
+            </div>
+            <div>
+              <button
+                onClick={() => {
+                  clearAllLocations();
+                }}
+                className="bg-info text-white uppercase rounded-lg px-3 py-0.5"
+              >
+                Clean all points
+              </button>
+              <button
+                onClick={() => {
+                  completeChoosePoint();
+                }}
+                className="bg-info text-white uppercase rounded-lg px-3 py-0.5 ml-2"
+              >
+                Complete
+              </button>
+              {/* </div> */}
+            </div>
+          </Box>
+        </div>
+      </Modal>
     </div>
   );
 }

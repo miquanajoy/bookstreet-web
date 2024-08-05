@@ -80,7 +80,6 @@ export default function HandleLocation() {
 
     let process;
     if (params.id) {
-      // dataPost.book = data
       process = fetchWrapper.put(config.apiUrl + LOCATION + "/" + params.id, dataPost)
     } else {
       process = fetchWrapper.post(config.apiUrl + LOCATION, dataPost);
@@ -109,7 +108,7 @@ export default function HandleLocation() {
 
   return (
     <div className="container">
-      <h1 className="title">Location Manager</h1>
+      <h1 className="title">Location Management</h1>
       <form
         onSubmit={handleSubmit(savedata)}
         className="grid grid-cols-2 gap-4 jumbotron mt-4"

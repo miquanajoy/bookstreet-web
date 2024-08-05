@@ -16,7 +16,7 @@ export default function SidebarPage(prop) {
     return (
         <div className="sidebar pt-2">
             <div className="flex items-center gap-2 px-6">
-                <div className='rounded-full h-10 w-10 bg-slate-50 bg-cover bg-no-repeat bg-center' style={{ backgroundImage: 'url(profile-image.jpg)' }}></div>
+                <div className='rounded-full h-10 w-10 bg-slate-50 bg-cover bg-no-repeat bg-center' style={{ backgroundImage: 'url("https://mdbootstrap.com/img/new/avatars/8.jpg")' }}></div>
                 <div className="text-sm">{user.user.fullName ?? ''}</div>
             </div>
             <ul className="p-0 text-center flex flex-column mt-4">
