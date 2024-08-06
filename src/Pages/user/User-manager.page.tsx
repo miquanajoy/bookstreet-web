@@ -74,12 +74,10 @@ export default function ShowUserPage() {
   }, []);
 
   async function deleteItem(id) {
-    const result = await fetchWrapper.delete(config.apiUrl + AUTH + "/" + id);
-    result.then((val) => {
-      fetAllData();
-      alertService.alert({
-        content: "Remove success",
-      });
+   await fetchWrapper.delete(config.apiUrl + AUTH + "/" + id);
+    fetAllData();
+    alertService.alert({
+      content: "Remove success",
     });
   }
 
@@ -88,7 +86,6 @@ export default function ShowUserPage() {
       <ListComponent
         title="User Management"
         buttonName="Create new user"
-        
         deleteItem={deleteItem}
         header={headers}
         data={data.list}

@@ -166,7 +166,7 @@ export default function ShowBook() {
     // console.log('getValues().author :>> ', getValues().author);
   }
   // End Model
-
+  console.log("user.role == Role.Store :>> ", user.role == Role.Store);
   return (
     <div className="px-6">
       <div className="flex items-center justify-between mb-2">
@@ -175,39 +175,43 @@ export default function ShowBook() {
             ? ROUTER.book.name
             : ROUTER.souvenir.name) + " management"}
         </h1>
-        {user.role != Role.Store ?? (
-          <div className="d-flex gap-2">
-            <button
-              className="bg-info text-white rounded-lg px-3 py-0.5"
-              onClick={() => getCsv()}
-            >
-              Export csv
-            </button>
-            <label
-              htmlFor="import-excel"
-              className="bg-info text-white rounded-lg px-3 py-0.5"
-            >
-              Import excel
-            </label>
-            <input
-              id="import-excel"
-              ref={inputFile}
-              type="file"
-              accept="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel"
-              className="d-none"
-              onChange={(event) => importExcel(event)}
-            />
-            <Link to="create">
-              <button className="bg-black text-white rounded-lg px-3 py-0.5">
-                Create new
-                {" " +
-                  (pathname == ROUTER.book.url
-                    ? ROUTER.book.name
-                    : ROUTER.souvenir.name)}
+        {
+          (user.role == Role.Store ? (
+            <div className="d-flex gap-2">
+              <button
+                className="bg-info text-white rounded-lg px-3 py-0.5"
+                onClick={() => getCsv()}
+              >
+                Export csv
               </button>
-            </Link>
-          </div>
-        )}
+              <label
+                htmlFor="import-excel"
+                className="bg-info text-white rounded-lg px-3 py-0.5"
+              >
+                Import excel
+              </label>
+              <input
+                id="import-excel"
+                ref={inputFile}
+                type="file"
+                accept="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel"
+                className="d-none"
+                onChange={(event) => importExcel(event)}
+              />
+              <Link to="create">
+                <button className="bg-black text-white rounded-lg px-3 py-0.5">
+                  Create new
+                  {" " +
+                    (pathname == ROUTER.book.url
+                      ? ROUTER.book.name
+                      : ROUTER.souvenir.name)}
+                </button>
+              </Link>
+            </div>
+          ) : (
+            <></>
+          ))
+        }
       </div>
       <div className="grid grid-cols-5 gap-4">
         {data.list.map((val) => (
