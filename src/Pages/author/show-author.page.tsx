@@ -10,12 +10,8 @@ import {
   AUTHOR,
   AVATARDEFAULT,
   IMPORT,
-  PRODUCT,
-  ROUTER,
   SAVEBATCH,
 } from "../../_helpers/const/const";
-import { IMPORT_CSV } from "../../_helpers/const/csv.const";
-import { fileService } from "../../_services/file.service";
 
 import Box from "@mui/material/Box";
 import Modal from "@mui/material/Modal";
@@ -37,19 +33,12 @@ export default function ShowAuthorPage() {
   const {
     control,
     register,
-    reset,
     getValues,
     formState: { errors },
   } = useForm({
     mode: "onChange",
   });
-  const inputFile = useRef(null);
 
-  const { fields, append, remove } = useFieldArray({
-    control,
-    name: "author",
-    rules: { required: true },
-  });
   const { pathname } = useLocation();
 
   const [data, setData] = useState({
@@ -57,13 +46,6 @@ export default function ShowAuthorPage() {
     totalPage: 0,
   });
 
-  const [dataImport, setDataImport] = useState([]);
-
-  // Model
-  const [open, setOpen] = useState(false);
-  const handleOpen = () => setOpen(true);
-  const handleClose = () => setOpen(false);
-  // End Model
 
   function deleteItem(val) {
     const result = fetchWrapper.delete(
@@ -91,13 +73,28 @@ export default function ShowAuthorPage() {
     fetAllData();
   }, [pathname]);
 
+  // Model
+  const [dataImport, setDataImport] = useState([]);
+
+  const [open, setOpen] = useState(false);
+  const handleOpen = () => setOpen(true);
+  const handleClose = () => setOpen(false);
+
+  const { fields, append, remove } = useFieldArray({
+    control,
+    name: "author",
+    rules: { required: true },
+  });
+
+  const inputFile = useRef(null);
+
   function getCsv() {
     excelService.getCsv(TYPE_AUTHOR);
   }
 
   async function importExcel(e) {
     try {
-    remove();
+      remove();
 
       const responseImport = await excelService.importExcel(
         e,
@@ -135,8 +132,9 @@ export default function ShowAuthorPage() {
     //   }
     // });
   }
+  // End Model
 
-  function submit() {
+  function submitCsv() {
     fetchWrapper.post(
       config.apiUrl + AUTHOR + "/" + SAVEBATCH,
       getValues().author
@@ -147,7 +145,7 @@ export default function ShowAuthorPage() {
 
   function closeModelImport() {
     handleClose();
-    setDataImport([])
+    setDataImport([]);
     inputFile.current.value = "";
     // console.log('getValues().author :>> ', getValues().author);
   }
@@ -268,8 +266,8 @@ export default function ShowAuthorPage() {
                               required: true,
                             })}
                           />
-                            <div className="absolute text-danger mt-2">
-                              {dataImport[index]?.Error}
+                          <div className="absolute text-danger mt-2">
+                            {dataImport[index]?.Error}
                           </div>
                         </TableCell>
                         <TableCell align="left">
@@ -299,7 +297,7 @@ export default function ShowAuthorPage() {
               </TableContainer>
 
               <button
-                onClick={submit}
+                onClick={submitCsv}
                 type="button"
                 className="mt-4 float-right text-white bg-green-700  rounded-lg text-sm px-5 py-2.5 me-2 mb-2"
               >

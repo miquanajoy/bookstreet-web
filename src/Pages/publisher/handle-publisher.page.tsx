@@ -53,12 +53,12 @@ export default function HandlePublisher() {
     setData(result);
 
     setPreview(result.urlImage);
-    const blocksFromHTML = convertFromHTML(result.description ?? "");
-    const state = ContentState.createFromBlockArray(
-      blocksFromHTML.contentBlocks,
-      blocksFromHTML.entityMap
-    );
-    setEditorState(EditorState.createWithContent(state));
+    // const blocksFromHTML = convertFromHTML(result.description ?? "");
+    // const state = ContentState.createFromBlockArray(
+    //   blocksFromHTML.contentBlocks,
+    //   blocksFromHTML.entityMap
+    // );
+    // setEditorState(EditorState.createWithContent(state));
     return result;
   }
 
@@ -87,7 +87,6 @@ export default function HandlePublisher() {
     const dataPost = {
       publisherId: params.id,
       ...val,
-      description: draftToHtml(convertToRaw(editorState.getCurrentContent())),
       urlImage: "",
     };
     const formData = new FormData();
@@ -99,11 +98,14 @@ export default function HandlePublisher() {
       );
       dataPost.urlImage = await fileService.postFile(formData);
     } else {
-      dataPost.urlImage = preview ?? '';
+      dataPost.urlImage = preview ?? "";
     }
 
     if (params.id) {
-      await fetchWrapper.put(config.apiUrl + PUBLISHER + "/" + params.id, dataPost);
+      await fetchWrapper.put(
+        config.apiUrl + PUBLISHER + "/" + params.id,
+        dataPost
+      );
     } else {
       await fetchWrapper.post(config.apiUrl + PUBLISHER, dataPost);
     }
@@ -136,7 +138,8 @@ export default function HandlePublisher() {
               style={{ backgroundImage: "url(" + preview + ")" }}
             ></label>
             <input
-              type="file" accept="image/png, image/jpeg"
+              type="file"
+              accept="image/png, image/jpeg"
               onChange={onSelectFile}
               id="imageUpload"
               className="hidden"
@@ -200,12 +203,10 @@ export default function HandlePublisher() {
               <label className="uppercase" htmlFor="Description">
                 <b>Description: </b>
               </label>
-              <Editor
-                editorState={editorState}
-                wrapperClassName="demo-wrapper"
-                editorClassName="demo-editor"
-                onEditorStateChange={setEditorState}
-              />
+              <textarea
+                className="form-control min-h-30 max-h-50"
+                {...register("description")}
+              ></textarea>
 
               <input type="submit" className="btn btn-dark mt-2" value="Save" />
             </div>

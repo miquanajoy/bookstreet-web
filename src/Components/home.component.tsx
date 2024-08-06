@@ -55,12 +55,12 @@ export default function HomePage() {
       {
         logo: "",
         ...ROUTER.souvenir,
-        roles: [Role.Admin],
+        roles: [Role.Admin, Role.Store],
       },
       {
         logo: "",
         ...ROUTER.book,
-        roles: [Role.Admin],
+        roles: [Role.Admin, Role.Store],
       },
       {
         logo: "",

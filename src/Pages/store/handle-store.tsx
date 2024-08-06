@@ -114,12 +114,12 @@ export default function HandleStore() {
       setLocationPin([newLocation]);
     }
 
-    const blocksFromHTML = convertFromHTML(result.description ?? "");
-    const state = ContentState.createFromBlockArray(
-      blocksFromHTML.contentBlocks,
-      blocksFromHTML.entityMap
-    );
-    setEditorState(EditorState.createWithContent(state));
+    // const blocksFromHTML = convertFromHTML(result.description ?? "");
+    // const state = ContentState.createFromBlockArray(
+    //   blocksFromHTML.contentBlocks,
+    //   blocksFromHTML.entityMap
+    // );
+    // setEditorState(EditorState.createWithContent(state));
     return result;
   }
 
@@ -392,12 +392,10 @@ export default function HandleStore() {
           <label htmlFor="avb">
             <b>Description: </b>
           </label>
-          <Editor
-            editorState={editorState}
-            wrapperClassName="demo-wrapper"
-            editorClassName="demo-editor"
-            onEditorStateChange={setEditorState}
-          />
+          <textarea
+            className="form-control min-h-30 max-h-50"
+            {...register("description")}
+          ></textarea>
           <input type="submit" className="btn btn-success mt-12" value="Save" />
         </div>
       </form>

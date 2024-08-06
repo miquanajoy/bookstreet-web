@@ -21,7 +21,6 @@ export const accountService = {
   delete: _delete,
   user: userSubject.asObservable(),
   get userValue() {
-    console.log("val 26:>> ", userSubject);
     return userSubject.value;
   },
 };

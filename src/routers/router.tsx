@@ -41,7 +41,7 @@ const router = createBrowserRouter([
         path: "",
         element: (
           <AuthGuard>
-            <RoleBasedGuard accessibleRoles={[Role.Admin]}>
+            <RoleBasedGuard accessibleRoles={[Role.Admin, Role.Store]}>
               <ShowBook />
             </RoleBasedGuard>
           </AuthGuard>
@@ -51,7 +51,7 @@ const router = createBrowserRouter([
         path: "detail/:id",
         element: (
           <AuthGuard>
-            <RoleBasedGuard accessibleRoles={[Role.Admin]}>
+            <RoleBasedGuard accessibleRoles={[Role.Admin, Role.Store]}>
               <ShowBook />
             </RoleBasedGuard>
           </AuthGuard>
@@ -61,7 +61,7 @@ const router = createBrowserRouter([
         path: "list",
         element: (
           <AuthGuard>
-            <RoleBasedGuard accessibleRoles={[Role.Admin]}>
+            <RoleBasedGuard accessibleRoles={[Role.Admin, Role.Store]}>
               <ShowBook />
             </RoleBasedGuard>
           </AuthGuard>
@@ -71,7 +71,7 @@ const router = createBrowserRouter([
         path: "create",
         element: (
           <AuthGuard>
-            <RoleBasedGuard accessibleRoles={[Role.Admin]}>
+            <RoleBasedGuard accessibleRoles={[Role.Admin, Role.Store]}>
               <AddBook />
             </RoleBasedGuard>
           </AuthGuard>
@@ -81,7 +81,7 @@ const router = createBrowserRouter([
         path: "update/:id",
         element: (
           <AuthGuard>
-            <RoleBasedGuard accessibleRoles={[Role.Admin]}>
+            <RoleBasedGuard accessibleRoles={[Role.Admin, Role.Store]}>
               <AddBook />
             </RoleBasedGuard>
           </AuthGuard>
@@ -97,7 +97,7 @@ const router = createBrowserRouter([
         path: "",
         element: (
           <AuthGuard>
-            <RoleBasedGuard accessibleRoles={[Role.Admin]}>
+            <RoleBasedGuard accessibleRoles={[Role.Admin, Role.Store]}>
               <ShowBook />
             </RoleBasedGuard>
           </AuthGuard>
@@ -107,7 +107,7 @@ const router = createBrowserRouter([
         path: "detail/:id",
         element: (
           <AuthGuard>
-            <RoleBasedGuard accessibleRoles={[Role.Admin]}>
+            <RoleBasedGuard accessibleRoles={[Role.Admin, Role.Store]}>
               <ShowBook />
             </RoleBasedGuard>
           </AuthGuard>
@@ -117,7 +117,7 @@ const router = createBrowserRouter([
         path: "list",
         element: (
           <AuthGuard>
-            <RoleBasedGuard accessibleRoles={[Role.Admin]}>
+            <RoleBasedGuard accessibleRoles={[Role.Admin, Role.Store]}>
               <ShowBook />
             </RoleBasedGuard>
           </AuthGuard>
@@ -127,7 +127,7 @@ const router = createBrowserRouter([
         path: "create",
         element: (
           <AuthGuard>
-            <RoleBasedGuard accessibleRoles={[Role.Admin]}>
+            <RoleBasedGuard accessibleRoles={[Role.Admin, Role.Store]}>
               <AddBook />
             </RoleBasedGuard>
           </AuthGuard>
@@ -137,7 +137,7 @@ const router = createBrowserRouter([
         path: "update/:id",
         element: (
           <AuthGuard>
-            <RoleBasedGuard accessibleRoles={[Role.Admin]}>
+            <RoleBasedGuard accessibleRoles={[Role.Admin, Role.Store]}>
               <AddBook />
             </RoleBasedGuard>
           </AuthGuard>

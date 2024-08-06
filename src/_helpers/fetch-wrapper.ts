@@ -47,6 +47,7 @@ function getByValue(url, value) {
 }
 
 function post(url, body) {
+  console.log('body :>> ', body);
   const requestOptions: any = {
     method: "POST",
     headers: { "Content-Type": "application/json", ...authHeader(url) },

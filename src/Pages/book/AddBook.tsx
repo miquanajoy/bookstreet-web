@@ -20,6 +20,7 @@ import { GENRE, PRODUCT, PUBLISHER, ROUTER } from "../../_helpers/const/const";
 import dayjs from "dayjs";
 
 export default function AddBook() {
+
   const [data, setData] = useState<any>({
     productName: "",
     price: 10000,
@@ -29,9 +30,10 @@ export default function AddBook() {
     genreId: "",
     distributorId: "",
     authors: "",
+    description: "",
     publisherId: "",
   });
-  
+
   const {
     register,
     handleSubmit,
@@ -108,13 +110,18 @@ export default function AddBook() {
     setData(result);
     setPreview(result.urlImage);
 
-    const blocksFromHTML = convertFromHTML(result.description ?? "");
-    const state = ContentState.createFromBlockArray(
-      blocksFromHTML.contentBlocks,
-      blocksFromHTML.entityMap
-    );
-    setEditorState(EditorState.createWithContent(state));
-
+    // const blocksFromHTML = convertFromHTML(result.description ?? "");
+    // const state = ContentState.createFromBlockArray(
+    //   blocksFromHTML.contentBlocks,
+    //   blocksFromHTML.entityMap
+    // );
+    // setEditorState(EditorState.createWithContent(state));
+    console.log({
+      ...result,
+      ...result.book,
+      publicDay: dayjs(result.book?.publicDay).format("YYYY-MM-DD"),
+      authors: result.book?.authors[0],
+    });
     return {
       ...result,
       ...result.book,
@@ -147,7 +154,7 @@ export default function AddBook() {
       productTypeId: isBookScreen ? 1 : 2,
       productTypeName: val.productTypeName,
       productName: val.productName,
-      description: draftToHtml(convertToRaw(editorState.getCurrentContent())),
+      description: val.description,
       price: val.price,
       urlImage: val.urlImage,
     };
@@ -370,12 +377,16 @@ export default function AddBook() {
           <label htmlFor="des">
             <b>Description: </b>
           </label>
-          <Editor
+          <textarea
+            className="form-control min-h-30 max-h-50"
+            {...register("description")}
+          ></textarea>
+          {/* <Editor
             editorState={editorState}
             wrapperClassName="demo-wrapper"
             editorClassName="demo-editor"
             onEditorStateChange={setEditorState}
-          />
+          /> */}
           <input type="submit" className="btn btn-success mt-12" value="Save" />
         </div>
       </form>

@@ -1,11 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Trash } from "../assets/icon/trash";
-import {
-  MDBTable,
-  MDBTableHead,
-  MDBTableBody,
-} from "mdb-react-ui-kit";
+import { MDBTable, MDBTableHead, MDBTableBody } from "mdb-react-ui-kit";
 import { EditIcon } from "../assets/icon/edit";
 import Pagination from "@mui/material/Pagination";
 
@@ -58,27 +54,22 @@ export default function ListComponent(props) {
         ))}
         <td>
           <div className="flex items-center justify-center gap-4">
-            <div>
-              <button
-                onClick={() => {
-                  navigate("update/" + findId(rowLine), { replace: true });
-                }}
-              >
-                <p className="fw-bold mb-1">
-                  <EditIcon />
-                </p>
-              </button>
-            </div>
-            <div>
-              <div
-                className="fw-bold mb-1"
-                onClick={(event: any) => {
-                  props.deleteItem(findId(rowLine));
-                }}
-              >
-                <Trash fill="#000" />
-              </div>
-            </div>
+            <button
+              className="fw-bold"
+              onClick={() => {
+                navigate("update/" + findId(rowLine), { replace: true });
+              }}
+            >
+              <EditIcon />
+            </button>
+            <button
+              className="fw-bold"
+              onClick={(event: any) => {
+                props.deleteItem(findId(rowLine));
+              }}
+            >
+              <Trash fill="#000" />
+            </button>
           </div>
         </td>
       </tr>

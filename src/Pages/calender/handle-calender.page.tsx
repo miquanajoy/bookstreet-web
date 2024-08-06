@@ -65,12 +65,12 @@ export default function HandleCalenderPage() {
     setData(result);
     setPreview(result.urlImage);
 
-    const blocksFromHTML = convertFromHTML(result.description ?? "");
-    const state = ContentState.createFromBlockArray(
-      blocksFromHTML.contentBlocks,
-      blocksFromHTML.entityMap
-    );
-    setEditorState(EditorState.createWithContent(state));
+    // const blocksFromHTML = convertFromHTML(result.description ?? "");
+    // const state = ContentState.createFromBlockArray(
+    //   blocksFromHTML.contentBlocks,
+    //   blocksFromHTML.entityMap
+    // );
+    // setEditorState(EditorState.createWithContent(state));
     setValue([
       dayjs(result.starDate).format("YYYY-MM-DD HH:mm"),
       dayjs(result.endDate).format("YYYY-MM-DD HH:mm"),
@@ -95,15 +95,14 @@ export default function HandleCalenderPage() {
       return;
     }
 
-    // I've kept this example simple by using the first image instead of multiple
     setSelectedFile(e.target.files[0]);
   };
 
   const savedata = async (val) => {
     let dataPost = val;
-    dataPost.description = draftToHtml(
-      convertToRaw(editorState.getCurrentContent())
-    );
+    // dataPost.description = draftToHtml(
+    //   convertToRaw(editorState.getCurrentContent())
+    // );
     dataPost.starDate = new Date(dayjs(value[0]).format("YYYY-MM-DD HH:mm"));
     dataPost.endDate = new Date(dayjs(value[1]).format("YYYY-MM-DD HH:mm"));
 
@@ -251,12 +250,10 @@ export default function HandleCalenderPage() {
           <label htmlFor="des">
             <b>Description: </b>
           </label>
-          <Editor
-            editorState={editorState}
-            wrapperClassName="demo-wrapper"
-            editorClassName="demo-editor"
-            onEditorStateChange={setEditorState}
-          />
+          <textarea
+            className="form-control min-h-30 max-h-50"
+            {...register("description")}
+          ></textarea>
 
           <input type="submit" className="btn btn-dark mt-2" value="Save" />
         </div>

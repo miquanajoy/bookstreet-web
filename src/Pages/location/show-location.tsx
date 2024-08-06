@@ -54,9 +54,9 @@ export default function ShowLocation() {
     fetAllData();
   }, []);
 
-  function deleteItem(val) {
-    const result = fetchWrapper.delete(config.apiUrl + LOCATION + "/" + val.id);
-    result.then((val) => {
+  function deleteItem(id) {
+    const result = fetchWrapper.delete(config.apiUrl + LOCATION + "/" + id);
+    result.then((_) => {
       fetAllData();
       alertService.alert({
         content: "Remove success",

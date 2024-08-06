@@ -5,6 +5,7 @@ import { login } from "../_services";
 import { Role } from "../models/Role";
 import { useForm } from "react-hook-form";
 import "./../styles/login.css";
+import { ROUTER } from "../_helpers/const/const";
 
 export default function AuthenPage() {
   const { register, handleSubmit } = useForm();
@@ -38,10 +39,10 @@ export default function AuthenPage() {
       if (val.statusCode === 200) {
         switch (val.data.role) {
           case Role.Admin:
-            navigate("/books", { replace: true });
+            navigate(ROUTER.book.url, { replace: true });
             break;
           case Role.Store:
-            navigate("/store", { replace: true });
+            navigate(ROUTER.book.url, { replace: true });
             break;
 
           default:
