@@ -54,13 +54,11 @@ export default function ShowLocation() {
     fetAllData();
   }, []);
 
-  function deleteItem(id) {
-    const result = fetchWrapper.delete(config.apiUrl + LOCATION + "/" + id);
-    result.then((_) => {
-      fetAllData();
-      alertService.alert({
-        content: "Remove success",
-      });
+  async function deleteItem(id) {
+    await fetchWrapper.delete(config.apiUrl + LOCATION + "/" + id);
+    fetAllData();
+    alertService.alert({
+      content: "Remove success",
     });
   }
 
@@ -68,7 +66,7 @@ export default function ShowLocation() {
     <>
       <ListComponent
         title="Location Management"
-        buttonName="Create new location"
+        buttonName="Create location"
         deleteItem={deleteItem}
         header={headers}
         data={data.list}

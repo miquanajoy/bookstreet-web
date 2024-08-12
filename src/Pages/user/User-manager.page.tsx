@@ -85,7 +85,7 @@ export default function ShowUserPage() {
     <>
       <ListComponent
         title="User Management"
-        buttonName="Create new user"
+        buttonName="Create user"
         deleteItem={deleteItem}
         header={headers}
         data={data.list}

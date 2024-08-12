@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import { useNavigate, useParams } from "react-router-dom";
-import { Editor } from "react-draft-wysiwyg";
+import axios from "axios";
 import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css";
 import { EditorState, ContentState, convertFromHTML } from "draft-js";
 import { fetchWrapper } from "../../_helpers/fetch-wrapper";
@@ -10,11 +10,9 @@ import { Role } from "../../models/Role";
 import { fileService } from "../../_services/file.service";
 import { alertService } from "../../_services/alert.service";
 import { ROUTER, STORE } from "../../_helpers/const/const";
-
-import Box from "@mui/material/Box";
-import Modal from "@mui/material/Modal";
+import imgMapLocal from "../location/map-location.jpg";
+import { Box, Modal } from "@mui/material";
 import { ModelStyle } from "../../_helpers/const/model.const";
-import imgMapLocal from "./map-location.svg";
 
 export default function HandleStore() {
   const { register, handleSubmit, watch, getValues } = useForm({
@@ -47,9 +45,9 @@ export default function HandleStore() {
 
   const [selectedFile, setSelectedFile] = useState<any>();
   const [preview, setPreview] = useState();
-  const [streets, setStreets] = useState([]);
-  const [locations, setLocations] = useState([]);
-  const [users, setUsers] = useState([]);
+  const [streets, setStreets] = useState<any>([]);
+  const [locations, setLocations] = useState<any>([]);
+  const [users, setUsers] = useState<any>([]);
   const [editorState, setEditorState] = useState(() => {
     const content = ContentState.createFromText("");
     return EditorState.createWithContent(content);
@@ -84,57 +82,63 @@ export default function HandleStore() {
     return () => URL.revokeObjectURL(objectUrl);
   }, [selectedFile]);
 
+  useEffect(() => {
+    if(!locations.length || !getValues().locationId) return
+    const locationFound = locations.find(
+      (location) => location.locationId == getValues().locationId
+    );
+    const newLocation = {
+      x: locationFound.xLocation,
+      y: locationFound.yLocation,
+      name: getValues().storeName,
+    };
+    setLocationPin([newLocation])
+  }, [watch("locationId"), watch("storeName")])
+
+
   async function fetAllData() {
-    const streets = await getOption("Street");
-    setStreets(streets);
+    let streetsPromise = getOption("Street");
+    let locationsPromise = getOption("Location");
+    
+    let usersPromise = getOption("Auth");
+    const fetall = await axios.all([
+      streetsPromise,
+      locationsPromise,
+      usersPromise,
+    ]);
 
-    const locations = await getOption("Location");
-    setLocations(locations);
+    setStreets(fetall[0].list);
 
-    let users = await getOption("Auth");
-    users = users.filter((val) => val.role == Role.Store);
-    setUsers(users);
+    locationsPromise = fetall[1].list.filter(
+      (location) => !location.storeId || location.storeId == params.id
+    );
+    setLocations(locationsPromise);
+
+    usersPromise = fetall[2].list.filter((val) => val.role == Role.Store);
+    setUsers(usersPromise);
     if (!params.id)
       return {
-        ...data,
-        locationId: locations[0].locationId,
-        userId: users[0].id,
+        ...data
       };
     const result = await fetchWrapper.get(
       config.apiUrl + STORE + "/" + params.id
     );
     setData(result);
     setPreview(result.urlImage);
-    if (result.xLocation) {
-      const newLocation = {
-        x: result.xLocation,
-        y: result.yLocation,
-        name: result.storeName,
-      };
-      setLocationPin([newLocation]);
-    }
 
-    // const blocksFromHTML = convertFromHTML(result.description ?? "");
-    // const state = ContentState.createFromBlockArray(
-    //   blocksFromHTML.contentBlocks,
-    //   blocksFromHTML.entityMap
-    // );
-    // setEditorState(EditorState.createWithContent(state));
     return result;
   }
 
   function getOption(url) {
-    return fetchWrapper.get(config.apiUrl + url);
+    return fetchWrapper.Post2GetByPaginate(
+      config.apiUrl + url,
+      1,
+      undefined,
+      -1
+    );
   }
 
   const savedata = async (val) => {
-    if (locationPin.length) {
-      val.xLocation = locationPin[0].x;
-      val.yLocation = locationPin[0].y;
-    } else {
-      val.xLocation = 0;
-      val.yLocation = 0;
-    }
     val.locationName = locations.find(
       (location) => val.locationId == location.locationId
     ).locationName;
@@ -186,17 +190,13 @@ export default function HandleStore() {
     });
   };
 
-  // Model
+  // Model choose location in map
   const [open, setOpen] = useState(false);
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
-  // End Model
 
   const imageCanvas = useRef(null);
   const [locationPin, setLocationPin] = useState([]);
-  const [canvas, setCanvas] = useState<any>();
-  const [imgMap, setImgMap] = useState<any>();
-
   function showLocation() {
     handleOpen();
     setTimeout(() => {
@@ -208,6 +208,7 @@ export default function HandleStore() {
       }, 1000);
     }, 1000);
   }
+
   function drwMap() {
     const canv = imageCanvas.current.getContext("2d");
     const img = new Image();
@@ -226,62 +227,23 @@ export default function HandleStore() {
     const y = pin.y * imageCanvas.current.height;
     const ctx = imageCanvas.current.getContext("2d");
     ctx.beginPath();
-    ctx.arc(x, y, 5, 0, 2 * Math.PI);
-    ctx.fillStyle = "red";
-    ctx.fill();
     ctx.closePath();
     ctx.font = "20px Arial";
-    ctx.fillText(pin.name, x, y);
-  }
+    ctx.fillText(pin.name, x - 60, y + 65);
+ 
+    const img = new Image(100, 100);
+    img.onload = function () {
 
-  function clearAllLocations() {
-    setLocationPin([]);
-    const canv = imageCanvas.current.getContext("2d");
-    const img = new Image();
-    img.src = imgMapLocal;
-
-    img.onload = () => {
-      imageCanvas.current.width = img.width;
-      imageCanvas.current.height = img.height;
-
-      canv.drawImage(img, 0, 0);
+      ctx.save();
+      ctx.beginPath();
+      ctx.arc(x, y, 50, 0, Math.PI * 2, false);
+      ctx.strokeStyle = "#2465D3";
+      ctx.stroke();
+      ctx.clip();
+      ctx.drawImage(img, x - 50, y - 50, 100, 100);
+      ctx.restore();
     };
-  }
-
-  useEffect(() => {
-    if (locationPin.length) {
-      locationPin[0].name = getValues().storeName;
-    }
-  }, [getValues().storeName]);
-
-  function choosePoint(event) {
-    if (locationPin.length) {
-      const cf = window.confirm("delete previous location?");
-      if (cf) {
-        clearAllLocations();
-        return;
-      }
-    }
-    const rect = imageCanvas.current.getBoundingClientRect();
-    const x = event.clientX - rect.left;
-    const y = event.clientY - rect.top;
-    const relativeX = x / imageCanvas.current.width;
-    const relativeY = y / imageCanvas.current.height;
-
-    // const name = prompt("Nhập tên cho vị trí này:");
-    // if (name) {
-    const newLocation = {
-      x: relativeX,
-      y: relativeY,
-      name: getValues().storeName ?? "",
-    };
-    setLocationPin([newLocation]);
-    drawLocation(newLocation);
-    // }
-  }
-
-  function completeChoosePoint() {
-    handleClose();
+    img.src = preview;
   }
 
   return (
@@ -371,7 +333,7 @@ export default function HandleStore() {
               className="cursor-pointer bg-info text-white uppercase rounded-lg px-3 py-0.5"
               onClick={showLocation}
             >
-              <b>Choose map </b>
+              <b>View map </b>
             </div>
           </div>
           <div>
@@ -399,7 +361,6 @@ export default function HandleStore() {
           <input type="submit" className="btn btn-success mt-12" value="Save" />
         </div>
       </form>
-
       <Modal
         open={open}
         onClose={handleClose}
@@ -409,30 +370,15 @@ export default function HandleStore() {
         <div className="p-6">
           <Box sx={ModelStyle}>
             <div className="overflow-auto w-100 h-70-screen">
-              <canvas
-                ref={imageCanvas}
-                onClick={choosePoint}
-                // style="image-rendering: auto"
-              ></canvas>
+              <canvas ref={imageCanvas}></canvas>
             </div>
-            <div>
+            <div className="mt-2">
               <button
-                onClick={() => {
-                  clearAllLocations();
-                }}
+                onClick={handleClose}
                 className="bg-info text-white uppercase rounded-lg px-3 py-0.5"
               >
-                Clean all points
+                Close
               </button>
-              <button
-                onClick={() => {
-                  completeChoosePoint();
-                }}
-                className="bg-info text-white uppercase rounded-lg px-3 py-0.5 ml-2"
-              >
-                Complete
-              </button>
-              {/* </div> */}
             </div>
           </Box>
         </div>

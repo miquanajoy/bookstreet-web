@@ -62,20 +62,18 @@ export default function ListStore() {
   }, []);
 
   async function deleteItem(id) {
-    const result = await fetchWrapper.delete(config.apiUrl + STORE + "/" + id);
-    result.then((_) => {
-      alertService.alert({
-        content: "Remove success",
-      });
-      fetAllData();
+    await fetchWrapper.delete(config.apiUrl + STORE + "/" + id);
+    alertService.alert({
+      content: "Remove success",
     });
+    fetAllData();
   }
 
   return (
     <>
       <ListComponent
         title="Store Management"
-        buttonName="Create new store"
+        buttonName="Create store"
         deleteItem={deleteItem}
         header={headers}
         data={data.list}

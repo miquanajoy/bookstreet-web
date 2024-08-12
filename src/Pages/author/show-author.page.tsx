@@ -178,7 +178,7 @@ export default function ShowAuthorPage() {
 
           <Link to="create">
             <button className="bg-black text-white rounded-lg px-3 py-0.5">
-              CREATE new author
+              Create author
             </button>
           </Link>
         </div>
@@ -193,7 +193,7 @@ export default function ShowAuthorPage() {
               <div
                 className="h-40 bg-contain bg-no-repeat bg-center"
                 style={{
-                  backgroundImage: `url(${val.urlImage ?? AVATARDEFAULT})`,
+                  backgroundImage: `url(${val.urlImage ? val.urlImage : AVATARDEFAULT})`,
                 }}
               ></div>
             </Link>

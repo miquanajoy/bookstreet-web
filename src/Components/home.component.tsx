@@ -1,92 +1,22 @@
-import React, { useContext, useEffect, useState } from "react";
-import { Link, NavLink, Outlet } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { Outlet } from "react-router-dom";
 
-import { useLocation, useParams } from "react-router-dom";
 import SidebarPage, { LinkInterface } from "./sidebar.component";
-import { Book } from "../assets/icon/book";
-import { UserManagementIcon } from "../assets/icon/store";
-import { Medal } from "../assets/icon/medal";
-import { Address } from "../assets/icon/address";
-import { Calender } from "../assets/icon/calendar";
 import AlertContext from "./alert.component";
 import LoadingComponent from "./loading.component";
 import { alertService, logout } from "../_services";
 import { AlertModel } from "../models/AlertModel";
-import { Role } from "../models/Role";
-import { LocationIcon } from "../assets/icon/location";
-import { AreaIcon } from "../assets/icon/area";
-import { ROUTER } from "../_helpers/const/const";
-
-function useCurrentURL() {
-  const location = useLocation();
-  const params = useParams();
-
-  return {
-    pathname: location.pathname.includes(Role.Admin)
-      ? location.pathname
-      : location.pathname.replace("/", ""),
-    search: location.search,
-    params,
-  };
-}
+import { ROUTERS } from "../_helpers/const/const";
+import { isLoadingVarialble } from "../_services/loading.service";
 
 export default function HomePage() {
+  const [isShowLoading, setIsShowLoading] = useState(false);
+
   const [routerList, setRouterList] = useState<LinkInterface[]>([]);
   const [isShowAlert, setIsShowAlert] = useState({});
 
   useEffect(() => {
-    setRouterList([
-      {
-        logo: "",
-        name: "User",
-        url: "/user-management",
-        roles: [Role.Admin],
-      },
-      {
-        logo: "",
-        ...ROUTER.store,
-        roles: [Role.Admin],
-      },
-      {
-        logo: "",
-        ...ROUTER.author,
-        roles: [Role.Admin],
-      },
-      {
-        logo: "",
-        ...ROUTER.souvenir,
-        roles: [Role.Admin, Role.Store],
-      },
-      {
-        logo: "",
-        ...ROUTER.book,
-        roles: [Role.Admin, Role.Store],
-      },
-      {
-        logo: "",
-        ...ROUTER.publisher,
-        roles: [Role.Admin],
-      },
-      {
-        logo: "",
-        ...ROUTER.event,
-        roles: [Role.Admin],
-      },
-      {
-        logo: "",
-        //  <AreaIcon />,
-        name: "Area",
-        url: "/area",
-        roles: [Role.Admin],
-      },
-      {
-        logo: "",
-        //  <LocationIcon />,
-        name: "Location",
-        url: "/location",
-        roles: [Role.Admin],
-      },
-    ]);
+    setRouterList(ROUTERS);
 
     alertService.onAlert().subscribe({
       next: (v: AlertModel) => {
@@ -99,14 +29,24 @@ export default function HomePage() {
       },
     });
   }, []);
+
   function handleLogout() {
     if (logout()) {
       window.location.href = "/";
     }
   }
+
+  useEffect(() => {
+    isLoadingVarialble.subscribe({
+      next: (v) => {
+        setIsShowLoading(v);
+      },
+    });
+  }, []);
+  
   return (
     <div>
-      {/* <LoadingComponent onLoading={true} /> */}
+      <LoadingComponent onLoading={isShowLoading} />
       <AlertContext onAlert={isShowAlert} content="Demo alert" />
       <div className="flex">
         <div className="lg:col-1 col-2 row-12">

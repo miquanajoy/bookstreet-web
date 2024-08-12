@@ -22,6 +22,13 @@ import PublisheranagerPage from "../Pages/publisher/publisher-manager.page";
 import { ROUTER } from "../_helpers/const/const";
 import HandleAuthorPage from "../Pages/author/handle-author.page";
 import ShowAuthorPage from "../Pages/author/show-author.page";
+import ShowGenrePage from "../Pages/genre/show-genre.page";
+import HandleGenrePage from "../Pages/genre/handle-genre.page";
+import HandleDistributor from "../Pages/distributor/show-distributor.page";
+import ShowDistributor from "../Pages/distributor/show-distributor.page";
+import HandleDistributorPage from "../Pages/distributor/handle-distributor.page";
+import HandleCategoryPage from "../Pages/category/handle-category.page";
+import ShowCategoryPage from "../Pages/category/show-category.page";
 
 const router = createBrowserRouter([
   {
@@ -395,6 +402,117 @@ const router = createBrowserRouter([
           <AuthGuard>
             <RoleBasedGuard accessibleRoles={[Role.Admin]}>
               <HandleAuthorPage />
+            </RoleBasedGuard>
+          </AuthGuard>
+        ),
+      },
+    ],
+  },
+  // Genre
+  {
+    path: ROUTER.genre.url,
+    element: <HomePage />,
+    children: [
+      {
+        path: "",
+        element: (
+          <AuthGuard>
+            <RoleBasedGuard accessibleRoles={[Role.Admin]}>
+              <ShowGenrePage />
+            </RoleBasedGuard>
+          </AuthGuard>
+        ),
+      },
+      {
+        path: "create",
+        element: (
+          <AuthGuard>
+            <RoleBasedGuard accessibleRoles={[Role.Admin]}>
+              <HandleGenrePage />
+            </RoleBasedGuard>
+          </AuthGuard>
+        ),
+      },
+      {
+        path: "update/:id",
+        element: (
+          <AuthGuard>
+            <RoleBasedGuard accessibleRoles={[Role.Admin]}>
+              <HandleGenrePage />
+            </RoleBasedGuard>
+          </AuthGuard>
+        ),
+      },
+    ],
+  },
+  // Distributor
+  {
+    path: ROUTER.distributor.url,
+    element: <HomePage />,
+    children: [
+      {
+        path: "",
+        element: (
+          <AuthGuard>
+            <RoleBasedGuard accessibleRoles={[Role.Admin]}>
+              <ShowDistributor />
+            </RoleBasedGuard>
+          </AuthGuard>
+        ),
+      },
+      {
+        path: "create",
+        element: (
+          <AuthGuard>
+            <RoleBasedGuard accessibleRoles={[Role.Admin]}>
+              <HandleDistributorPage />
+            </RoleBasedGuard>
+          </AuthGuard>
+        ),
+      },
+      {
+        path: "update/:id",
+        element: (
+          <AuthGuard>
+            <RoleBasedGuard accessibleRoles={[Role.Admin]}>
+              <HandleDistributorPage />
+            </RoleBasedGuard>
+          </AuthGuard>
+        ),
+      },
+    ],
+  },
+  // Category
+  {
+    path: ROUTER.category.url,
+    element: <HomePage />,
+    children: [
+      {
+        path: "",
+        element: (
+          <AuthGuard>
+            <RoleBasedGuard accessibleRoles={[Role.Admin]}>
+              <ShowCategoryPage />
+            </RoleBasedGuard>
+          </AuthGuard>
+        ),
+      },
+      {
+        path: "create",
+        element: (
+          <AuthGuard>
+            <RoleBasedGuard accessibleRoles={[Role.Admin]}>
+              <HandleCategoryPage />
+            </RoleBasedGuard>
+          </AuthGuard>
+        ),
+      },
+      {
+        path: "update/:id",
+        element: (
+          <AuthGuard>
+            <RoleBasedGuard accessibleRoles={[Role.Admin]}>
+              <HandleCategoryPage />
             </RoleBasedGuard>
           </AuthGuard>
         ),

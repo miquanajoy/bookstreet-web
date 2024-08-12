@@ -51,7 +51,7 @@ export default function PublisheranagerPage() {
         <h1 className="title">Publisher MANAGEMENT</h1>
         <Link to="create">
           <button className="bg-black text-white rounded-lg px-3 py-0.5">
-            Create new Publisher
+            Create Publisher
           </button>
         </Link>
       </div>

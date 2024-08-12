@@ -2,6 +2,7 @@ import config from "../config";
 import { accountService, alertService } from "../_services";
 import axios from "axios";
 import { PAGINATOR } from "./const/paginator.const";
+import { loadingService } from "../_services/loading.service";
 
 export const fetchWrapper = {
   getByValue,
@@ -10,10 +11,11 @@ export const fetchWrapper = {
   put,
   Post2GetByPaginate,
   delete: _delete,
-  postUpgrade
+  postUpgrade,
 };
 
 function get(url) {
+  loadingService.showLoading();
   const requestOptions = {
     method: "GET",
     headers: authHeader(url),
@@ -21,7 +23,13 @@ function get(url) {
   return fetch(url, requestOptions).then(handleResponse);
 }
 
-function Post2GetByPaginate(url, pageNumber, filter?) {
+function Post2GetByPaginate(
+  url,
+  pageNumber = 1,
+  filter?,
+  limit = PAGINATOR.LIMIT
+) {
+  loadingService.showLoading();
   const requestOptions = {
     ...authHeader(url),
   };
@@ -31,14 +39,15 @@ function Post2GetByPaginate(url, pageNumber, filter?) {
     method: "post",
     data: {
       page: pageNumber,
-      limit: PAGINATOR.LIMIT,
-      ...filter
+      limit: limit,
+      ...filter,
     },
     headers: requestOptions,
   }).then(handleResponseForPost2Get);
 }
 
 function getByValue(url, value) {
+  loadingService.showLoading();
   const requestOptions = {
     method: "GET",
     headers: authHeader(url),
@@ -47,25 +56,30 @@ function getByValue(url, value) {
 }
 
 function post(url, body) {
-  console.log('body :>> ', body);
+  loadingService.showLoading();
   const requestOptions: any = {
     method: "POST",
     headers: { "Content-Type": "application/json", ...authHeader(url) },
     body: JSON.stringify(body),
   };
-  return fetch(url, requestOptions).then((response) => response.json());
+  return fetch(url, requestOptions).then((response) => {
+    loadingService.showLoading();
+    return response.json();
+  });
 }
 
 function postUpgrade(url, body) {
+  loadingService.showLoading();
   const requestOptions: any = {
     method: "POST",
     headers: { "Content-Type": "application/json", ...authHeader(url) },
     body: JSON.stringify(body),
   };
-  return fetch(url, requestOptions).then(handleResponseForPost)    ;
+  return fetch(url, requestOptions).then(handleResponseForPost);
 }
 
 function put(url, body) {
+  loadingService.showLoading();
   const requestOptions = {
     method: "PUT",
     headers: { "Content-Type": "application/json", ...authHeader(url) },
@@ -75,11 +89,14 @@ function put(url, body) {
 }
 
 async function _delete(url) {
+  loadingService.showLoading();
   const requestOptions = {
     method: "DELETE",
     headers: authHeader(url),
   };
-  return await fetch(url, requestOptions).then(handleResponse);
+  return await fetch(url, requestOptions).then((data) => {
+    return data;
+  });
 }
 
 function authHeader(url) {
@@ -94,6 +111,8 @@ function authHeader(url) {
 }
 
 function handleResponse(response) {
+  loadingService.hiddenLoading();
+
   return response.text().then((text) => {
     const data = text && JSON.parse(text);
 
@@ -105,12 +124,13 @@ function handleResponse(response) {
       const error = (data && data.message) || response.statusText;
       return Promise.reject(error);
     }
-
     return data;
   });
 }
 
 function handleResponseForPost2Get(response) {
+  loadingService.hiddenLoading();
+
   const data = response.data.data;
 
   if (!(response.statusText == "OK")) {
@@ -122,11 +142,11 @@ function handleResponseForPost2Get(response) {
     return Promise.reject(error);
   }
   const { total: total } = data.pagination;
-
   return { list: data.list, totalPage: PAGINATOR.calculatorPageTotals(total) };
 }
 
 function handleResponseForPost(response) {
+  loadingService.hiddenLoading();
   if ([400].includes(response.status)) {
     alertService.alert({
       content: "Can't create",
@@ -134,7 +154,7 @@ function handleResponseForPost(response) {
     return Promise.reject(response.errors);
   }
 
-  if(response.statusCode == 200) {
+  if (response.statusCode == 200) {
     return Promise.resolve();
   }
 

@@ -62,7 +62,7 @@ export default function HandleArea() {
     <>
       <ListComponent
         title="Area Management"
-        buttonName="Create new area"
+        buttonName="Create area"
         deleteItem={deleteItem}
         header={headers}
         data={data.list}

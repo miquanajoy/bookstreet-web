@@ -87,7 +87,7 @@ export default function CalenderManagerPage() {
     <>
       <ListComponent
         title="EVENT MANAGEMENT"
-        buttonName="Create new event"
+        buttonName="Create event"
         deleteItem={deleteItem}
         header={headers}
         data={data.list}

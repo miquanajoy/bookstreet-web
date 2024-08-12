@@ -2,25 +2,23 @@ import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { alertService, onAlert } from "../../_services";
-import { Editor } from "react-draft-wysiwyg";
 import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css";
-import {
-  EditorState,
-  convertToRaw,
-  ContentState,
-  convertFromHTML,
-} from "draft-js";
 import { fetchWrapper } from "../../_helpers/fetch-wrapper";
 import config from "../../config";
-import draftToHtml from "draftjs-to-html";
 import { CATEGORY } from "../../models/category";
 import { DISTRIBUTOR } from "../../models/distributor";
 import { fileService } from "../../_services/file.service";
-import { GENRE, PRODUCT, PUBLISHER, ROUTER } from "../../_helpers/const/const";
+import {
+  GENRE,
+  PRODUCT,
+  PUBLISHER,
+  ROUTER,
+  STORE,
+} from "../../_helpers/const/const";
 import dayjs from "dayjs";
+import axios from "axios";
 
 export default function AddBook() {
-
   const [data, setData] = useState<any>({
     productName: "",
     price: 10000,
@@ -32,6 +30,7 @@ export default function AddBook() {
     authors: "",
     description: "",
     publisherId: "",
+    status: 1,
   });
 
   const {
@@ -57,12 +56,10 @@ export default function AddBook() {
     publishers: [],
     distributors: [],
     genres: [],
+    stores: [],
+    status: [],
   });
 
-  const [editorState, setEditorState] = useState(() => {
-    const content = ContentState.createFromText("");
-    return EditorState.createWithContent(content);
-  });
 
   useEffect(() => {
     if (!selectedFile) {
@@ -92,36 +89,48 @@ export default function AddBook() {
     reader.readAsDataURL(e.target.files[0]);
     setSelectedFile(e.target.files[0]);
   };
+
   async function fetAllData() {
-    const categories = await getOption(CATEGORY);
-    const publishers = await getOption(PUBLISHER);
-    const distributors = await getOption(DISTRIBUTOR);
-    const genres = await getOption(GENRE);
-    setOption({
-      categories,
-      publishers,
-      distributors,
-      genres,
-    });
+    const categories = getOption(CATEGORY);
+    const publishers = getOption(PUBLISHER);
+    const distributors = getOption(DISTRIBUTOR);
+    const genres = getOption(GENRE);
+    const stores = getOption(STORE);
+    await axios
+      .all([categories, publishers, distributors, genres, stores])
+      .then((v) => {
+        const status = [
+          {
+            key: "1",
+            value: "In stock",
+          },
+          {
+            key: "2",
+            value: "Out stock",
+          },
+        ];
+        setOption({
+          categories: v[0],
+          publishers: v[1],
+          distributors: v[2],
+          genres: v[3],
+          stores: v[4],
+          status,
+        });
+      });
+
     if (!params.id) return data;
     const result = await fetchWrapper.get(
       config.apiUrl + PRODUCT + "/" + params.id
     );
     setData(result);
     setPreview(result.urlImage);
-
-    // const blocksFromHTML = convertFromHTML(result.description ?? "");
-    // const state = ContentState.createFromBlockArray(
-    //   blocksFromHTML.contentBlocks,
-    //   blocksFromHTML.entityMap
-    // );
-    // setEditorState(EditorState.createWithContent(state));
-    console.log({
-      ...result,
-      ...result.book,
-      publicDay: dayjs(result.book?.publicDay).format("YYYY-MM-DD"),
-      authors: result.book?.authors[0],
-    });
+console.log({
+  ...result,
+  ...result.book,
+  publicDay: dayjs(result.book?.publicDay).format("YYYY-MM-DD"),
+  authors: result.book?.authors[0],}
+)
     return {
       ...result,
       ...result.book,
@@ -135,10 +144,10 @@ export default function AddBook() {
   }
 
   const savedata = async (val) => {
-    const categoryId = val.categoryId;
-    const distributorId = val.distributorId;
-    const publisherId = val.publisherId;
-    const genreId = val.genreId;
+    const categoryId = Number(val.categoryId);
+    const distributorId = Number(val.distributorId);
+    const publisherId = Number(val.publisherId);
+    const genreId = Number(val.genreId);
     const book = {
       ...data.book,
       distributorId: distributorId,
@@ -157,6 +166,7 @@ export default function AddBook() {
       description: val.description,
       price: val.price,
       urlImage: val.urlImage,
+      status: val.status
     };
     if (!isBookScreen) {
       delete dataPost.book;
@@ -195,7 +205,7 @@ export default function AddBook() {
       .catch((e) => {});
   };
   return (
-    <div className="container">
+    <div className="col-10">
       <form
         onSubmit={handleSubmit(savedata)}
         className="grid grid-cols-3 gap-2 jumbotron mt-4"
@@ -259,40 +269,39 @@ export default function AddBook() {
           )}
           {isBookScreen ? (
             <div>
-              <label htmlFor="publisher">
-                <b>Publisher: </b>
-              </label>
-              <select
-                {...register("publisherId")}
-                id="publisher"
-                className="form-control"
-              >
-                {options.publishers.map((val) => (
-                  <option key={val.publisherId} value={val.publisherId}>
-                    {val.publisherName}
-                  </option>
-                ))}
-              </select>
-            </div>
-          ) : (
-            <></>
-          )}
-          {isBookScreen ? (
-            <div>
-              <label htmlFor="genr">
-                <b>Genre: </b>
-              </label>
-              <select
-                {...register("genreId")}
-                id="genr"
-                className="form-control"
-              >
-                {options.genres.map((val) => (
-                  <option key={val.genreId} value={val.genreId}>
-                    {val.genreName}
-                  </option>
-                ))}
-              </select>
+              <div>
+                <label htmlFor="publisher">
+                  <b>Publisher: </b>
+                </label>
+                <select
+                  {...register("publisherId")}
+                  id="publisher"
+                  className="form-control"
+                >
+                  {options.publishers.map((val) => (
+                    <option key={val.publisherId} value={val.publisherId}>
+                      {val.publisherName}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <div>
+                <label htmlFor="genr">
+                  <b>Genre: </b>
+                </label>
+                <select
+                  {...register("genreId")}
+                  id="genr"
+                  className="form-control"
+                >
+                  {options.genres.map((val) => (
+                    <option key={val.genreId} value={val.genreId}>
+                      {val.genreName}
+                    </option>
+                  ))}
+                </select>
+              </div>
             </div>
           ) : (
             <></>
@@ -332,25 +341,9 @@ export default function AddBook() {
               <></>
             )}
           </div>
-          <div>
-            {isBookScreen ? (
-              <div>
-                <label htmlFor="anm">
-                  <b>Price: </b>
-                </label>
-                <input
-                  id="anm"
-                  type="number"
-                  className="form-control"
-                  {...register("price")}
-                />
-              </div>
-            ) : (
-              <></>
-            )}
-          </div>
-          <div>
-            {isBookScreen ? (
+
+          {isBookScreen ? (
+            <div>
               <div>
                 <label htmlFor="dis">
                   <b>Distributor: </b>
@@ -367,10 +360,41 @@ export default function AddBook() {
                   ))}
                 </select>
               </div>
-            ) : (
-              <></>
-            )}
-          </div>
+
+              <div>
+                <div>
+                  <label htmlFor="anm">
+                    <b>Price: </b>
+                  </label>
+                  <input
+                    id="anm"
+                    type="number"
+                    className="form-control"
+                    {...register("price")}
+                  />
+                </div>
+              </div>
+              {/* Status */}
+              <div>
+                <label htmlFor="status">
+                  <b>Status: </b>
+                </label>
+                <select
+                  {...register("status")}
+                  id="status"
+                  className="form-control"
+                >
+                  {options.status.map((val) => (
+                    <option key={val.key} value={val.key}>
+                      {val.value}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            </div>
+          ) : (
+            <></>
+          )}
         </div>
 
         <div className="col-start-2 col-span-2">
@@ -381,12 +405,6 @@ export default function AddBook() {
             className="form-control min-h-30 max-h-50"
             {...register("description")}
           ></textarea>
-          {/* <Editor
-            editorState={editorState}
-            wrapperClassName="demo-wrapper"
-            editorClassName="demo-editor"
-            onEditorStateChange={setEditorState}
-          /> */}
           <input type="submit" className="btn btn-success mt-12" value="Save" />
         </div>
       </form>

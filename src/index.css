@@ -16,6 +16,10 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
+p {
+  margin: 0px !important;
+}
+
 .sidebar {
   height: 100%;
   min-height: 100vh;

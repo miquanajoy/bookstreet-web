@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { login } from "../_services";
@@ -6,8 +6,15 @@ import { Role } from "../models/Role";
 import { useForm } from "react-hook-form";
 import "./../styles/login.css";
 import { ROUTER } from "../_helpers/const/const";
+import LoadingComponent from "./loading.component";
+import {
+  isLoadingVarialble,
+  loadingService,
+} from "../_services/loading.service";
 
 export default function AuthenPage() {
+  const [isShowLoading, setIsShowLoading] = useState(false);
+
   const { register, handleSubmit } = useForm();
   const location = useLocation();
   const navigate = useNavigate();
@@ -51,8 +58,18 @@ export default function AuthenPage() {
       }
     });
   };
+
+  useEffect(() => {
+    isLoadingVarialble.subscribe({
+      next: (v) => {
+        setIsShowLoading(v);
+        console.log("v :>> ", v);
+      },
+    });
+  }, []);
   return (
     <div className="login-box">
+      <LoadingComponent onLoading={isShowLoading} />
       <div className="container right-panel-active">
         <form className="form" id="form2" onSubmit={handleSubmit(loginHandle)}>
           <h2 className="form__title">Sign In</h2>

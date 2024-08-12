@@ -2,6 +2,7 @@ import { BehaviorSubject } from "rxjs";
 
 import config from "../config";
 import { fetchWrapper } from "../_helpers/fetch-wrapper";
+import { loadingService } from "./loading.service";
 
 const userSubject = new BehaviorSubject(null);
 const baseUrl = `${config.apiUrl}Auth/`;
@@ -26,15 +27,20 @@ export const accountService = {
 };
 
 export function login(email, password) {
+  loadingService.showLoading();
   return fetchWrapper
     .post(`${baseUrl}Login`, { username: email, password: password })
     .then((result) => {
+      loadingService.hiddenLoading();
+      
       const convertToString = JSON.stringify(result.data);
       if (result.statusCode === 200) {
         userSubject.next(result.data);
 
         localStorage.setItem("userInfo", `${convertToString}`);
       }
+      console.log('2 >> ', loadingService.isLoading);
+
       return result;
     });
 }

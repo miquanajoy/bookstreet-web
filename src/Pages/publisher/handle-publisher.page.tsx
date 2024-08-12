@@ -38,7 +38,6 @@ export default function HandlePublisher() {
     return EditorState.createWithContent(convertValueForEditor(""));
   });
 
-  const location = useLocation();
   const navigate = useNavigate();
   const params = useParams();
 
