@@ -18,46 +18,46 @@ export const CATEGORY = "Category";
 
 export const ROUTER = {
   book: {
-    name: "Book",
+    name: "Sách",
     url: "/books",
   },
   souvenir: {
-    name: "Souvenir",
+    name: "Quà lưu niệm",
     url: "/souvenir",
   },
   event: {
-    name: "Event",
+    name: "Sự kiện",
     url: "/event-management",
   },
   publisher: {
-    name: "Publisher",
+    name: "Nhà xuất bản",
     url: "/publisher-management",
   },
   store: {
-    name: "Store",
+    name: "Cửa hàng",
     url: "/store-management",
   },
   author: {
-    name: "Author",
+    name: "Tác giả",
     url: "/author-management",
   },
   genre: {
-    name: "Genre",
+    name: "Thể loại",
     url: "/genre",
   },
   distributor: {
-    name: DISTRIBUTOR,
+    name: "Nhà phân phối",
     url: "/distributor",
   },
   category: {
-    name: CATEGORY,
+    name: "Phân loại",
     url: "/category",
   },
 };
 export const ROUTERS = [
   {
     logo: "",
-    name: "User",
+    name: "Người dùng",
     url: "/user-management",
     roles: [Role.Admin],
   },
@@ -93,13 +93,13 @@ export const ROUTERS = [
   },
   {
     logo: "",
-    name: "Area",
+    name: "Khu vực",
     url: "/area",
     roles: [Role.Admin],
   },
   {
     logo: "",
-    name: "Location",
+    name: "Vị trí",
     url: "/location",
     roles: [Role.Admin],
   },

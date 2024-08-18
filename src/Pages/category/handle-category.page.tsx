@@ -83,7 +83,7 @@ export default function HandleCategoryPage() {
 
   return (
     <div className="container">
-      <h1 className="title">Category Management</h1>
+      <h1 className="title">Quản lý danh mục</h1>
       <form onSubmit={handleSubmit(savedata)} className="col-7 mx-auto mt-4">
         <div className="d-flex flex-column gap-2">
           <div className="grid grid-cols-2 gap-2">

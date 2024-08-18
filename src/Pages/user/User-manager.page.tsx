@@ -77,15 +77,15 @@ export default function ShowUserPage() {
    await fetchWrapper.delete(config.apiUrl + AUTH + "/" + id);
     fetAllData();
     alertService.alert({
-      content: "Remove success",
+      content: "Xóa thành công",
     });
   }
 
   return (
     <>
       <ListComponent
-        title="User Management"
-        buttonName="Create user"
+        title="Quản lý người dùng"
+        buttonName="Tạo người dùng"
         deleteItem={deleteItem}
         header={headers}
         data={data.list}

@@ -54,7 +54,7 @@ export default function ShowAuthorPage() {
     result.then((val) => {
       fetAllData();
       alertService.alert({
-        content: "Remove success",
+        content: "Xóa thành công",
       });
     });
   }
@@ -153,19 +153,19 @@ export default function ShowAuthorPage() {
   return (
     <div className="px-6">
       <div className="flex items-center justify-between mb-2">
-        <h1 className="title">Author management</h1>
+        <h1 className="title">Quản lý tác giả</h1>
         <div className="d-flex gap-2">
           <button
             className="bg-info text-white rounded-lg px-3 py-0.5"
             onClick={() => getCsv()}
           >
-            Export csv
+            Xuất csv
           </button>
           <label
             htmlFor="import-excel"
             className="bg-info text-white rounded-lg px-3 py-0.5"
           >
-            Import excel
+            Nhập excel
           </label>
           <input
             id="import-excel"
@@ -178,7 +178,7 @@ export default function ShowAuthorPage() {
 
           <Link to="create">
             <button className="bg-black text-white rounded-lg px-3 py-0.5">
-              Create author
+              Tạo tác giả
             </button>
           </Link>
         </div>

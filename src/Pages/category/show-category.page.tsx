@@ -36,7 +36,7 @@ export default function ShowCategoryPage() {
     result.then((val) => {
       fetAllData();
       alertService.alert({
-        content: "Remove success",
+        content: "Xóa thành công",
       });
     });
   }
@@ -74,8 +74,8 @@ export default function ShowCategoryPage() {
 
   return (
     <ListComponent
-      title="Category Management"
-      buttonName="Create category"
+      title="Quản lý danh mục"
+      buttonName="Tạo danh mục"
       deleteItem={deleteItem}
       header={headers}
       data={data.list}

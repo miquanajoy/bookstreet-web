@@ -53,7 +53,7 @@ export default function HandleArea() {
     result.then((val) => {
       fetAllData();
       alertService.alert({
-        content: "Remove success",
+        content: "Xóa thành công",
       });
     });
   }
@@ -61,8 +61,8 @@ export default function HandleArea() {
   return (
     <>
       <ListComponent
-        title="Area Management"
-        buttonName="Create area"
+        title="Quản lý khu vực"
+        buttonName="Tạo khu vực"
         deleteItem={deleteItem}
         header={headers}
         data={data.list}

@@ -103,7 +103,7 @@ export default function HandleAreaPage() {
 
   return (
     <div className="container">
-      <h1 className="title">Area Management</h1>
+      <h1 className="title">Quản lý khu vực</h1>
       <form
         onSubmit={handleSubmit(savedata)}
         className="grid grid-cols-2 gap-4 jumbotron mt-4"

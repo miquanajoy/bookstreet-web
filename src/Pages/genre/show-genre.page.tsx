@@ -36,7 +36,7 @@ export default function ShowGenrePage() {
     result.then((val) => {
       fetAllData();
       alertService.alert({
-        content: "Remove success",
+        content: "Xóa thành công",
       });
     });
   }
@@ -74,8 +74,8 @@ export default function ShowGenrePage() {
 
   return (
     <ListComponent
-      title="Genre Management"
-      buttonName="Create genre"
+      title="Quản lý thể loại"
+      buttonName="Tạo thể loại"
       deleteItem={deleteItem}
       header={headers}
       data={data.list}

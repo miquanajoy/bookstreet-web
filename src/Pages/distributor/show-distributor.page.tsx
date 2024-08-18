@@ -27,7 +27,7 @@ export default function ShowDistributor() {
     result.then((val) => {
       fetAllData();
       alertService.alert({
-        content: "Remove success",
+        content: "Xóa thành công",
       });
     });
   }
@@ -49,11 +49,11 @@ export default function ShowDistributor() {
   return (
     <div className="px-6">
       <div className="flex items-center justify-between mb-2">
-        <h1 className="title">Distributor management</h1>
+        <h1 className="title">Quản lý nhà phân phối</h1>
         <div className="d-flex gap-2">
           <Link to="create">
             <button className="bg-black text-white rounded-lg px-3 py-0.5">
-              Create distributor
+              Tạo nhà phân phối
             </button>
           </Link>
         </div>

@@ -22,7 +22,7 @@ export default function PublisheranagerPage() {
     result.then(async (val) => {
       await fetAllData();
       alertService.alert({
-        content: "Remove success",
+        content: "Xóa thành công",
       });
     });
   }
@@ -48,10 +48,10 @@ export default function PublisheranagerPage() {
   return (
     <div className="px-6">
       <div className="flex items-center justify-between mb-2">
-        <h1 className="title">Publisher MANAGEMENT</h1>
+        <h1 className="title">Quản lý nhà xuất bản</h1>
         <Link to="create">
           <button className="bg-black text-white rounded-lg px-3 py-0.5">
-            Create Publisher
+            Tạo nhà xuất bản
           </button>
         </Link>
       </div>

@@ -78,7 +78,7 @@ export default function CalenderManagerPage() {
     result.then((val) => {
       fetAllData();
       alertService.alert({
-        content: "Remove success",
+        content: "Xóa thành công",
       });
     });
   }
@@ -86,8 +86,8 @@ export default function CalenderManagerPage() {
   return (
     <>
       <ListComponent
-        title="EVENT MANAGEMENT"
-        buttonName="Create event"
+        title="QUẢN LÝ SỰ KIỆN"
+        buttonName="Tạo sự kiện"
         deleteItem={deleteItem}
         header={headers}
         data={data.list}

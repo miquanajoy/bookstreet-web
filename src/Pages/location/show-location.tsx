@@ -58,15 +58,15 @@ export default function ShowLocation() {
     await fetchWrapper.delete(config.apiUrl + LOCATION + "/" + id);
     fetAllData();
     alertService.alert({
-      content: "Remove success",
+      content: "Xóa thành công",
     });
   }
 
   return (
     <>
       <ListComponent
-        title="Location Management"
-        buttonName="Create location"
+        title="Quản lý vị trí"
+        buttonName="Tạo vị trí"
         deleteItem={deleteItem}
         header={headers}
         data={data.list}

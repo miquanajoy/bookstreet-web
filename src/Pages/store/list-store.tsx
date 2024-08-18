@@ -64,7 +64,7 @@ export default function ListStore() {
   async function deleteItem(id) {
     await fetchWrapper.delete(config.apiUrl + STORE + "/" + id);
     alertService.alert({
-      content: "Remove success",
+      content: "Xóa thành công",
     });
     fetAllData();
   }
@@ -72,8 +72,8 @@ export default function ListStore() {
   return (
     <>
       <ListComponent
-        title="Store Management"
-        buttonName="Create store"
+        title="Quản lý cửa hàng"
+        buttonName="Tạo cửa hàng"
         deleteItem={deleteItem}
         header={headers}
         data={data.list}

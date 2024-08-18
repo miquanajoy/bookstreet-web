@@ -55,7 +55,7 @@ export default function ShowBook() {
     await fetchWrapper.delete(config.apiUrl + "Product/" + val.productId);
     await fetAllData();
     alertService.alert({
-      content: "Remove success",
+      content: "Xóa thành công",
     });
   }
   async function fetAllData(pageNumber = 1) {
@@ -378,8 +378,7 @@ export default function ShowBook() {
     <div className="px-6">
       <div className="flex items-center justify-between mb-2">
         <h1 className="title">
-          {(isBookScreen ? ROUTER.book.name : ROUTER.souvenir.name) +
-            " management"}
+          {"Quản lý " + (isBookScreen ? ROUTER.book.name : ROUTER.souvenir.name)}
         </h1>
         {user.role == Role.Store ? (
           <div className="d-flex gap-2">
@@ -387,13 +386,13 @@ export default function ShowBook() {
               className="bg-info text-white rounded-lg px-3 py-0.5"
               onClick={() => getCsv(isBookScreen ? 1 : 2)}
             >
-              Export csv
+              Xuất csv
             </button>
             <label
               htmlFor="import-excel"
               className="bg-info text-white rounded-lg px-3 py-0.5"
             >
-              Import excel
+              Nhập excel
             </label>
             <input
               id="import-excel"

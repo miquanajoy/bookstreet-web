@@ -233,7 +233,7 @@ export default function HandleLocation() {
 
   return (
     <div className="container">
-      <h1 className="title">Location Management</h1>
+      <h1 className="title">Quản lý vị trí</h1>
       <form
         onSubmit={handleSubmit(savedata)}
         className="grid grid-cols-2 gap-4 jumbotron mt-4"
