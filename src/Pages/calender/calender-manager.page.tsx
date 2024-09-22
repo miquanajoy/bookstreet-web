@@ -5,6 +5,11 @@ import { fetchWrapper } from "../../_helpers/fetch-wrapper";
 import config from "../../config";
 import { EVENT } from "../../_helpers/const/const";
 import dayjs from "dayjs";
+import {
+  SearchModel,
+  searchService,
+  typeSearch,
+} from "../../_services/home/search.service";
 
 export default function CalenderManagerPage() {
   const [data, setData] = useState({
@@ -14,26 +19,35 @@ export default function CalenderManagerPage() {
   const headers = [
     {
       key: "title",
-      name: "Title",
+      name: "Tiêu đề",
     },
     {
       key: "starDate",
-      name: "Start Date",
+      name: "Ngày bắt đầu",
     },
     {
       key: "endDate",
-      name: "End date",
+      name: "Ngày kết thúc",
     },
     {
       key: "purpose",
-      name: "Purpose",
+      name: "Mục đích",
     },
   ];
 
   async function fetAllData(pageNumber = 1) {
     const result = fetchWrapper.Post2GetByPaginate(
       config.apiUrl + EVENT,
-      pageNumber
+      pageNumber,
+      {
+        filters: [
+          {
+            field: "title",
+            value: searchService.$SearchValue.value?.dataSearch,
+            operand: typeSearch,
+          },
+        ],
+      }
     );
     result.then((res) => {
       const convertedData = res.list.map((val) => {
@@ -61,26 +75,33 @@ export default function CalenderManagerPage() {
           },
         ];
       });
-      console.log("convertedData :>> ", convertedData);
       setData({
         list: convertedData,
         totalPage: res.totalPage,
       });
     });
+    return result
   }
 
   useEffect(() => {
     fetAllData();
   }, []);
 
-  function deleteItem(id) {
-    const result = fetchWrapper.delete(config.apiUrl + EVENT + "/" + id);
-    result.then((val) => {
-      fetAllData();
-      alertService.alert({
-        content: "Xóa thành công",
-      });
+  // Search area
+  useEffect(() => {
+    const searchSub = searchService.$SearchValue.subscribe({
+      next: (v: SearchModel) => {
+        if (v?.isClickSearch) {
+          fetAllData();
+        }
+      },
     });
+    return () => searchSub.unsubscribe();
+  }, []);
+  // End Search area
+
+  function deleteItem(id) {
+    fetchWrapper.delete(config.apiUrl + EVENT + "/" + id, fetAllData);
   }
 
   return (

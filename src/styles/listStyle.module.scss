@@ -1,10 +1,15 @@
 .book-detail {
-   .trash-box {
-      display: none;
-   }
-   &:hover {
-      .trash-box {
-         display: inline;
-      }
-   }
+  .info-icon {
+    background: url("./../assets/images/info-icon.jpg") center/cover no-repeat;
+  }
+
+  .trash-box {
+    display: none;
+  }
+  &:hover {
+    .trash-box {
+      cursor: pointer;
+      display: inline;
+    }
+  }
 }

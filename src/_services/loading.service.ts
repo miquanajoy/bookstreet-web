@@ -1,10 +1,10 @@
 import { BehaviorSubject, Subject } from "rxjs";
 
-const loading$ = new Subject<boolean>();
+const loading$ = new BehaviorSubject<boolean>(false);
 export const isLoadingVarialble = loading$;
 export const loadingService = {
   get isLoading() {
-    return loading$
+    return loading$.value
   },
   loading$,
   showLoading,

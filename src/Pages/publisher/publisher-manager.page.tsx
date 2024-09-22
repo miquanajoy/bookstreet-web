@@ -6,6 +6,11 @@ import { alertService } from "../../_services/alert.service";
 import { fetchWrapper } from "../../_helpers/fetch-wrapper";
 import config from "../../config";
 import Pagination from "@mui/material/Pagination";
+import {
+  SearchModel,
+  searchService,
+  typeSearch,
+} from "../../_services/home/search.service";
 
 export default function PublisheranagerPage() {
   const [data, setData] = useState({
@@ -16,21 +21,25 @@ export default function PublisheranagerPage() {
   // const headers = ["publisherId", "name", "description", "action"];
 
   function deleteItem(val) {
-    const result = fetchWrapper.delete(
-      config.apiUrl + "Publisher/" + val.publisherId
+    fetchWrapper.delete(
+      config.apiUrl + "Publisher/" + val.publisherId,
+      fetAllData
     );
-    result.then(async (val) => {
-      await fetAllData();
-      alertService.alert({
-        content: "Xóa thành công",
-      });
-    });
   }
 
   async function fetAllData(pageNumber = 1) {
     const result = fetchWrapper.Post2GetByPaginate(
       config.apiUrl + "Publisher",
-      pageNumber
+      pageNumber,
+      {
+        filters: [
+          {
+            field: "publisherName",
+            value: searchService.$SearchValue.value?.dataSearch,
+            operand: typeSearch,
+          },
+        ],
+      }
     );
     result.then((res: any) => {
       setData(res);
@@ -40,6 +49,19 @@ export default function PublisheranagerPage() {
   useEffect(() => {
     fetAllData();
   }, []);
+
+  // Search area
+  useEffect(() => {
+    const searchSub = searchService.$SearchValue.subscribe({
+      next: (v: SearchModel) => {
+        if (v?.isClickSearch) {
+          fetAllData();
+        }
+      },
+    });
+    return () => searchSub.unsubscribe();
+  }, []);
+  // End Search area
 
   function handleChange(pageNumber) {
     fetAllData(pageNumber);

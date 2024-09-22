@@ -116,7 +116,7 @@ export default function HandleDistributorPage() {
     process
       .then((val) => {
         alertService.alert({
-          content: params.id ? "Update success" : "Create success",
+          content: params.id ?  "Thay đổi thành công" : "Tạo mới thành công",
         });
         navigate(ROUTER.distributor.url, {
           replace: true,
@@ -149,14 +149,14 @@ export default function HandleDistributorPage() {
             htmlFor="imageUpload"
             className="block border px-2 py-1 bg-slate-50 rounded"
           >
-            New Image
+            Chọn hình ảnh
           </label>
         </div>
 
         <div className="d-flex flex-column gap-2">
           <div className="grid grid-cols-2 gap-2">
             <label className="uppercase" htmlFor="nm">
-              <b>Distributor name: </b>
+              <b>Tên nhà phân phối: </b>
               <input
                 id="nm"
                 type="text"
@@ -165,7 +165,7 @@ export default function HandleDistributorPage() {
               />
             </label>
             <label className="uppercase" htmlFor="anm">
-              <b>Distributor number: </b>
+              <b>Số nhà phân phối: </b>
               <input
                 id="anm"
                 type="number"
@@ -187,7 +187,7 @@ export default function HandleDistributorPage() {
             </label>
           </div>
             <label className="uppercase" htmlFor="anm">
-              <b>Year: </b>
+              <b>Năm: </b>
               <input
                 id="anm"
                 type="number"
@@ -201,7 +201,7 @@ export default function HandleDistributorPage() {
       
           <div className="col-start-2 col-span-2">
             <label htmlFor="des">
-              <b>Description: </b>
+              <b>Mô tả: </b>
             </label>
             <textarea
               className="form-control min-h-30 max-h-50"
@@ -211,7 +211,7 @@ export default function HandleDistributorPage() {
             <input
               type="submit"
               className="btn btn-success mt-12"
-              value="Save"
+              value="Lưu"
             />
           </div>
         </div>

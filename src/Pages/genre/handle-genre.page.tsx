@@ -48,9 +48,9 @@ export default function HandleGenrePage() {
   });
 
   async function fetAllData() {
-    const categories = await fetchWrapper.get(config.apiUrl + CATEGORY);
+    const categories = await fetchWrapper.Post2GetByPaginate(config.apiUrl + CATEGORY, -1);
     setOption({
-      categories,
+      categories: categories.list,
     });
     if (!params.id) return data;
     const result = await fetchWrapper.get(
@@ -78,7 +78,7 @@ export default function HandleGenrePage() {
     process
       .then((_) => {
         alertService.alert({
-          content: params.id ? "Update success" : "Create success",
+          content: params.id ?  "Thay đổi thành công" : "Tạo mới thành công",
         });
         navigate(ROUTER.genre.url, {
           replace: true,
@@ -94,7 +94,7 @@ export default function HandleGenrePage() {
         <div className="d-flex flex-column gap-2">
           <div className="grid grid-cols-2 gap-2">
             <label className="uppercase" htmlFor="nm">
-              <b>Genre name: </b>
+              <b>Tên thể loại: </b>
               <input
                 id="nm"
                 type="text"
@@ -105,7 +105,7 @@ export default function HandleGenrePage() {
           </div>
           <div className="w-auto">
             <label htmlFor="cat">
-              <b>Category: </b>
+              <b>Danh mục: </b>
             </label>
             <select
               id="cat"
@@ -123,7 +123,7 @@ export default function HandleGenrePage() {
             <input
               type="submit"
               className="btn btn-success mt-2"
-              value="Save"
+              value="Lưu"
             />
           </div>
         </div>

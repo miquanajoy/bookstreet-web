@@ -46,13 +46,16 @@ export default function HandleCategoryPage() {
     setOption({
       productTypes,
     });
-    if (!params.id) return data;
+    if (!params.id) return {
+      ...data,
+      productTypeId: 1
+    };
     const result = await fetchWrapper.get(
       config.apiUrl + CATEGORY + "/" + params.id
     );
     setData(result);
     setPreview(result.urlImage);
-    return result;
+    return result
   }
 
   const savedata = async (val) => {
@@ -66,14 +69,21 @@ export default function HandleCategoryPage() {
       );
     } else {
       delete dataPost.categoryId;
-      process = fetchWrapper.postUpgrade(config.apiUrl + CATEGORY, dataPost);
+      process = fetchWrapper.post(config.apiUrl + CATEGORY, dataPost);
     }
 
     process
-      .then((_) => {
-        alertService.alert({
-          content: params.id ? "Update success" : "Create success",
-        });
+      .then((v) => {
+        if(v.success) {
+          alertService.alert({
+            content: params.id ?  "Thay đổi thành công" : "Tạo mới thành công",
+          });
+        } else {
+          alertService.alert({
+            content: params.id ?  "Thay đổi không thành công" : "Tạo mới không thành công",
+          });
+        }
+        
         navigate(ROUTER.category.url, {
           replace: true,
         });
@@ -88,7 +98,7 @@ export default function HandleCategoryPage() {
         <div className="d-flex flex-column gap-2">
           <div className="grid grid-cols-2 gap-2">
             <label className="uppercase" htmlFor="nm">
-              <b>Category name: </b>
+              <b>Tên danh mục: </b>
               <input
                 id="nm"
                 type="text"
@@ -99,7 +109,7 @@ export default function HandleCategoryPage() {
           </div>
           <div className="w-auto">
             <label htmlFor="cat">
-              <b>Product type: </b>
+              <b>Loại sản phẩm: </b>
             </label>
             <select
               id="cat"
@@ -117,7 +127,7 @@ export default function HandleCategoryPage() {
             <input
               type="submit"
               className="btn btn-success mt-2"
-              value="Save"
+              value="Lưu"
             />
           </div>
         </div>

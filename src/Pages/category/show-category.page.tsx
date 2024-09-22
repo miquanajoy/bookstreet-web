@@ -3,10 +3,13 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { alertService } from "../../_services/alert.service";
 import { fetchWrapper } from "../../_helpers/fetch-wrapper";
 import config from "../../config";
-import {
-  CATEGORY,
-} from "../../_helpers/const/const";
+import { CATEGORY } from "../../_helpers/const/const";
 import ListComponent from "../../Components/list.component";
+import {
+  SearchModel,
+  searchService,
+  typeSearch,
+} from "../../_services/home/search.service";
 
 export default function ShowCategoryPage() {
   const navigate = useNavigate();
@@ -14,12 +17,12 @@ export default function ShowCategoryPage() {
   const headers = [
     {
       key: "productTypeName",
-      name: "Product type name",
+      name: "Tên loại sản phẩm",
     },
     {
       key: "categoryName",
-      name: "Category name",
-    }
+      name: "Tên danh mục",
+    },
   ];
 
   const { pathname } = useLocation();
@@ -30,26 +33,27 @@ export default function ShowCategoryPage() {
   });
 
   function deleteItem(id) {
-    const result = fetchWrapper.delete(
-      config.apiUrl + CATEGORY + "/" + id
-    );
-    result.then((val) => {
-      fetAllData();
-      alertService.alert({
-        content: "Xóa thành công",
-      });
-    });
+    fetchWrapper.delete(config.apiUrl + CATEGORY + "/" + id, fetAllData);
   }
 
   async function fetAllData(pageNumber = 1) {
     const result = fetchWrapper.Post2GetByPaginate(
       config.apiUrl + CATEGORY,
-      pageNumber
+      pageNumber,
+      {
+        filters: [
+          {
+            field: "categoryName",
+            value: searchService.$SearchValue.value?.dataSearch,
+            operand: typeSearch,
+          },
+        ],
+      }
     );
     result.then((res) => {
-      const convertData = res.list.map(v => {
-        return v
-      })
+      const convertData = res.list.map((v) => {
+        return v;
+      });
       const convertedData = res.list.map((val) => {
         let p = [];
         p.push({ id: val.categoryId });
@@ -66,11 +70,25 @@ export default function ShowCategoryPage() {
         totalPage: res.totalPage,
       });
     });
+    return result
   }
 
   useEffect(() => {
     fetAllData();
   }, [pathname]);
+
+  // Search area
+  useEffect(() => {
+    const searchSub = searchService.$SearchValue.subscribe({
+      next: (v: SearchModel) => {
+        if (v?.isClickSearch) {
+          fetAllData();
+        }
+      },
+    });
+    return () => searchSub.unsubscribe();
+  }, []);
+  // End Search area
 
   return (
     <ListComponent

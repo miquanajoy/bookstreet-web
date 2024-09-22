@@ -116,7 +116,7 @@ export default function HandleAuthorPage() {
     process
       .then((val) => {
         alertService.alert({
-          content: params.id ? "Update success" : "Create success",
+          content: params.id ?  "Thay đổi thành công" : "Tạo mới thành công",
         });
         navigate(ROUTER.author.url, {
           replace: true,
@@ -149,14 +149,14 @@ export default function HandleAuthorPage() {
             htmlFor="imageUpload"
             className="block border px-2 py-1 bg-slate-50 rounded"
           >
-            New Image
+            Chọn hình ảnh
           </label>
         </div>
 
         <div className="d-flex flex-column gap-2">
           <div className="grid grid-cols-2 gap-2">
             <label className="uppercase" htmlFor="nm">
-              <b>Author name: </b>
+              <b>Tên tác giả: </b>
               <input
                 id="nm"
                 type="text"
@@ -165,7 +165,7 @@ export default function HandleAuthorPage() {
               />
             </label>
             <label className="uppercase" htmlFor="anm">
-              <b>Date of birth: </b>
+              <b>Ngày sinh: </b>
               <input
                 id="anm"
                 type="date"
@@ -178,7 +178,7 @@ export default function HandleAuthorPage() {
 
           <div>
             <label className="uppercase d-block" htmlFor="biography">
-              <b>Biography: </b>
+              <b>Tiểu sử: </b>
               <input
                 id="biography"
                 type="text"
@@ -190,7 +190,7 @@ export default function HandleAuthorPage() {
           </div>
           <div className="col-start-2 col-span-2">
             <label htmlFor="des">
-              <b>Description: </b>
+              <b>Mô tả: </b>
             </label>
             <textarea
               className="form-control min-h-30 max-h-50"
@@ -200,7 +200,7 @@ export default function HandleAuthorPage() {
             <input
               type="submit"
               className="btn btn-success mt-12"
-              value="Save"
+              value="Lưu"
             />
           </div>
         </div>

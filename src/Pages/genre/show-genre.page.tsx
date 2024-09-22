@@ -7,6 +7,7 @@ import {
   GENRE,
 } from "../../_helpers/const/const";
 import ListComponent from "../../Components/list.component";
+import { SearchModel, searchService, typeSearch } from "../../_services/home/search.service";
 
 export default function ShowGenrePage() {
   const navigate = useNavigate();
@@ -14,11 +15,11 @@ export default function ShowGenrePage() {
   const headers = [
     {
       key: "genreName",
-      name: "Genre name",
+      name: "Tên thể loại",
     },
     {
       key: "categoryName",
-      name: "Category",
+      name: "Tên danh mục",
     },
   ];
 
@@ -30,21 +31,26 @@ export default function ShowGenrePage() {
   });
 
   function deleteItem(id) {
-    const result = fetchWrapper.delete(
-      config.apiUrl + GENRE + "/" + id
+    fetchWrapper.delete(
+      config.apiUrl + GENRE + "/" + id,
+      fetAllData
     );
-    result.then((val) => {
-      fetAllData();
-      alertService.alert({
-        content: "Xóa thành công",
-      });
-    });
+
   }
 
   async function fetAllData(pageNumber = 1) {
     const result = fetchWrapper.Post2GetByPaginate(
       config.apiUrl + GENRE,
-      pageNumber
+      pageNumber,
+      {
+        filters: [
+          {
+            field: "genreName",
+            value: searchService.$SearchValue.value?.dataSearch,
+            operand: typeSearch,
+          },
+        ],
+      }
     );
     result.then((res) => {
       const convertData = res.list.map(v => {
@@ -66,12 +72,26 @@ export default function ShowGenrePage() {
         totalPage: res.totalPage,
       });
     });
+    return result
   }
 
   useEffect(() => {
     fetAllData();
   }, [pathname]);
 
+    // Search area
+    useEffect(() => {
+      const searchSub = searchService.$SearchValue.subscribe({
+        next: (v: SearchModel) => {
+          if (v?.isClickSearch) {
+            fetAllData();
+          }
+        },
+      });
+      return () => searchSub.unsubscribe();
+    }, []);
+    // End Search area
+    
   return (
     <ListComponent
       title="Quản lý thể loại"

@@ -1,4 +1,4 @@
-import { IMPORT_CSV } from "../_helpers/const/csv.const";
+import { IMPORT_CSV, zipUrl } from "../_helpers/const/csv.const";
 import { fileService } from "./file.service";
 
 export const TYPE_BOOK = 1;
@@ -7,7 +7,7 @@ export const TYPE_AUTHOR = 3;
 
 class ExcelService {
   getCsv(template = TYPE_BOOK) {
-    window.open(IMPORT_CSV + `?templateImport=${template}`, "_blank");
+    window.open(IMPORT_CSV + zipUrl + `?templateImport=${template}`, "_blank");
   }
 
   async importExcel(e, url) {

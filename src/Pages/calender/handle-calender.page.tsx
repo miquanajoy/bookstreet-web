@@ -130,7 +130,7 @@ export default function HandleCalenderPage() {
     process
       .then((val) => {
         alertService.alert({
-          content: params.id ? "Update success" : "Create success",
+          content: params.id ?  "Thay đổi thành công" : "Tạo mới thành công",
         });
         navigate(ROUTER.event.url, { replace: true });
       })
@@ -161,13 +161,13 @@ export default function HandleCalenderPage() {
             htmlFor="imageUpload"
             className="block border px-2 py-1 bg-slate-50 rounded"
           >
-            New Image
+            Chọn hình ảnh
           </label>
         </div>
 
         <div>
           <label className="uppercase" htmlFor="nm">
-            <b>EVENT: </b>
+            <b>Tên sự kiện: </b>
           </label>
           <input
             id="nm"
@@ -177,7 +177,7 @@ export default function HandleCalenderPage() {
           />
           <br />
           <label className="uppercase" htmlFor="loca">
-            <b>Location: </b>
+            <b>Vị trí: </b>
           </label>
           <select
             {...register("locationId")}
@@ -192,7 +192,7 @@ export default function HandleCalenderPage() {
           </select>
           <br />
           <label className="uppercase" htmlFor="anm">
-            <b>Purpose: </b>
+            <b>Mục đích: </b>
           </label>
           <input
             id="anm"
@@ -202,7 +202,7 @@ export default function HandleCalenderPage() {
           />
           <br />
           <label className="uppercase" htmlFor="avb">
-            <b>Host Name: </b>
+            <b>Tên máy chủ: </b>
           </label>
           <input
             id="avb"
@@ -213,11 +213,11 @@ export default function HandleCalenderPage() {
           <br />
           <div className="row">
             <div className="col-6">
-              <b>Start date:</b>
+              <b>Ngày bắt đầu:</b>
               <div>{value[0]}</div>
             </div>
             <div className="col-6">
-              <b>End date:</b>
+              <b>Ngày kết thúc:</b>
               <div>{value[1]}</div>
             </div>
           </div>
@@ -248,14 +248,14 @@ export default function HandleCalenderPage() {
           </ChakraProvider> */}
           <br />
           <label htmlFor="des">
-            <b>Description: </b>
+            <b>Mô tả: </b>
           </label>
           <textarea
             className="form-control min-h-30 max-h-50"
             {...register("description")}
           ></textarea>
 
-          <input type="submit" className="btn btn-dark mt-2" value="Save" />
+          <input type="submit" className="btn btn-dark mt-2" value="Lưu" />
         </div>
       </form>
     </div>

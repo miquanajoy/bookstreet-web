@@ -3,6 +3,7 @@ import { BehaviorSubject } from "rxjs";
 import config from "../config";
 import { fetchWrapper } from "../_helpers/fetch-wrapper";
 import { loadingService } from "./loading.service";
+import { alertService } from "./alert.service";
 
 const userSubject = new BehaviorSubject(null);
 const baseUrl = `${config.apiUrl}Auth/`;
@@ -32,14 +33,13 @@ export function login(email, password) {
     .post(`${baseUrl}Login`, { username: email, password: password })
     .then((result) => {
       loadingService.hiddenLoading();
-      
+
       const convertToString = JSON.stringify(result.data);
       if (result.statusCode === 200) {
         userSubject.next(result.data);
 
         localStorage.setItem("userInfo", `${convertToString}`);
       }
-      console.log('2 >> ', loadingService.isLoading);
 
       return result;
     });
@@ -110,12 +110,12 @@ function update(id, params) {
 }
 
 function _delete(id) {
-  return fetchWrapper.delete(`${baseUrl}/${id}`).then((x) => {
-    if (id === userSubject.value.id) {
-      logout();
-    }
-    return x;
-  });
+  // return fetchWrapper.delete(`${baseUrl}/${id}`).then((x) => {
+  //   if (id === userSubject.value.id) {
+  //     logout();
+  //   }
+  //   return x;
+  // });
 }
 
 let refreshTokenTimeout;

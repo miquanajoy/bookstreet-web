@@ -26,6 +26,10 @@ import dayjs from "dayjs";
 import { useFieldArray, useForm } from "react-hook-form";
 import { ModelStyle } from "../../_helpers/const/model.const";
 import { excelService, TYPE_AUTHOR } from "../../_services/excel.service";
+import { fileService } from "../../_services/file.service";
+import axios from "axios";
+import { URL_IMG } from "../../_helpers/const/csv.const";
+import { SearchModel, searchService, typeSearch } from "../../_services/home/search.service";
 
 export default function ShowAuthorPage() {
   const navigate = useNavigate();
@@ -34,6 +38,7 @@ export default function ShowAuthorPage() {
     control,
     register,
     getValues,
+    setValue,
     formState: { errors },
   } = useForm({
     mode: "onChange",
@@ -46,23 +51,26 @@ export default function ShowAuthorPage() {
     totalPage: 0,
   });
 
-
   function deleteItem(val) {
-    const result = fetchWrapper.delete(
-      config.apiUrl + AUTHOR + "/" + val.authorId
+    fetchWrapper.delete(
+      config.apiUrl + AUTHOR + "/" + val.authorId,
+      fetAllData
     );
-    result.then((val) => {
-      fetAllData();
-      alertService.alert({
-        content: "Xóa thành công",
-      });
-    });
   }
 
   async function fetAllData(pageNumber = 1) {
     const result = fetchWrapper.Post2GetByPaginate(
       config.apiUrl + AUTHOR,
-      pageNumber
+      pageNumber,
+      {
+        filters: [
+          {
+            field: "authorName",
+            value: searchService.$SearchValue.value?.dataSearch,
+            operand: typeSearch,
+          },
+        ],
+      }
     );
     result.then((res: any) => {
       setData(res);
@@ -73,6 +81,19 @@ export default function ShowAuthorPage() {
     fetAllData();
   }, [pathname]);
 
+  // Search area
+  useEffect(() => {
+    const searchSub = searchService.$SearchValue.subscribe({
+      next: (v: SearchModel) => {
+        if (v?.isClickSearch) {
+          fetAllData();
+        }
+      },
+    });
+    return () => searchSub.unsubscribe();
+  }, []);
+  // End Search area
+
   // Model
   const [dataImport, setDataImport] = useState([]);
 
@@ -80,7 +101,7 @@ export default function ShowAuthorPage() {
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
 
-  const { fields, append, remove } = useFieldArray({
+  const { fields, append, remove, update } = useFieldArray({
     control,
     name: "author",
     rules: { required: true },
@@ -101,15 +122,21 @@ export default function ShowAuthorPage() {
         AUTHOR + "/" + IMPORT
       );
 
-      const convertData = responseImport
-        // .filter((val) => val.Success)
-        .map((val) => {
-          const birth = dayjs(new Date(val.DateOfBirth)).format("YYYY-MM-DD");
-          return {
-            ...val,
-            DateOfBirth: birth != "Invalid Date" ? birth : "",
-          };
-        });
+      const convertData = responseImport.map((val) => {
+        const birth = dayjs(new Date(val.DateOfBirth)).format("YYYY-MM-DD");
+        const UrlImage =
+          val.UrlImage && val.UrlImage != "anh_mau.jpg"
+            ? URL_IMG + val.UrlImage
+            : undefined;
+        return {
+          ...val,
+          UrlImage,
+          DateOfBirth:
+            birth != "Invalid Date"
+              ? birth
+              : dayjs(new Date()).format("YYYY-MM-DD"),
+        };
+      });
       inputFile.current.value = "";
       handleOpen();
       convertData.forEach((val) => {
@@ -132,22 +159,73 @@ export default function ShowAuthorPage() {
     //   }
     // });
   }
+
+  function onSelectFile(e, index) {
+    if (!e.target.files || e.target.files.length === 0) {
+      return;
+    }
+    let reader = new FileReader();
+    let base64String;
+    reader.onload = function () {
+      base64String = reader.result;
+      const currentDataImport = JSON.parse(JSON.stringify(getValues().author));
+      currentDataImport[index].UrlImage = base64String;
+      setDataImport(currentDataImport);
+    };
+    reader.readAsDataURL(e.target.files[0]);
+  }
   // End Model
 
-  function submitCsv() {
-    fetchWrapper.post(
+  async function submitCsv() {
+    const listImportImg = [];
+    let valueToSubmit = [];
+    getValues().author.map(async (data, index) => {
+      if (data?.UrlImage && data?.UrlImage["0"]?.name) {
+        const formData = new FormData();
+
+        const img = data.UrlImage[0];
+        formData.append(
+          "files",
+          new Blob([img], { type: "image/png" }),
+          img.name
+        );
+        listImportImg.push(fileService.postFile(formData));
+      } else {
+        listImportImg.push("");
+      }
+    });
+    await axios.all(listImportImg).then((val) => {
+      valueToSubmit = getValues().author.map((v, index) => {
+        let urlImage = val[index];
+        if (typeof v.UrlImage != "object") {
+          if (val[index]?.includes(URL_IMG)) {
+            urlImage = v.UrlImage;
+          } else {
+            urlImage = v.UrlImage;
+          }
+        }
+
+        return {
+          authorName: v.AuthorName,
+          biography: v.Biography,
+          dateOfBirth: v.DateOfBirth,
+          description: v.Description,
+          urlImage,
+        };
+      });
+    });
+    await fetchWrapper.post(
       config.apiUrl + AUTHOR + "/" + SAVEBATCH,
-      getValues().author
+      valueToSubmit
     );
-    closeModelImport();
-    fetAllData(1);
+    await closeModelImport();
+    await fetAllData(1);
   }
 
   function closeModelImport() {
     handleClose();
     setDataImport([]);
     inputFile.current.value = "";
-    // console.log('getValues().author :>> ', getValues().author);
   }
 
   return (
@@ -159,7 +237,7 @@ export default function ShowAuthorPage() {
             className="bg-info text-white rounded-lg px-3 py-0.5"
             onClick={() => getCsv()}
           >
-            Xuất csv
+            Tải xuống file mẫu
           </button>
           <label
             htmlFor="import-excel"
@@ -171,7 +249,7 @@ export default function ShowAuthorPage() {
             id="import-excel"
             ref={inputFile}
             type="file"
-            accept="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel"
+            accept=".zip"
             className="d-none"
             onChange={(event) => importExcel(event)}
           />
@@ -191,9 +269,11 @@ export default function ShowAuthorPage() {
           >
             <Link to={"update/" + val.authorId}>
               <div
-                className="h-40 bg-contain bg-no-repeat bg-center"
+                className="h-40 bg-cover bg-no-repeat bg-center"
                 style={{
-                  backgroundImage: `url(${val.urlImage ? val.urlImage : AVATARDEFAULT})`,
+                  backgroundImage: `url(${
+                    val.urlImage ? val.urlImage : AVATARDEFAULT
+                  })`,
                 }}
               ></div>
             </Link>
@@ -236,25 +316,31 @@ export default function ShowAuthorPage() {
         <div className="p-6">
           <Box sx={ModelStyle}>
             <div>
-              <TableContainer component={Paper}>
-                <Table sx={{ minWidth: 650 }} aria-label="simple table">
+              <TableContainer sx={{ maxHeight: 440 }} component={Paper}>
+                <Table
+                  stickyHeader
+                  sx={{ minWidth: 440 }}
+                  aria-label="simple table"
+                >
                   <TableHead>
                     <TableRow>
                       <TableCell>Author name (*)</TableCell>
+                      <TableCell align="center">Hình ảnh</TableCell>
+
                       <TableCell align="left">Birthday</TableCell>
                       <TableCell align="left">Biography</TableCell>
                       <TableCell align="left">Description</TableCell>
                     </TableRow>
                   </TableHead>
                   <TableBody>
-                    {fields.map((row, index) => (
+                    {dataImport.map((row, index) => (
                       <TableRow
                         key={index}
                         sx={{
                           "&:last-child td, &:last-child th": { border: 0 },
                         }}
                       >
-                        <TableCell align="left" key={index}>
+                        <TableCell align="left">
                           <input
                             className={
                               errors.author && errors.author[index]
@@ -266,8 +352,31 @@ export default function ShowAuthorPage() {
                               required: true,
                             })}
                           />
-                          <div className="absolute text-danger mt-2">
+                          <div className="absolute text-danger mt-3">
                             {dataImport[index]?.Error}
+                          </div>
+                        </TableCell>
+                        <TableCell align="left">
+                          <div className="flex flex-column items-center gap-2">
+                            <label
+                              htmlFor={"imageUpload" + index}
+                              className="block h-20 w-20 bg-slate-50 bg-contain bg-no-repeat bg-center"
+                              style={{
+                                backgroundImage: "url(" + row?.UrlImage + ")",
+                              }}
+                            >
+                              <input
+                                type="file"
+                                accept="image/png, image/jpeg"
+                                id={"imageUpload" + index}
+                                className="hidden"
+                                {...register(`author.${index}.UrlImage`, {
+                                  onChange: (e) => {
+                                    onSelectFile(e, index);
+                                  },
+                                })}
+                              />
+                            </label>
                           </div>
                         </TableCell>
                         <TableCell align="left">

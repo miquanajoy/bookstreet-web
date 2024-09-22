@@ -5,11 +5,12 @@ import { alertService } from "../../_services/alert.service";
 import config from "../../config";
 import { fetchWrapper } from "../../_helpers/fetch-wrapper";
 import { fileService } from "../../_services/file.service";
-import { LOCATION } from "../../_helpers/const/const";
+import { AREA, LOCATION, STREET } from "../../_helpers/const/const";
 import Box from "@mui/material/Box";
 import Modal from "@mui/material/Modal";
 import { ModelStyle } from "../../_helpers/const/model.const";
-import imgMapLocal from "./map-location.jpg";
+import axios from "axios";
+import { loadingService } from "../../_services/loading.service";
 
 export default function HandleLocation() {
   const [data, setData] = useState<any>({
@@ -20,19 +21,39 @@ export default function HandleLocation() {
     xLocation: 0,
     yLocation: 0,
     locationImage: "",
+    streetId: "",
   });
+
   const navigate = useNavigate();
-  const { register, handleSubmit, getValues } = useForm({
+  const { register, handleSubmit, getValues, watch } = useForm({
     defaultValues: async () => {
       return await fetAllData();
     },
   });
+
   const [errForm, setErrForm] = useState<any>();
   const params = useParams();
-  const [areas, setAreas] = useState([]);
+  const [areas, setAreas] = useState({
+    data: [],
+    filterData: [],
+  });
+  const [streets, setStreets] = useState([]);
+  const [locations, setLocations] = useState([]);
 
   const [selectedFile, setSelectedFile] = useState<any>();
   const [preview, setPreview] = useState();
+
+  // Start Effect
+  useEffect(() => {
+    const areasFilter = areas.data.filter(
+      (area) => area.streetId == getValues().streetId
+    );
+    setAreas((prevAreas) => ({
+      ...prevAreas,
+      filterData: areasFilter,
+    }));
+  }, [watch("streetId")]);
+  // End Effect
 
   const onSelectFile = (e) => {
     if (!e.target.files || e.target.files.length === 0) {
@@ -52,41 +73,71 @@ export default function HandleLocation() {
   };
 
   async function fetAllData() {
-    const areas = await fetchWrapper.get(config.apiUrl + "Area");
-    setAreas(areas);
+    let locationsPromise: any = getOption(LOCATION);
 
+    let areas = getOption(AREA);
+    let streets: any = getOption(STREET);
+    const allApiResult = await axios.all([areas, streets, locationsPromise]);
+    // .then((v) => {
+    const areasFilter = allApiResult[0].list.filter(
+      (area) => area.streetId == allApiResult[0].list[0].streetId
+    );
+
+    setAreas({
+      data: allApiResult[0].list,
+      filterData: areasFilter,
+    });
+
+    setStreets(allApiResult[1].list);
+    streets = allApiResult[1].list;
+    areas = allApiResult[0].list;
+    locationsPromise = allApiResult[2].list;
+
+    setLocationPin(locationsPromise);
+    setLocations(locationsPromise);
     if (!params.id) {
       return {
-        locationName: "",
+        ...data,
+        streetId: streets[0].streetId,
         areaId: areas[0].areaId,
       };
     }
 
     const result = await fetchWrapper.get(
-      config.apiUrl + "Location/" + params.id
+      config.apiUrl + LOCATION + "/" + params.id
     );
     setData(result);
     setPreview(result.urlImage);
-    if (result.xLocation) {
-      const newLocation = {
-        x: result.xLocation,
-        y: result.yLocation,
-        name: result.locationName,
-      };
-      setLocationPin([newLocation]);
-    }
+    const streetId = result.locationImage
+      ? streets.find((street) => street.urlImage == result.locationImage)
+          .streetId
+      : streets[0].streetId;
+    return {
+      ...result,
+      streetId,
+    };
 
-    return result;
+    function getOption(url) {
+      return fetchWrapper.Post2GetByPaginate(
+        config.apiUrl + url,
+        1,
+        undefined,
+        -1
+      );
+    }
   }
 
   const savedata = async (val) => {
     setErrForm([]);
-    if (locationPin.length) {
-      val.xLocation = locationPin[0].x;
-      val.yLocation = locationPin[0].y;
+    if (locationPin.length && params.id) {
+      const locationPinDetail = locationPin.find(
+        (val) => val.locationId == params.id
+      );
+      val.xLocation = locationPinDetail.xLocation;
+      val.yLocation = locationPinDetail.yLocation;
     } else {
-      val.xLocation = 0;
-      val.yLocation = 0;
+      val.xLocation = locationPin[locationPin.length - 1].xLocation;
+      val.yLocation = locationPin[locationPin.length - 1].yLocation;
     }
 
     const formData = new FormData();
@@ -101,6 +152,9 @@ export default function HandleLocation() {
       val.urlImage = preview ?? "";
     }
 
+    val.locationImage = streets.find(
+      (street) => street.streetId == val.streetId
+    ).urlImage;
     let process;
     if (params.id) {
       process = fetchWrapper.put(
@@ -126,7 +180,7 @@ export default function HandleLocation() {
         return;
       }
       alertService.alert({
-        content: params.id ? "Update success" : "Create success",
+        content: params.id ? "Thay đổi thành công" : "Tạo mới thành công",
       });
       navigate("/location", { replace: true });
     });
@@ -139,52 +193,67 @@ export default function HandleLocation() {
 
   const imageCanvas = useRef(null);
   const [locationPin, setLocationPin] = useState([]);
-  const [canvas, setCanvas] = useState<any>();
-  const [imgMap, setImgMap] = useState<any>();
 
   function showLocation() {
     handleOpen();
+    loadingService.showLoading();
+
     setTimeout(() => {
       drwMap();
-      setTimeout(() => {
-        if (locationPin.length) {
-          drawLocation(locationPin[0]);
-        }
-      }, 1000);
     }, 1000);
   }
 
   function drwMap() {
     const canv = imageCanvas.current.getContext("2d");
     const img = new Image();
-    img.src = imgMapLocal;
+    img.src = streets.find(
+      (street) => street.streetId == getValues().streetId
+    )?.urlImage;
 
     img.onload = () => {
+      loadingService.hiddenLoading();
+
       imageCanvas.current.width = img.width;
       imageCanvas.current.height = img.height;
-
       canv.drawImage(img, 0, 0);
+      if (locationPin.length) {
+        drawLocation();
+      }
+    };
+    img.onerror = () => {
+      loadingService.hiddenLoading();
+      alertService.alert({
+        content: "Không thể tải được hình ảnh",
+      });
     };
   }
 
-  function drawLocation(pin) {
-    const x = pin.x * imageCanvas.current.width;
-    const y = pin.y * imageCanvas.current.height;
-    const ctx = imageCanvas.current.getContext("2d");
-    ctx.beginPath();
-    ctx.arc(x, y, 5, 0, 2 * Math.PI);
-    ctx.fillStyle = "red";
-    ctx.fill();
-    ctx.closePath();
-    ctx.font = "20px Arial";
-    ctx.fillText(pin.name, x, y);
+  function drawLocation() {
+    if (!imageCanvas.current) return;
+    locationPin.forEach((pin) => {
+      const x = pin.xLocation * imageCanvas.current.width;
+      const y = pin.yLocation * imageCanvas.current.height;
+      const ctx = imageCanvas.current.getContext("2d");
+
+      ctx.beginPath();
+      ctx.arc(x, y, 5, 0, 2 * Math.PI);
+      ctx.fillStyle = "red";
+      ctx.fill();
+      ctx.closePath();
+      ctx.font = "20px Arial";
+      ctx.fillText(pin.locationName, x, y);
+    });
   }
+
+  useEffect(drawLocation, [locationPin]);
 
   function clearAllLocations() {
     setLocationPin([]);
     const canv = imageCanvas.current.getContext("2d");
     const img = new Image();
-    img.src = imgMapLocal;
+    img.src = streets.find(
+      (street) => street.streetId == getValues().streetId
+    )?.urlImage;
 
     img.onload = () => {
       imageCanvas.current.width = img.width;
@@ -194,36 +263,61 @@ export default function HandleLocation() {
     };
   }
 
-  useEffect(() => {
-    if (locationPin.length) {
-      locationPin[0].name = getValues().locationName;
-    }
-  }, [getValues().locationName]);
+  // useEffect(() => {
+  //   if (locationPin.length) {
+  //     const locatioinPintDetail = locationPin.find(
+  //       (val) => val.locationId == params.id
+  //     );
+  //     if (locatioinPintDetail) {
+  //       locatioinPintDetail.locationName = getValues().locationName;
+  //     } else {
+
+  //       locationPin[locationPin.length - 1].locationName
+  //       .locationName =
+  //       //   getValues().locationName;
+  //     }
+  //   }
+  // }, [watch("locationName")]);
 
   function choosePoint(event) {
-    if (locationPin.length) {
-      const cf = window.confirm("delete previous location?");
-      if (cf) {
-        clearAllLocations();
-        return;
-      }
-    }
-    const rect = imageCanvas.current.getBoundingClientRect();
-    const x = event.clientX - rect.left;
-    const y = event.clientY - rect.top;
-    const relativeX = x / imageCanvas.current.width;
-    const relativeY = y / imageCanvas.current.height;
+    let locationPinCurrent = locationPin.filter((val) => val.locationId);
+    const canv = imageCanvas.current.getContext("2d");
+    const img = new Image();
+    img.src = streets.find(
+      (street) => street.streetId == getValues().streetId
+    )?.urlImage;
+    loadingService.showLoading();
+    img.onload = () => {
+      loadingService.hiddenLoading();
 
-    // const name = prompt("Nhập tên cho vị trí này:");
-    // if (name) {
-    const newLocation = {
-      x: relativeX,
-      y: relativeY,
-      name: getValues().locationName ?? "",
+      imageCanvas.current.width = img.width;
+      imageCanvas.current.height = img.height;
+
+      canv.drawImage(img, 0, 0);
+
+      const rect = imageCanvas.current.getBoundingClientRect();
+      const x = event.clientX - rect.left;
+      const y = event.clientY - rect.top;
+      const xLocation = x / imageCanvas.current.width;
+      const yLocation = y / imageCanvas.current.height;
+
+      const locationPintDetail = locationPin.find(
+        (val) => val.locationId == params.id && params.id
+      );
+      const newLocation = {
+        xLocation,
+        yLocation,
+        locationName: getValues().locationName ?? "",
+      };
+      if (locationPintDetail) {
+        locationPintDetail.xLocation = newLocation.xLocation;
+        locationPintDetail.yLocation = newLocation.yLocation;
+        locationPintDetail.locationName = newLocation.locationName;
+        setLocationPin([...locationPinCurrent]);
+      } else {
+        setLocationPin([...locationPinCurrent, newLocation]);
+      }
     };
-    setLocationPin([newLocation]);
-    drawLocation(newLocation);
-    // }
   }
 
   function completeChoosePoint() {
@@ -255,13 +349,13 @@ export default function HandleLocation() {
             htmlFor="imageUpload"
             className="block border px-2 py-1 bg-slate-50 rounded"
           >
-            New Image
+            Chọn hình ảnh
           </label>
         </div>
 
         <div className="flex flex-column gap-2">
           <label className="uppercase" htmlFor="nm">
-            <b>Location name: </b>
+            <b>Vị trí: </b>
             <input
               id="nm"
               type="text"
@@ -270,31 +364,44 @@ export default function HandleLocation() {
               {...register("locationName")}
             />
           </label>
-
-          <div className="d-flex items-end	pb-2">
-            <div
-              className="cursor-pointer bg-info text-white uppercase rounded-lg px-3 py-0.5"
-              onClick={showLocation}
+          <label className="uppercase" htmlFor="street">
+            <b>Đường sách </b>
+            <select
+              {...register("streetId")}
+              id="street"
+              className="form-control"
             >
-              <b>Choose map </b>
-            </div>
-          </div>
+              {streets.map((v) => (
+                <option key={v.streetId} value={v.streetId}>
+                  {v.streetName}
+                </option>
+              ))}
+            </select>
+          </label>
           <label className="uppercase" htmlFor="area">
-            <b>Area: </b>
+            <b>Khu vực: </b>
             <select {...register("areaId")} id="area" className="form-control">
-              {areas.map((v) => (
+              {areas.filterData.map((v) => (
                 <option key={v.areaId} value={v.areaId}>
                   {v.areaName}
                 </option>
               ))}
             </select>
           </label>
+
+          <div className="d-flex items-end pb-2 mt-1">
+            <div
+              className="cursor-pointer bg-info text-white uppercase rounded-lg px-3 py-0.5"
+              onClick={showLocation}
+            >
+              <b>Xem bản đồ</b>
+            </div>
+          </div>
           <div>
-            <input type="submit" className="btn btn-dark mt-2" value="Save" />
+            <input type="submit" className="btn btn-dark mt-2" value="Lưu" />
           </div>
         </div>
       </form>
-
 
       <Modal
         open={open}
@@ -303,13 +410,9 @@ export default function HandleLocation() {
         aria-describedby="modal-modal-description"
       >
         <div className="p-6">
-          <Box sx={ModelStyle}>
+          <Box sx={{ ...ModelStyle, width: "80%" }}>
             <div className="overflow-auto w-100 h-70-screen">
-              <canvas
-                ref={imageCanvas}
-                onClick={choosePoint}
-                // style="image-rendering: auto"
-              ></canvas>
+              <canvas ref={imageCanvas} onClick={choosePoint}></canvas>
             </div>
             <div className="mt-2">
               <button
@@ -318,7 +421,7 @@ export default function HandleLocation() {
                 }}
                 className="bg-info text-white uppercase rounded-lg px-3 py-0.5"
               >
-                Clean all points
+                Xóa tất cả các điểm
               </button>
               <button
                 onClick={() => {
@@ -326,7 +429,7 @@ export default function HandleLocation() {
                 }}
                 className="bg-info text-white uppercase rounded-lg px-3 py-0.5 ml-2"
               >
-                Complete
+                Hoàn tất
               </button>
               {/* </div> */}
             </div>

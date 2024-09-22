@@ -3,16 +3,15 @@ import { useForm } from "react-hook-form";
 import { useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
 import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css";
-import { EditorState, ContentState, convertFromHTML } from "draft-js";
 import { fetchWrapper } from "../../_helpers/fetch-wrapper";
 import config from "../../config";
 import { Role } from "../../models/Role";
 import { fileService } from "../../_services/file.service";
 import { alertService } from "../../_services/alert.service";
-import { ROUTER, STORE } from "../../_helpers/const/const";
-import imgMapLocal from "../location/map-location.jpg";
+import { LOCATION, ROUTER, STORE, STREET } from "../../_helpers/const/const";
 import { Box, Modal } from "@mui/material";
 import { ModelStyle } from "../../_helpers/const/model.const";
+import { loadingService } from "../../_services/loading.service";
 
 export default function HandleStore() {
   const { register, handleSubmit, watch, getValues } = useForm({
@@ -48,10 +47,6 @@ export default function HandleStore() {
   const [streets, setStreets] = useState<any>([]);
   const [locations, setLocations] = useState<any>([]);
   const [users, setUsers] = useState<any>([]);
-  const [editorState, setEditorState] = useState(() => {
-    const content = ContentState.createFromText("");
-    return EditorState.createWithContent(content);
-  });
 
   const onSelectFile = (e) => {
     if (!e.target.files || e.target.files.length === 0) {
@@ -83,28 +78,34 @@ export default function HandleStore() {
   }, [selectedFile]);
 
   useEffect(() => {
-    if(!locations.length || !getValues().locationId) return
-    const locationFound = locations.find(
+    if (!locations.length || !getValues().locationId) return;
+    const locationPin = locations.find(
       (location) => location.locationId == getValues().locationId
     );
-    const newLocation = {
-      x: locationFound.xLocation,
-      y: locationFound.yLocation,
-      name: getValues().storeName,
-    };
-    setLocationPin([newLocation])
-  }, [watch("locationId"), watch("storeName")])
+    const prevValue = locations.find(
+      (location) => location.storeId == params.id
+    );
+    if (prevValue) {
+      prevValue.storeImage = "";
+      prevValue.storeId = 0;
+    }
 
+    locationPin.storeImage = preview;
+    locationPin.storeId = params.id;
+  }, [watch("locationId")]);
 
   async function fetAllData() {
-    let streetsPromise = getOption("Street");
-    let locationsPromise = getOption("Location");
-    
-    let usersPromise = getOption("Auth");
+    let streetsPromise = getOption(STREET);
+    let locationsPromise: any = getOption(LOCATION);
+
+    let usersPromise: any = getOption("Auth");
+    let storePrm = getOption(STORE);
+
     const fetall = await axios.all([
       streetsPromise,
       locationsPromise,
       usersPromise,
+      storePrm,
     ]);
 
     setStreets(fetall[0].list);
@@ -112,17 +113,32 @@ export default function HandleStore() {
     locationsPromise = fetall[1].list.filter(
       (location) => !location.storeId || location.storeId == params.id
     );
+    setLocationPin(fetall[1].list);
+    let listStoreHasUser: number[] = fetall[3].list.map((v) => v.userId);
     setLocations(locationsPromise);
-
-    usersPromise = fetall[2].list.filter((val) => val.role == Role.Store);
+    usersPromise = fetall[2].list.filter((val) => {
+      return (
+        val.role == Role.Store &&
+        (!params.id ? !listStoreHasUser.includes(val.id) : true)
+      );
+    });
     setUsers(usersPromise);
     if (!params.id)
       return {
-        ...data
+        ...data,
+        locationId: locationsPromise.locationId,
       };
     const result = await fetchWrapper.get(
       config.apiUrl + STORE + "/" + params.id
     );
+
+    listStoreHasUser = listStoreHasUser.filter((v) => v && v != result.userId);
+    setLocations(locationsPromise);
+    usersPromise = usersPromise.filter((val) => {
+      return !listStoreHasUser.includes(val.id);
+    });
+    setUsers(usersPromise);
+
     setData(result);
     setPreview(result.urlImage);
 
@@ -139,10 +155,13 @@ export default function HandleStore() {
   }
 
   const savedata = async (val) => {
-    val.locationName = locations.find(
-      (location) => val.locationId == location.locationId
-    ).locationName;
-    val.userFullName = users.find((user) => val.userId == user.id).fullName;
+    val.locationName = val.locationId
+      ? locations.find((location) => val.locationId == location.locationId)
+          .locationName
+      : "";
+    val.userFullName = val.userId
+      ? users.find((user) => val.userId == user.id).fullName
+      : "";
     const formData = new FormData();
     if (selectedFile) {
       formData.append(
@@ -164,7 +183,7 @@ export default function HandleStore() {
 
     let process;
     if (params.id) {
-      val.storeId = params.id;
+      val.storeId = Number(params.id);
       process = fetchWrapper.put(config.apiUrl + STORE + "/" + params.id, val);
     } else {
       delete val.storeId;
@@ -183,9 +202,18 @@ export default function HandleStore() {
         }
         return;
       }
-      alertService.alert({
-        content: params.id ? "Update success" : "Create success",
-      });
+      if (res.success) {
+        alertService.alert({
+          content: params.id ? "Thay đổi thành công" : "Tạo mới thành công",
+        });
+      } else {
+        if (res.message) {
+          alertService.alert({
+            content: res.message,
+          });
+        }
+      }
+
       navigate(ROUTER.store.url, { replace: true });
     });
   };
@@ -198,52 +226,62 @@ export default function HandleStore() {
   const imageCanvas = useRef(null);
   const [locationPin, setLocationPin] = useState([]);
   function showLocation() {
+    loadingService.showLoading();
     handleOpen();
     setTimeout(() => {
       drwMap();
-      setTimeout(() => {
-        if (locationPin.length) {
-          drawLocation(locationPin[0]);
-        }
-      }, 1000);
     }, 1000);
   }
 
   function drwMap() {
     const canv = imageCanvas.current.getContext("2d");
     const img = new Image();
-    img.src = imgMapLocal;
+    const imgLocation = locations.find(
+      (location) => location.locationId == getValues().locationId
+    ).locationImage;
+    img.src = imgLocation;
+    if (!imgLocation) {
+      alert("khu vực này chưa có ảnh");
+      return;
+    }
 
     img.onload = () => {
       imageCanvas.current.width = img.width;
       imageCanvas.current.height = img.height;
 
       canv.drawImage(img, 0, 0);
+      if (locationPin.length) {
+        drawLocation();
+      }
+      loadingService.hiddenLoading();
+    };
+    img.onerror = () => {
+      alertService.alert({
+        content: "Không thể tải được hình ảnh",
+      });
+      loadingService.hiddenLoading();
     };
   }
 
-  function drawLocation(pin) {
-    const x = pin.x * imageCanvas.current.width;
-    const y = pin.y * imageCanvas.current.height;
-    const ctx = imageCanvas.current.getContext("2d");
-    ctx.beginPath();
-    ctx.closePath();
-    ctx.font = "20px Arial";
-    ctx.fillText(pin.name, x - 60, y + 65);
- 
-    const img = new Image(100, 100);
-    img.onload = function () {
+  function drawLocation() {
+    locationPin.forEach((pin) => {
+      const x = pin.xLocation * imageCanvas.current.width;
+      const y = pin.yLocation * imageCanvas.current.height;
+      const ctx = imageCanvas.current.getContext("2d");
 
-      ctx.save();
-      ctx.beginPath();
-      ctx.arc(x, y, 50, 0, Math.PI * 2, false);
-      ctx.strokeStyle = "#2465D3";
-      ctx.stroke();
-      ctx.clip();
-      ctx.drawImage(img, x - 50, y - 50, 100, 100);
-      ctx.restore();
-    };
-    img.src = preview;
+      const img = new Image(100, 100);
+      img.onload = function () {
+        ctx.save();
+        ctx.beginPath();
+        ctx.arc(x, y, 50, 0, Math.PI * 2, false);
+        ctx.strokeStyle = "#2465D3";
+        ctx.stroke();
+        ctx.clip();
+        ctx.drawImage(img, x - 50, y - 50, 100, 100);
+        ctx.restore();
+      };
+      img.src = pin.storeImage;
+    });
   }
 
   return (
@@ -269,13 +307,13 @@ export default function HandleStore() {
             htmlFor="imageUpload"
             className="block border px-2 py-1 bg-slate-50 rounded"
           >
-            New Image
+            Chọn hình ảnh
           </label>
         </div>
         <div className="d-flex flex-col gap-2">
           <div>
             <label htmlFor="storeName">
-              <b>Store name: </b>
+              <b>Tên cửa hàng: </b>
             </label>
             <input
               id="storeName"
@@ -288,7 +326,7 @@ export default function HandleStore() {
 
           <div className="h-16">
             <label htmlFor="location">
-              <b>Location: </b>
+              <b>Vị trí: </b>
             </label>
             <select
               {...register("locationId")}
@@ -304,7 +342,7 @@ export default function HandleStore() {
           </div>
           <div>
             <label htmlFor="openH">
-              <b>Open hour: </b>
+              <b>Giờ mở cửa </b>
             </label>
             <input
               type="time"
@@ -318,7 +356,7 @@ export default function HandleStore() {
         <div className="d-flex flex-col gap-2">
           <div>
             <label htmlFor="User">
-              <b>User: </b>
+              <b>Chủ cửa hàng: </b>
             </label>
             <select {...register("userId")} id="User" className="form-control">
               {users.map((v) => (
@@ -333,12 +371,12 @@ export default function HandleStore() {
               className="cursor-pointer bg-info text-white uppercase rounded-lg px-3 py-0.5"
               onClick={showLocation}
             >
-              <b>View map </b>
+              <b>Bản đồ</b>
             </div>
           </div>
           <div>
             <label htmlFor="closH">
-              <b>Close hour: </b>
+              <b>Giờ đóng cửa: </b>
             </label>
             <input
               type="time"
@@ -352,13 +390,13 @@ export default function HandleStore() {
 
         <div className="col-start-2 col-span-2">
           <label htmlFor="avb">
-            <b>Description: </b>
+            <b>Mô tả: </b>
           </label>
           <textarea
             className="form-control min-h-30 max-h-50"
             {...register("description")}
           ></textarea>
-          <input type="submit" className="btn btn-success mt-12" value="Save" />
+          <input type="submit" className="btn btn-success mt-12" value="Lưu" />
         </div>
       </form>
       <Modal
@@ -368,7 +406,7 @@ export default function HandleStore() {
         aria-describedby="modal-modal-description"
       >
         <div className="p-6">
-          <Box sx={ModelStyle}>
+          <Box sx={{ ...ModelStyle, width: "80%" }}>
             <div className="overflow-auto w-100 h-70-screen">
               <canvas ref={imageCanvas}></canvas>
             </div>

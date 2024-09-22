@@ -3,6 +3,10 @@ import { accountService, alertService } from "../_services";
 import axios from "axios";
 import { PAGINATOR } from "./const/paginator.const";
 import { loadingService } from "../_services/loading.service";
+import {
+  CONFIRMED_DELETE,
+  deleteService,
+} from "../Components/delete-dialog.component";
 
 export const fetchWrapper = {
   getByValue,
@@ -11,6 +15,7 @@ export const fetchWrapper = {
   put,
   Post2GetByPaginate,
   delete: _delete,
+  confirmedDelete,
   postUpgrade,
 };
 
@@ -62,8 +67,17 @@ function post(url, body) {
     headers: { "Content-Type": "application/json", ...authHeader(url) },
     body: JSON.stringify(body),
   };
-  return fetch(url, requestOptions).then((response) => {
-    loadingService.showLoading();
+  return fetch(url, requestOptions).then((response: any) => {
+    loadingService.hiddenLoading();
+    if (response.status) {
+      return response.json();
+    } else if (!response.success) {
+      loadingService.hiddenLoading();
+      alertService.alert({
+        content: "Can't create",
+      });
+      return;
+    }
     return response.json();
   });
 }
@@ -88,14 +102,34 @@ function put(url, body) {
   return fetch(url, requestOptions).then(handleResponse);
 }
 
-async function _delete(url) {
+function _delete(url, reloadData) {
+  deleteService.showDeleteALert(url);
+  deleteService.$isReload.subscribe((v) => {
+    if (v) {
+      reloadData().then((_) => {
+        alertService.alert({
+          content: "Xóa thành công",
+        });
+      });
+    }
+  });
+}
+
+async function confirmedDelete(url) {
+  deleteService.hiddenDeleteAlert();
   loadingService.showLoading();
-  const requestOptions = {
-    method: "DELETE",
-    headers: authHeader(url),
-  };
-  return await fetch(url, requestOptions).then((data) => {
-    return data;
+
+  return await axios.delete(url).then((response) => {
+    console.log("response :>> ", response);
+    if (response.data.message || !response.data.success) {
+      alertService.alert({
+        content: response.data.message,
+      });
+      loadingService.hiddenLoading();
+    } else {
+      deleteService.$isReload.next(true);
+    }
+    return response.data;
   });
 }
 
@@ -147,24 +181,28 @@ function handleResponseForPost2Get(response) {
 
 function handleResponseForPost(response) {
   loadingService.hiddenLoading();
+  console.log(response);
   if ([400].includes(response.status)) {
     alertService.alert({
-      content: "Can't create",
+      content: "Không thể tạo",
     });
     return Promise.reject(response.errors);
   }
 
-  if (response.statusCode == 200) {
-    return Promise.resolve();
+  if (response.statusCode == 200 || response.status == 200) {
+    return Promise.resolve(response);
   }
 
-  if (!(response.statusText == "OK")) {
+  if (
+    (!(response.statusText == "OK") && response.statusText) ||
+    !response?.success
+  ) {
     if ([401, 403].includes(response.status) && accountService.userValue) {
       // accountService.logout();
     }
     alertService.alert({
-      content: "Can't create",
+      content: "Không thể tạo",
     });
-    return Promise.reject();
+    return Promise.reject(response);
   }
 }

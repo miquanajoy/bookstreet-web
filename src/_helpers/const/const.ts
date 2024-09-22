@@ -8,6 +8,7 @@ export const SAVEBATCH = "SaveBatch";
 
 export const PUBLISHER = "Publisher";
 export const EVENT = "Event";
+export const STREET = "Street";
 export const AREA = "Area";
 export const LOCATION = "Location";
 
@@ -15,6 +16,10 @@ export const GENRE = "Genre";
 export const PRODUCT = "Product";
 export const DISTRIBUTOR = "Distributor";
 export const CATEGORY = "Category";
+export const CUSTOMER = "Customer";
+export const POINT_HISTORY = "PointHistory";
+export const GIFT = "Gift";
+export const KIOS = "Kios";
 
 export const ROUTER = {
   book: {
@@ -37,6 +42,10 @@ export const ROUTER = {
     name: "Cửa hàng",
     url: "/store-management",
   },
+  kios: {
+    name: "Máy kios",
+    url: "/kios",
+  },
   author: {
     name: "Tác giả",
     url: "/author-management",
@@ -50,20 +59,45 @@ export const ROUTER = {
     url: "/distributor",
   },
   category: {
-    name: "Phân loại",
+    name: "Danh mục",
     url: "/category",
+  },
+  street: {
+    name: "Đường sách",
+    url: "/street",
+  },
+  roleStore: {
+    customerPoint: {
+      name: "Duyệt điểm",
+      url: "/browse-scores",
+    },
+    gift: {
+      name: "Quà tặng",
+      url: "/gift",
+    },
+  },
+  roleManager: {
+    pointHistory: {
+      name: "Lịch sử cộng điểm",
+      url: "/point-history",
+    },
   },
 };
 export const ROUTERS = [
   {
     logo: "",
-    name: "Người dùng",
+    name: "Tài khoản",
     url: "/user-management",
     roles: [Role.Admin],
   },
   {
     logo: "",
     ...ROUTER.store,
+    roles: [Role.Admin],
+  },
+  {
+    logo: "",
+    ...ROUTER.kios,
     roles: [Role.Admin],
   },
   {
@@ -93,6 +127,11 @@ export const ROUTERS = [
   },
   {
     logo: "",
+    ...ROUTER.street,
+    roles: [Role.Admin],
+  },
+  {
+    logo: "",
     name: "Khu vực",
     url: "/area",
     roles: [Role.Admin],
@@ -116,6 +155,21 @@ export const ROUTERS = [
   {
     logo: "",
     ...ROUTER.category,
+    roles: [Role.Admin],
+  },
+  {
+    logo: "",
+    ...ROUTER.roleStore.customerPoint,
+    roles: [Role.Store],
+  },
+  {
+    logo: "",
+    ...ROUTER.roleStore.gift,
+    roles: [Role.Store],
+  },
+  {
+    logo: "",
+    ...ROUTER.roleManager.pointHistory,
     roles: [Role.Admin],
   },
 ];

@@ -5,8 +5,13 @@ import { fetchWrapper } from "../../_helpers/fetch-wrapper";
 import config from "../../config";
 import ListComponent from "../../Components/list.component";
 import { AREA } from "../../_helpers/const/const";
+import {
+  SearchModel,
+  searchService,
+  typeSearch,
+} from "../../_services/home/search.service";
 
-export default function HandleArea() {
+export default function ShowAreaPage() {
   const [data, setData] = useState({
     list: [],
     totalPage: 0,
@@ -23,11 +28,22 @@ export default function HandleArea() {
   async function fetAllData(pageNumber = 1) {
     const result = fetchWrapper.Post2GetByPaginate(
       config.apiUrl + AREA,
-      pageNumber
+      pageNumber,
+      {
+        filters: [
+          {
+            field: "areaName",
+            value: searchService.$SearchValue.value?.dataSearch,
+            operand: typeSearch,
+          },
+        ],
+      }
     );
     result.then((res) => {
       const convertedData = res.list.map((val) => {
         let p = [];
+
+        p.push({ id: val.areaId });
         p.push({ image: val.urlImage });
         for (const key in val) {
           if (!["streetId", "urlImage"].includes(key)) {
@@ -42,6 +58,7 @@ export default function HandleArea() {
         totalPage: res.totalPage,
       });
     });
+    return result
   }
 
   useEffect(() => {
@@ -49,14 +66,20 @@ export default function HandleArea() {
   }, []);
 
   function deleteItem(id) {
-    const result = fetchWrapper.delete(config.apiUrl + AREA + "/" + id);
-    result.then((val) => {
-      fetAllData();
-      alertService.alert({
-        content: "Xóa thành công",
-      });
-    });
+    fetchWrapper.delete(config.apiUrl + AREA + "/" + id, fetAllData);
   }
+  // Search area
+  useEffect(() => {
+    const searchSub = searchService.$SearchValue.subscribe({
+      next: (v: SearchModel) => {
+        if (v?.isClickSearch) {
+          fetAllData();
+        }
+      },
+    });
+    return () => searchSub.unsubscribe();
+  }, []);
+  // End Search area
 
   return (
     <>

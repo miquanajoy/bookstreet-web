@@ -5,6 +5,11 @@ import { fetchWrapper } from "../../_helpers/fetch-wrapper";
 import config from "../../config";
 import ListComponent from "../../Components/list.component";
 import { LOCATION } from "../../_helpers/const/const";
+import {
+  SearchModel,
+  searchService,
+  typeSearch,
+} from "../../_services/home/search.service";
 
 export default function ShowLocation() {
   const [data, setData] = useState({
@@ -29,7 +34,16 @@ export default function ShowLocation() {
   function fetAllData(pageNumber = 1) {
     const result = fetchWrapper.Post2GetByPaginate(
       config.apiUrl + LOCATION,
-      pageNumber
+      pageNumber,
+      {
+        filters: [
+          {
+            field: "locationName",
+            value: searchService.$SearchValue.value?.dataSearch,
+            operand: typeSearch,
+          },
+        ],
+      }
     );
     result.then((res) => {
       const convertedData = res.list.map((val) => {
@@ -48,18 +62,28 @@ export default function ShowLocation() {
         totalPage: res.totalPage,
       });
     });
+    return result;
   }
 
   useEffect(() => {
     fetAllData();
   }, []);
 
-  async function deleteItem(id) {
-    await fetchWrapper.delete(config.apiUrl + LOCATION + "/" + id);
-    fetAllData();
-    alertService.alert({
-      content: "Xóa thành công",
+  // Search area
+  useEffect(() => {
+    const searchSub = searchService.$SearchValue.subscribe({
+      next: (v: SearchModel) => {
+        if (v?.isClickSearch) {
+          fetAllData();
+        }
+      },
     });
+    return () => searchSub.unsubscribe();
+  }, []);
+  // End Search area
+
+  async function deleteItem(id) {
+    await fetchWrapper.delete(config.apiUrl + LOCATION + "/" + id, fetAllData);
   }
 
   return (

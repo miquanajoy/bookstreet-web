@@ -9,6 +9,7 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { Trash } from "../../assets/icon/trash";
 import { Pagination } from "@mui/material";
+import { SearchModel, searchService, typeSearch } from "../../_services/home/search.service";
 
 export default function ShowDistributor() {
   const navigate = useNavigate();
@@ -21,21 +22,26 @@ export default function ShowDistributor() {
   });
 
   function deleteItem(val) {
-    const result = fetchWrapper.delete(
-      config.apiUrl + DISTRIBUTOR + "/" + val.distributorId
+    fetchWrapper.delete(
+      config.apiUrl + DISTRIBUTOR + "/" + val.distributorId,
+      fetAllData
     );
-    result.then((val) => {
-      fetAllData();
-      alertService.alert({
-        content: "Xóa thành công",
-      });
-    });
+
   }
 
   async function fetAllData(pageNumber = 1) {
     const result = fetchWrapper.Post2GetByPaginate(
       config.apiUrl + DISTRIBUTOR,
-      pageNumber
+      pageNumber,
+      {
+        filters: [
+          {
+            field: "distriName",
+            value: searchService.$SearchValue.value?.dataSearch,
+            operand: typeSearch,
+          },
+        ],
+      }
     );
     result.then((res: any) => {
       setData(res);
@@ -46,6 +52,19 @@ export default function ShowDistributor() {
     fetAllData();
   }, [pathname]);
 
+    // Search area
+    useEffect(() => {
+      const searchSub = searchService.$SearchValue.subscribe({
+        next: (v: SearchModel) => {
+          if (v?.isClickSearch) {
+            fetAllData();
+          }
+        },
+      });
+      return () => searchSub.unsubscribe();
+    }, []);
+    // End Search area
+    
   return (
     <div className="px-6">
       <div className="flex items-center justify-between mb-2">
@@ -66,7 +85,7 @@ export default function ShowDistributor() {
           >
             <Link to={"update/" + val.distributorId}>
               <div
-                className="h-40 bg-contain bg-no-repeat bg-center"
+                className="h-40 bg-cover bg-no-repeat bg-center"
                 style={{
                   backgroundImage: `url(${val.urlImage ? val.urlImage : AVATARDEFAULT})`,
                 }}

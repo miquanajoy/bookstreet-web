@@ -1,6 +1,9 @@
 import axios from "axios";
 import { fetchWrapper } from "../_helpers/fetch-wrapper";
 import config from "../config";
+import { alertService } from "./alert.service";
+import { URL_IMG } from "../_helpers/const/csv.const";
+import { loadingService } from "./loading.service";
 
 class FileService {
   postFile(files, url?) {
@@ -14,14 +17,21 @@ class FileService {
         "Content-Type": "multipart/form-data; boundary=----",
         ...this.authHeader(),
       },
-    }).then((res) => {
-      const urlImg = `https://fptbs.azurewebsites.net/api/File/image/${res.data.data[0]}`;
-      return urlImg;
-    });
+    })
+      .then((res) => {
+        const urlImg = URL_IMG + `${res.data.data[0]}`;
+        return urlImg;
+      })
+      .catch(() => {
+        alertService.alert({
+          content: "Have an error when update image",
+        });
+      });
   }
 
   postFileExcel(files, url) {
-    url = config.apiUrl + url ;
+    loadingService.showLoading();
+    url = config.apiUrl + url;
     return axios({
       method: "post",
       url,
@@ -32,8 +42,8 @@ class FileService {
         ...this.authHeader(),
       },
     }).then((res) => {
-        return res.data
-      
+      loadingService.hiddenLoading();
+      return res.data;
     });
   }
 

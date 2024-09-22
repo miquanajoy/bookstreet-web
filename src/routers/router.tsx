@@ -2,33 +2,42 @@ import { Navigate, createBrowserRouter, useRoutes } from "react-router-dom";
 import AuthGuard from "../guards/AuthGuard";
 import AuthenPage from "../Components/authen.component";
 import RoleBasedGuard from "../guards/RoleBaseGuard";
-import { FC } from "react";
 import HomePage from "../Components/home.component";
 import AddUser from "../Pages/user/addUser.page";
 import HandleCalenderPage from "../Pages/calender/handle-calender.page";
 import CalenderManagerPage from "../Pages/calender/calender-manager.page";
-import ShowUserPage from "../Pages/user/User-manager.page";
 import HandlePublisher from "../Pages/publisher/handle-publisher.page";
 import { Role } from "../models/Role";
 import ShowBook from "../Pages/book/ShowBook";
 import AddBook from "../Pages/book/AddBook";
 import ListStore from "../Pages/store/list-store";
 import HandleStore from "../Pages/store/handle-store";
-import HandleArea from "../Pages/area/handle-area";
 import ShowLocation from "../Pages/location/show-location";
 import HandleLocation from "../Pages/location/handle-location";
-import HandleAreaPage from "../Pages/area/handle-area.page";
 import PublisheranagerPage from "../Pages/publisher/publisher-manager.page";
 import { ROUTER } from "../_helpers/const/const";
 import HandleAuthorPage from "../Pages/author/handle-author.page";
 import ShowAuthorPage from "../Pages/author/show-author.page";
 import ShowGenrePage from "../Pages/genre/show-genre.page";
 import HandleGenrePage from "../Pages/genre/handle-genre.page";
-import HandleDistributor from "../Pages/distributor/show-distributor.page";
 import ShowDistributor from "../Pages/distributor/show-distributor.page";
 import HandleDistributorPage from "../Pages/distributor/handle-distributor.page";
 import HandleCategoryPage from "../Pages/category/handle-category.page";
 import ShowCategoryPage from "../Pages/category/show-category.page";
+import HandleStreetPage from "../Pages/street/handle-street.page";
+import ShowStreetPage from "../Pages/street/show-street.page";
+import HandleAreaPage from "../Pages/area/handle-area.page";
+import ShowAreaPage from "../Pages/area/show-area.page";
+import ListCustomerPoint from "../Pages/role/store/customer-point/list-customer-point";
+import ShowUserPage from "../Pages/user/User-manager.page";
+import ShowGift from "../Pages/role/store/gift/show-gift";
+import HandleGift from "../Pages/role/store/gift/handle-gift";
+import HandleCustomer from "../Pages/role/store/customer-point/handle-customer-point";
+import ShowSouvenir from "../Pages/book/show-souvenir";
+import ListKios from "../Pages/role/admin/kios/list-kios";
+import HandleKios from "../Pages/role/admin/kios/handle-kios";
+import PointStore from "../Pages/role/manager/manager-point/point-store";
+import ListBrowseScores from "../Pages/role/store/browse-scores/list-browse-scores";
 
 const router = createBrowserRouter([
   {
@@ -105,7 +114,7 @@ const router = createBrowserRouter([
         element: (
           <AuthGuard>
             <RoleBasedGuard accessibleRoles={[Role.Admin, Role.Store]}>
-              <ShowBook />
+              <ShowSouvenir />
             </RoleBasedGuard>
           </AuthGuard>
         ),
@@ -307,7 +316,7 @@ const router = createBrowserRouter([
         element: (
           <AuthGuard>
             <RoleBasedGuard accessibleRoles={[Role.Admin]}>
-              <HandleArea />
+              <ShowAreaPage />
             </RoleBasedGuard>
           </AuthGuard>
         ),
@@ -513,6 +522,151 @@ const router = createBrowserRouter([
           <AuthGuard>
             <RoleBasedGuard accessibleRoles={[Role.Admin]}>
               <HandleCategoryPage />
+            </RoleBasedGuard>
+          </AuthGuard>
+        ),
+      },
+    ],
+  },
+  // Street
+  {
+    path: ROUTER.street.url,
+    element: <HomePage />,
+    children: [
+      {
+        path: "",
+        element: (
+          <AuthGuard>
+            <RoleBasedGuard accessibleRoles={[Role.Admin]}>
+              <ShowStreetPage />
+            </RoleBasedGuard>
+          </AuthGuard>
+        ),
+      },
+      {
+        path: "create",
+        element: (
+          <AuthGuard>
+            <RoleBasedGuard accessibleRoles={[Role.Admin]}>
+              <HandleStreetPage />
+            </RoleBasedGuard>
+          </AuthGuard>
+        ),
+      },
+      {
+        path: "update/:id",
+        element: (
+          <AuthGuard>
+            <RoleBasedGuard accessibleRoles={[Role.Admin]}>
+              <HandleStreetPage />
+            </RoleBasedGuard>
+          </AuthGuard>
+        ),
+      },
+    ],
+  },
+  // Customer point
+  {
+    path: ROUTER.roleStore.customerPoint.url,
+    element: <HomePage />,
+    children: [
+      {
+        path: "",
+        element: (
+          <AuthGuard>
+            <RoleBasedGuard accessibleRoles={[Role.Store]}>
+              <ListBrowseScores />
+            </RoleBasedGuard>
+          </AuthGuard>
+        ),
+      }
+    ],
+  },
+  // Gift
+  {
+    path: ROUTER.roleStore.gift.url,
+    element: <HomePage />,
+    children: [
+      {
+        path: "",
+        element: (
+          <AuthGuard>
+            <RoleBasedGuard accessibleRoles={[Role.Store]}>
+              <ShowGift />
+            </RoleBasedGuard>
+          </AuthGuard>
+        ),
+      },
+      {
+        path: "create",
+        element: (
+          <AuthGuard>
+            <RoleBasedGuard accessibleRoles={[Role.Store]}>
+              <HandleGift />
+            </RoleBasedGuard>
+          </AuthGuard>
+        ),
+      },
+      {
+        path: "update/:id",
+        element: (
+          <AuthGuard>
+            <RoleBasedGuard accessibleRoles={[Role.Store]}>
+              <HandleGift />
+            </RoleBasedGuard>
+          </AuthGuard>
+        ),
+      },
+    ],
+  },
+  // Kios
+  {
+    path: ROUTER.kios.url,
+    element: <HomePage />,
+    children: [
+      {
+        path: "",
+        element: (
+          <AuthGuard>
+            <RoleBasedGuard accessibleRoles={[Role.Admin]}>
+              <ListKios />
+            </RoleBasedGuard>
+          </AuthGuard>
+        ),
+      },
+      {
+        path: "create",
+        element: (
+          <AuthGuard>
+            <RoleBasedGuard accessibleRoles={[Role.Admin]}>
+              <HandleKios />
+            </RoleBasedGuard>
+          </AuthGuard>
+        ),
+      },
+      {
+        path: "update/:id",
+        element: (
+          <AuthGuard>
+            <RoleBasedGuard accessibleRoles={[Role.Admin]}>
+              <HandleKios />
+            </RoleBasedGuard>
+          </AuthGuard>
+        ),
+      },
+    ],
+  },
+  // Gift history
+  {
+    path: ROUTER.roleManager.pointHistory.url,
+    element: <HomePage />,
+    children: [
+      {
+        path: "",
+        element: (
+          <AuthGuard>
+            <RoleBasedGuard accessibleRoles={[Role.Admin]}>
+              <PointStore />
             </RoleBasedGuard>
           </AuthGuard>
         ),

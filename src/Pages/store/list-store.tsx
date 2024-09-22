@@ -5,6 +5,11 @@ import { fetchWrapper } from "../../_helpers/fetch-wrapper";
 import config from "../../config";
 import ListComponent from "../../Components/list.component";
 import { STORE } from "../../_helpers/const/const";
+import {
+  SearchModel,
+  searchService,
+  typeSearch,
+} from "../../_services/home/search.service";
 
 export default function ListStore() {
   const [data, setData] = useState({
@@ -14,19 +19,28 @@ export default function ListStore() {
   const headers = [
     {
       key: "image",
-      name: "urlImage",
+      name: "Avatar",
     },
-    { key: "storeName", name: "storeName" },
-    { key: "locationName", name: "locationName" },
-    { key: "openingHours", name: "openingHours" },
-    { key: "closingHours", name: "closingHours" },
-    { key: "description", name: "description" },
+    { key: "storeName", name: "Tên cửa hàng" },
+    { key: "locationName", name: "Vị trí" },
+    { key: "openingHours", name: "Giờ mở cửa" },
+    { key: "closingHours", name: "Giờ đóng cửa" },
+    { key: "description", name: "Mô tả" },
   ];
 
   function fetAllData(pageNumber = 1) {
     const result = fetchWrapper.Post2GetByPaginate(
       config.apiUrl + STORE,
-      pageNumber
+      pageNumber,
+      {
+        filters: [
+          {
+            field: "storeName",
+            value: searchService.$SearchValue.value?.dataSearch,
+            operand: typeSearch,
+          },
+        ],
+      }
     );
     result.then((res) => {
       const convertedData = res.list.map((val) => [
@@ -55,18 +69,28 @@ export default function ListStore() {
         totalPage: res.totalPage,
       });
     });
+    return result
   }
 
   useEffect(() => {
     fetAllData();
   }, []);
 
-  async function deleteItem(id) {
-    await fetchWrapper.delete(config.apiUrl + STORE + "/" + id);
-    alertService.alert({
-      content: "Xóa thành công",
+  // Search area
+  useEffect(() => {
+    const searchSub = searchService.$SearchValue.subscribe({
+      next: (v: SearchModel) => {
+        if (v?.isClickSearch) {
+          fetAllData();
+        }
+      },
     });
-    fetAllData();
+    return () => searchSub.unsubscribe();
+  }, []);
+  // End Search area
+
+  async function deleteItem(id) {
+    await fetchWrapper.delete(config.apiUrl + STORE + "/" + id, fetAllData);
   }
 
   return (

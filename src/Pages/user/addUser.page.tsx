@@ -53,6 +53,7 @@ export default function AddUser() {
     if (!params.id) return;
     const result = fetchWrapper.get(config.apiUrl + "Auth/" + params.id);
     result.then((val) => {
+      console.log('val :>> ', val);
       setValue("username", val.username);
       setValue("fullName", val.fullName);
       setValue("password", "");
@@ -77,21 +78,18 @@ export default function AddUser() {
       ...val,
       avatar: val.urlImage,
     };
+   
     const formData = new FormData();
     if (selectedFile) {
-      console.log('selectedFile :>> ', selectedFile);
       formData.append(
         "files",
         new Blob([selectedFile], { type: "image/png" }),
         selectedFile.name
       );
       dataPost.avatar = await fileService.postFile(formData);
-      console.log("preview :>> ", preview);
     } else {
       dataPost.avatar = preview;
-      console.log("preview :>> ", preview);
     }
-    console.log("selectedFile", selectedFile);
   
     const connectApi = params.id
       ? fetchWrapper.put(config.apiUrl + "Auth/" + params.id, dataPost)
@@ -111,7 +109,7 @@ export default function AddUser() {
         return;
       }
       alertService.alert({
-        content: params.id ? "Update success" : "Create success",
+        content: params.id ?  "Thay đổi thành công" : "Tạo mới thành công",
       });
       navigate("/user-management", { replace: true });
     });
@@ -119,7 +117,7 @@ export default function AddUser() {
 
   return (
     <div className="container">
-      <h1 className="title">Account Management</h1>
+      <h1 className="title">Quản lý tài khoản</h1>
       <form
         onSubmit={handleSubmit(savedata)}
         className="grid grid-cols-2 gap-4 jumbotron mt-4"
@@ -140,13 +138,13 @@ export default function AddUser() {
             htmlFor="imageUpload"
             className="block border px-2 py-1 bg-slate-50 rounded"
           >
-            New Image
+            Chọn hình ảnh
           </label>
         </div>
 
         <div className="grid grid-cols-2 gap-4">
           <label className="uppercase" htmlFor="nm">
-            <b>Username: </b>
+            <b>Tên Tài khoản: </b>
             <input
               id="nm"
               type="text"
@@ -157,7 +155,7 @@ export default function AddUser() {
             <p className="text-danger">{errForm?.Username}</p>
           </label>
           <label className="uppercase" htmlFor="fullName">
-            <b>Full name: </b>
+            <b>Tên đầy đủ: </b>
             <input
               id="fullName"
               type="text"
@@ -168,7 +166,7 @@ export default function AddUser() {
             <p className="text-danger">{errForm?.FullName}</p>
           </label>
           <label className="uppercase" htmlFor="anm">
-            <b>Password: </b>
+            <b>Mật khẩu mới: </b>
             <input
               id="anm"
               type="password"
@@ -190,7 +188,7 @@ export default function AddUser() {
             <p className="text-danger">{errForm?.Email}</p>
           </label>
           <label className="uppercase" htmlFor="phone">
-            <b>Phone: </b>
+            <b>Điện thoại: </b>
             <input
               id="phone"
               type="text"
@@ -200,7 +198,7 @@ export default function AddUser() {
             />
           </label>
           <label className="uppercase" htmlFor="addr">
-            <b>Address: </b>
+            <b>Địa chỉ: </b>
             <input
               id="addr"
               type="text"
@@ -211,7 +209,7 @@ export default function AddUser() {
           </label>
 
           <label className="uppercase" htmlFor="role">
-            <b>Role: </b>
+            <b>Vai trò: </b>
             <select {...register("role")} id="role" className="form-control">
               {Roles.map((v) => (
                 <option key={v} value={v}>
@@ -220,7 +218,7 @@ export default function AddUser() {
               ))}
             </select>
           </label>
-          <input type="submit" className="btn btn-dark mt-2" value="Save" />
+          <input type="submit" className="btn btn-dark mt-2" value="Lưu" />
         </div>
       </form>
     </div>

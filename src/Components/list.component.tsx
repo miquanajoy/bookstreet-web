@@ -4,9 +4,27 @@ import { Trash } from "../assets/icon/trash";
 import { MDBTable, MDBTableHead, MDBTableBody } from "mdb-react-ui-kit";
 import { EditIcon } from "../assets/icon/edit";
 import Pagination from "@mui/material/Pagination";
+import { searchService } from "../_services/home/search.service";
 
 export default function ListComponent(props) {
   const navigate = useNavigate();
+
+  function filterHeader(headerName: string) {
+    switch (headerName) {
+      case "urlImage":
+        return "Avatar";
+      case "locationName":
+        return "Tên vị trí";
+      case "areaName":
+        return "Tên khu vực";
+      case "streetName":
+        return "Tên Đường sách";
+      case "description":
+        return "Mô tả";
+      default:
+        return headerName;
+    }
+  }
 
   function findId(index) {
     const item = props.data[index].find((td, i) => {
@@ -14,6 +32,7 @@ export default function ListComponent(props) {
     });
     return item.id;
   }
+
   function renderTdUi() {
     const headerKeys = props.header.map((headerDt) => {
       return headerDt.key;
@@ -47,7 +66,7 @@ export default function ListComponent(props) {
                   ></div>
                 </div>
               ) : (
-                <p className="text-center">{td[Object.keys(td)[0]]}</p>
+                <p className="text-center line-clamp-6">{td[Object.keys(td)[0]]}</p>
               )}
             </div>
           </td>
@@ -92,10 +111,10 @@ export default function ListComponent(props) {
           <tr className="text-center">
             {props.header.map((v) => (
               <th key={v.key} scope="col">
-                {v.name}
+                {filterHeader(v.name)}
               </th>
             ))}
-            <th scope="col">Actions</th>
+            <th scope="col">Sửa / Xóa</th>
           </tr>
         </MDBTableHead>
         <MDBTableBody>{renderTdUi()}</MDBTableBody>

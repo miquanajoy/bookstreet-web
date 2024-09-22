@@ -147,14 +147,14 @@ export default function HandlePublisher() {
               htmlFor="imageUpload"
               className="block border px-2 py-1 bg-slate-50 rounded"
             >
-              New Image
+              Chọn hình ảnh
             </label>
           </div>
 
           <div className="grid grid-cols-2 gap-2 jumbotron mt-4">
             <div>
               <label className="uppercase" htmlFor="nm">
-                <b>Publisher name: </b>
+                <b>Tên nhà xuất bản: </b>
               </label>
               <input
                 id="nm"
@@ -165,7 +165,7 @@ export default function HandlePublisher() {
             </div>
             <div>
               <label className="uppercase" htmlFor="nm">
-                <b>Publisher number: </b>
+                <b>Số nhà xuất bản: </b>
               </label>
               <input
                 id="nm"
@@ -189,7 +189,7 @@ export default function HandlePublisher() {
             </div>
             <div>
               <label className="uppercase" htmlFor="nm">
-                <b>Year: </b>
+                <b>Năm: </b>
               </label>
               <input
                 id="nm"
@@ -200,14 +200,14 @@ export default function HandlePublisher() {
             </div>
             <div className="col-span-2">
               <label className="uppercase" htmlFor="Description">
-                <b>Description: </b>
+                <b>Mô tả: </b>
               </label>
               <textarea
                 className="form-control min-h-30 max-h-50"
                 {...register("description")}
               ></textarea>
 
-              <input type="submit" className="btn btn-dark mt-2" value="Save" />
+              <input type="submit" className="btn btn-dark mt-2" value="Lưu" />
             </div>
           </div>
         </form>

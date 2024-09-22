@@ -8,8 +8,17 @@ import { alertService, logout } from "../_services";
 import { AlertModel } from "../models/AlertModel";
 import { ROUTERS } from "../_helpers/const/const";
 import { isLoadingVarialble } from "../_services/loading.service";
+import DeleteDialog from "./delete-dialog.component";
+import { useForm } from "react-hook-form";
+import { searchService } from "../_services/home/search.service";
 
 export default function HomePage() {
+  const {
+    register,
+    handleSubmit,
+    getValues,
+    formState: { errors },
+  } = useForm();
   const [isShowLoading, setIsShowLoading] = useState(false);
 
   const [routerList, setRouterList] = useState<LinkInterface[]>([]);
@@ -43,9 +52,24 @@ export default function HomePage() {
       },
     });
   }, []);
+
+  const savedata = async (val) => {
+    searchService.setValueSearch({
+      dataSearch: val["search-input"],
+      isClickSearch:  true
+    })
+  };
   
+  function updateSearchValue(e) {
+    searchService.setValueSearch({
+      dataSearch: e.target.value,
+      isClickSearch: false
+    })
+  }
+
   return (
     <div>
+      <DeleteDialog />
       <LoadingComponent onLoading={isShowLoading} />
       <AlertContext onAlert={isShowAlert} content="Demo alert" />
       <div className="flex">
@@ -55,14 +79,17 @@ export default function HomePage() {
         <div className="lg:col-11 col-10">
           <div className="lg:col-span-8 col-span-10 row-span-1">
             <div className="header w-full flex items-center justify-between p-2">
-              <form className="max-w-md">
+              <form
+                className="max-w-lg w-full"
+                onSubmit={handleSubmit(savedata)}
+              >
                 <label
                   htmlFor="default-search"
                   className="mb-2 text-sm font-medium text-gray-900 sr-only dark:text-white"
                 >
-                  Search
+                  Tìm kiếm
                 </label>
-                <div className="relative">
+                <div className="relative d-flex items-center">
                   <div className="absolute inset-y-0 start-0 flex items-center ps-3 pointer-events-none">
                     <svg
                       width="17"
@@ -92,12 +119,19 @@ export default function HomePage() {
                     </svg>
                   </div>
                   <input
-                    type="search"
+                    type="text"
                     id="default-search"
                     className="block w-full py-2 pl-10 text-sm text-gray-900 border border-gray-300 rounded-2xl bg-gray-50"
-                    placeholder="Search"
-                    required
+                    placeholder="Tìm kiếm"
+                    {...register("search-input")}
+                    onChange={(v) => {updateSearchValue(v)}}
                   />
+                  <button
+                    type="submit"
+                    className="whitespace-nowrap px-4 p-2 ml-2 text-sm font-medium text-gray-900 focus:outline-none bg-white rounded-2xl border border-gray-200  text-gray-400"
+                  >
+                    Tìm kiếm
+                  </button>
                 </div>
               </form>
               <button

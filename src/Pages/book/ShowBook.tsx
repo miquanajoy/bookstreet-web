@@ -13,7 +13,6 @@ import {
   ROUTER,
   SAVEBATCH,
 } from "../../_helpers/const/const";
-import { accountService } from "../../_services/account.service";
 import { excelService, TYPE_BOOK } from "../../_services/excel.service";
 import { useFieldArray, useForm } from "react-hook-form";
 
@@ -28,7 +27,16 @@ import TableRow from "@mui/material/TableRow";
 import Paper from "@mui/material/Paper";
 import { ModelStyle } from "../../_helpers/const/model.const";
 import { Role, Roles } from "../../models/Role";
-import { CATEGORY } from "../../models/category";
+import { fileService } from "../../_services/file.service";
+import axios from "axios";
+import dayjs from "dayjs";
+import { URL_IMG } from "../../_helpers/const/csv.const";
+import { searchService, typeSearch } from "../../_services/home/search.service";
+import { MOCKDATA_BOOK } from "../../_helpers/const/mock-data";
+import { loadingService } from "../../_services/loading.service";
+import DialogDetailComponent, {
+  dialogDetailService,
+} from "./dialog-detail.component";
 
 export default function ShowBook() {
   const user = JSON.parse(localStorage.getItem("userInfo"));
@@ -49,18 +57,16 @@ export default function ShowBook() {
     mode: "onChange",
   });
 
-  const [categories, setCategories] = useState([]);
-
   async function deleteItem(val) {
-    await fetchWrapper.delete(config.apiUrl + "Product/" + val.productId);
-    await fetAllData();
-    alertService.alert({
-      content: "Xóa thành công",
-    });
+    await fetchWrapper.delete(
+      config.apiUrl + "Product/" + val.productId,
+      fetAllData
+    );
   }
   async function fetAllData(pageNumber = 1) {
-    const categories = await fetchWrapper.get(config.apiUrl + CATEGORY);
-    setCategories(categories);
+    getDataByPaginator(pageNumber);
+  }
+  async function getDataByPaginator(pageNumber = 1) {
     const filter = {
       filters: [
         {
@@ -70,6 +76,11 @@ export default function ShowBook() {
         },
       ],
     };
+    filter.filters.push({
+      field: "productName",
+      value: searchService.$SearchValue.value?.dataSearch,
+      operand: typeSearch,
+    });
     const result = fetchWrapper.Post2GetByPaginate(
       config.apiUrl + PRODUCT,
       pageNumber,
@@ -89,6 +100,17 @@ export default function ShowBook() {
     fetAllData();
   }, [pathname]);
 
+  useEffect(() => {
+    const searchSub = searchService.$SearchValue.subscribe({
+      next: (v) => {
+        if (v?.isClickSearch) {
+          getDataByPaginator(1);
+        }
+      },
+    });
+    return () => searchSub.unsubscribe();
+  }, []);
+
   // Model
   const [dataImport, setDataImport] = useState([]);
 
@@ -101,6 +123,11 @@ export default function ShowBook() {
     name: "author",
     rules: { required: true },
   });
+
+  const handleClickOpenDetail = (v) => {
+    console.log("e :>> ", v);
+    dialogDetailService.showDialog(v);
+  };
 
   const inputFile = useRef(null);
 
@@ -119,14 +146,24 @@ export default function ShowBook() {
       const convertData = responseImport
         // .filter((val) => val.Success)
         .map((val) => {
-          return {
-            ...val,
-          };
+          if (isBookScreen) {
+            val.AuthorName = val.AuthorName[0];
+          }
+          const UrlImage =
+            val.UrlImage && val.UrlImage != "anh_mau.jpg"
+              ? URL_IMG + val.UrlImage
+              : undefined;
+          return { ...val, UrlImage };
         });
       inputFile.current.value = "";
       handleOpen();
       convertData.forEach((val) => {
-        console.log("val :>> ", val);
+        if (isBookScreen) {
+          val.PublicDay =
+            val.PublicDay != "Invalid Date" && val.PublicDay
+              ? dayjs(new Date(val.PublicDay)).format("YYYY-MM-DD")
+              : dayjs(new Date()).format("YYYY-MM-DD");
+        }
         append(val);
       });
       setDataImport(convertData);
@@ -134,34 +171,101 @@ export default function ShowBook() {
       inputFile.current.value = "";
 
       alertService.alert({
-        content: "An error occurred",
+        content: "Không thể import",
       });
     }
   }
 
   async function submitCsv() {
     // const formData = new FormData();
-    let valueToSubmit = getValues().author.map((v) => ({ ...v }));
-    valueToSubmit.productTypeId = isBookScreen ? 1 : 2;
-    console.log("valueToSubmit :>> ", valueToSubmit);
-    // getValues().author.map(async (data, index) => {
-    //   if (data.urlImage[0]) {
-    //     const img = data.urlImage[0];
-    //     formData.append(
-    //       "files",
-    //       new Blob([img], { type: "image/png" }),
-    //       img.name
-    //     );
-    //     valueToSubmit[index].urlImage = await fileService.postFile(formData);
-    //   } else {
-    //     valueToSubmit[index].urlImage = "";
-    //   }
-    // });
-    await fetchWrapper.post(
+    const listImportImg = [];
+    let valueToSubmit = [];
+    getValues().author.map(async (data, index) => {
+      if (data?.UrlImage && data?.UrlImage["0"]?.name) {
+        const formData = new FormData();
+
+        const img = data.UrlImage[0];
+        formData.append(
+          "files",
+          new Blob([img], { type: "image/png" }),
+          img.name
+        );
+        listImportImg.push(fileService.postFile(formData));
+      } else {
+        listImportImg.push("");
+      }
+    });
+    await axios.all(listImportImg).then((val) => {
+      valueToSubmit = getValues().author.map((v, index) => {
+        let urlImage = val[index];
+        if (typeof v.UrlImage != "object") {
+          if (val[index]?.includes(URL_IMG)) {
+            urlImage = v.UrlImage;
+          } else {
+            urlImage = v.UrlImage;
+          }
+        }
+
+        const book = {
+          categoryName: v.CategoryName,
+          distributorName: v.DistributorName,
+          publisherName: v.PublisherName,
+          genreName: v.GenreName,
+          publicDay: v.PublicDay,
+          authors: v.AuthorName.split(", "),
+        };
+        const postData = {
+          book,
+          categoryId: v.CategoryId,
+          productTypeId: isBookScreen ? 1 : 2,
+          productTypeName: v.ProductTypeName,
+          publicDay: v.PublicDay,
+          productName: v.ProductName,
+          description: v.Description,
+          price: v.Price,
+          status: 1,
+          AuthorName: v.AuthorName.split(", "),
+          categoryName: v.CategoryName,
+          distributorName: v.DistributorName,
+          publisherName: v.PublisherName,
+          genreName: v.GenreName,
+          authors: v.AuthorName.split(", "),
+
+          urlImage,
+        };
+        if (!isBookScreen) {
+          delete postData.book;
+        }
+        return postData;
+      });
+    });
+    const resp = await fetchWrapper.post(
       config.apiUrl + PRODUCT + "/" + SAVEBATCH,
       valueToSubmit
     );
-    await closeModelImport();
+    if (resp.success) {
+      alertService.alert({
+        content: `${resp.data.successCount} Bản ghi tạo thành công`,
+      });
+      if (!resp.data.successCount) {
+        for (let index = 0; index < resp.data.results.length; index++) {
+          const val = resp.data.results[index];
+          if (val.message) {
+            alertService.alert({
+              content: val.message,
+            });
+            return;
+          }
+        }
+      } else {
+        closeModelImport();
+      }
+    }
+    if (!resp.success || resp.success == 400) {
+      alertService.alert({
+        content: resp.message,
+      });
+    }
     await fetAllData(1);
   }
 
@@ -169,16 +273,16 @@ export default function ShowBook() {
     handleClose();
     setDataImport([]);
     inputFile.current.value = "";
-    // console.log('getValues().author :>> ', getValues().author);
   }
 
   const listImportBook = () => {
     return (
-      <TableContainer component={Paper}>
-        <Table sx={{ minWidth: 650 }} aria-label="simple table">
+      <TableContainer sx={{ maxHeight: 440 }} component={Paper}>
+        <Table stickyHeader sx={{ minWidth: 440 }} aria-label="simple table">
           <TableHead>
             <TableRow>
               <TableCell> Tên sách (*)</TableCell>
+              <TableCell align="left">Hình ảnh</TableCell>
               <TableCell align="left">Giá tiền</TableCell>
               {isBookScreen ? (
                 <TableCell align="left">Danh mục</TableCell>
@@ -189,18 +293,25 @@ export default function ShowBook() {
               <TableCell align="left">Tác giả</TableCell>
               <TableCell align="left">Nhà cung cấp</TableCell>
               <TableCell align="left">Nhà xuất bản</TableCell>
+              {isBookScreen ? (
+                <TableCell align="left">Ngày xuất bản</TableCell>
+              ) : (
+                <></>
+              )}
+
+              {/* <TableCell align="left">Trạng thái</TableCell> */}
               <TableCell align="left">Mô tả</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
-            {fields.map((row, index) => (
+            {dataImport.map((row, index) => (
               <TableRow
                 key={"n" + index}
                 sx={{
                   "&:last-child td, &:last-child th": { border: 0 },
                 }}
               >
-                <TableCell align="left" key={index}>
+                <TableCell align="left">
                   <input
                     className={
                       errors.author && errors.author[index]
@@ -213,21 +324,32 @@ export default function ShowBook() {
                     })}
                   />
                   <div className="absolute text-danger mt-2">
-                    {dataImport[index]?.Error}
+                    {dataImport[index]?.Error || dataImport[index]?.message}
                   </div>
                 </TableCell>
-                {/* <TableCell align="left" key={index}>
-                          <input
-                            className={
-                              errors.author && errors.author[index]
-                                ? "form-control is-invalid"
-                                : "form-control"
-                            }
-                            type="file"
-                            accept="image/png, image/jpeg"
-                            {...register(`author.${index}.urlImage`)}
-                          />
-                        </TableCell> */}
+                <TableCell align="left">
+                  <div className="flex flex-column items-center gap-2">
+                    <label
+                      htmlFor={"imageUpload" + index}
+                      className="block h-20 w-20 bg-slate-50 bg-contain bg-no-repeat bg-center"
+                      style={{
+                        backgroundImage: "url(" + row?.UrlImage + ")",
+                      }}
+                    >
+                      <input
+                        type="file"
+                        accept="image/png, image/jpeg"
+                        id={"imageUpload" + index}
+                        className="hidden"
+                        {...register(`author.${index}.UrlImage`, {
+                          onChange: (e) => {
+                            onSelectFile(e, index);
+                          },
+                        })}
+                      />
+                    </label>
+                  </div>
+                </TableCell>
 
                 <TableCell align="left">
                   <input
@@ -255,6 +377,7 @@ export default function ShowBook() {
                 ) : (
                   <></>
                 )}
+
                 <TableCell align="left">
                   <input
                     className="form-control"
@@ -276,6 +399,17 @@ export default function ShowBook() {
                     {...register(`author.${index}.PublisherName`)}
                   />
                 </TableCell>
+                {isBookScreen ? (
+                  <TableCell align="left">
+                    <input
+                      className="form-control"
+                      type="date"
+                      {...register(`author.${index}.PublicDay`)}
+                    />
+                  </TableCell>
+                ) : (
+                  <></>
+                )}
 
                 <TableCell align="left">
                   <textarea
@@ -292,19 +426,20 @@ export default function ShowBook() {
   };
   const listImportSouvenir = () => {
     return (
-      <TableContainer component={Paper}>
-        <Table sx={{ minWidth: 650 }} aria-label="simple table">
+      <TableContainer sx={{ maxHeight: 440 }} component={Paper}>
+        <Table stickyHeader sx={{ minWidth: 440 }} aria-label="simple table">
           <TableHead>
             <TableRow>
               <TableCell> Tên đồ lưu niệm (*)</TableCell>
+              <TableCell align="left">Hình ảnh</TableCell>
               <TableCell align="left">Giá tiền</TableCell>
               <TableCell align="left">Danh mục</TableCell>
-              {/* <TableCell align="left">Thể loại</TableCell> */}
+
               <TableCell align="left">Mô tả</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
-            {fields.map((row, index) => (
+            {dataImport.map((row, index) => (
               <TableRow
                 key={"n" + index}
                 sx={{
@@ -327,7 +462,29 @@ export default function ShowBook() {
                     {dataImport[index]?.Error}
                   </div>
                 </TableCell>
-
+                <TableCell align="left">
+                  <div className="flex flex-column items-center gap-2">
+                    <label
+                      htmlFor={"imageUpload" + index}
+                      className="block h-20 w-20 bg-slate-50 bg-contain bg-no-repeat bg-center"
+                      style={{
+                        backgroundImage: "url(" + row?.UrlImage + ")",
+                      }}
+                    >
+                      <input
+                        type="file"
+                        accept="image/png, image/jpeg"
+                        id={"imageUpload" + index}
+                        className="hidden"
+                        {...register(`author.${index}.UrlImage`, {
+                          onChange: (e) => {
+                            onSelectFile(e, index);
+                          },
+                        })}
+                      />
+                    </label>
+                  </div>
+                </TableCell>
                 <TableCell align="left">
                   <input
                     className="form-control"
@@ -343,14 +500,6 @@ export default function ShowBook() {
                     {...register(`author.${index}.CategoryName`)}
                   />
                 </TableCell>
-                {/* <TableCell align="left">
-                  <input
-                    className="form-control"
-                    type="text"
-                    {...register(`author.${index}.GenreName`)}
-                  />
-                </TableCell> */}
-
                 <TableCell align="left">
                   <textarea
                     className="form-control min-h-30 max-h-50"
@@ -364,6 +513,21 @@ export default function ShowBook() {
       </TableContainer>
     );
   };
+
+  function onSelectFile(e, index) {
+    if (!e.target.files || e.target.files.length === 0) {
+      return;
+    }
+    let reader = new FileReader();
+    let base64String;
+    reader.onload = function () {
+      base64String = reader.result;
+      const currentDataImport = JSON.parse(JSON.stringify(getValues().author));
+      currentDataImport[index].UrlImage = base64String;
+      setDataImport(currentDataImport);
+    };
+    reader.readAsDataURL(e.target.files[0]);
+  }
   // End Model
 
   // Template role store
@@ -378,7 +542,8 @@ export default function ShowBook() {
     <div className="px-6">
       <div className="flex items-center justify-between mb-2">
         <h1 className="title">
-          {"Quản lý " + (isBookScreen ? ROUTER.book.name : ROUTER.souvenir.name)}
+          {"Quản lý " +
+            (isBookScreen ? ROUTER.book.name : ROUTER.souvenir.name)}
         </h1>
         {user.role == Role.Store ? (
           <div className="d-flex gap-2">
@@ -386,7 +551,7 @@ export default function ShowBook() {
               className="bg-info text-white rounded-lg px-3 py-0.5"
               onClick={() => getCsv(isBookScreen ? 1 : 2)}
             >
-              Xuất csv
+              Tải xuống file mẫu
             </button>
             <label
               htmlFor="import-excel"
@@ -405,8 +570,7 @@ export default function ShowBook() {
             {templateRoleStore(
               "create",
               <button className="bg-black text-white rounded-lg px-3 py-0.5">
-                Create
-                {" " + (isBookScreen ? ROUTER.book.name : ROUTER.souvenir.name)}
+                Tạo sách
               </button>
             )}
           </div>
@@ -423,7 +587,7 @@ export default function ShowBook() {
             {templateRoleStore(
               "update/" + val.productId,
               <div
-                className="h-60 bg-contain bg-no-repeat bg-center"
+                className="h-60 bg-cover bg-no-repeat bg-center"
                 style={{
                   backgroundImage: `url(${
                     val.urlImage ? val.urlImage : AVATARDEFAULT
@@ -431,22 +595,42 @@ export default function ShowBook() {
                 }}
               ></div>
             )}
-            <div
-              onClick={(_: any) => {
-                deleteItem(val);
+            <button
+              onClick={() => {
+                handleClickOpenDetail(val);
               }}
-              className={`${listStyle["trash-box"]} position-absolute top-0 right-0 bg-slate-400 rounded px-2 py-1 opacity-50 hover:!opacity-100`}
-            >
-              <Trash />
-            </div>
+              className={`${listStyle["info-icon"]} position-absolute top-0 left-0 bg-slate-400 rounded p-3 opacity-50 cursor-pointer`}
+            ></button>
+
+            {user.role == Role.Store ? (
+              <div
+                onClick={(_: any) => {
+                  deleteItem(val);
+                }}
+                className={`${listStyle["trash-box"]} position-absolute top-0 right-0 bg-slate-400 rounded px-2 py-1`}
+              >
+                <Trash />
+              </div>
+            ) : (
+              <></>
+            )}
             {templateRoleStore(
               "update/" + val.productId,
               <div className="mt-1 text-dark">
                 <h6 className="mb-0 line-clamp-2">{val.productName}</h6>
+                <div>{val.price} vnd</div>
                 {isBookScreen ? (
                   <div>
-                    <div className="box-author">Tác giả: {val?.authors}</div>
-                    <div>Sold at: {val.storeName}</div>
+                    {val?.authors ? (
+                      <div className="box-author">Tác giả: {val?.authors}</div>
+                    ) : (
+                      <></>
+                    )}
+                    {user.role == Roles[0] ? (
+                      <div>Được bán tại: {val.storeName}</div>
+                    ) : (
+                      <></>
+                    )}
                   </div>
                 ) : (
                   <></>
@@ -478,20 +662,21 @@ export default function ShowBook() {
       >
         <div className="p-6">
           <Box sx={ModelStyle}>
-            <div>
+            <div className="max-h-50vh overflow-auto">
               {isBookScreen ? listImportBook() : listImportSouvenir()}
-
-              <button
-                onClick={submitCsv}
-                type="button"
-                className="mt-4 float-right text-white bg-green-700  rounded-lg text-sm px-5 py-2.5 me-2 mb-2"
-              >
-                Submit
-              </button>
             </div>
+            <button
+              onClick={submitCsv}
+              type="button"
+              className="mt-4 float-right text-white bg-green-700  rounded-lg text-sm px-5 py-2.5 me-2 mb-2"
+            >
+              Submit
+            </button>
           </Box>
         </div>
       </Modal>
+
+      <DialogDetailComponent />
     </div>
   );
 }
