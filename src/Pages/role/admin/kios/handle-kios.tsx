@@ -42,9 +42,9 @@ export default function HandleKios() {
     const fetall = await fetchWrapper.AxiosAll([locationsPromise]);
 
     locationsPromise = fetall[0].list.filter(
-      (location) => !location.kiosId || location.kiosId == params.id
+      (location) =>
+        (!location.kiosId || location.kiosId == params.id) && !location.storeId
     );
-
     setLocations(locationsPromise);
     if (!params.id)
       return {
@@ -96,9 +96,15 @@ export default function HandleKios() {
         }
         return;
       }
-      alertService.alert({
-        content: params.id ? "Thay đổi thành công" : "Tạo mới thành công",
-      });
+      if (res.success) {
+        alertService.alert({
+          content: params.id ? "Thay đổi thành công" : "Tạo mới thành công",
+        });
+      } else {
+        alertService.alert({
+          content: res.message,
+        });
+      }
       navigate(ROUTER.kios.url, { replace: true });
     });
   };

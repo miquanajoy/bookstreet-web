@@ -4,7 +4,7 @@ export interface SearchModel {
   dataSearch: string;
   isClickSearch: boolean;
 }
-export const typeSearch = 0;
+export const typeSearch = 6;
 class SearchService {
   $SearchValue = new BehaviorSubject<SearchModel>(undefined);
   setValueSearch(val) {

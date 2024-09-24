@@ -9,19 +9,18 @@ import { AREA, LOCATION, STREET } from "../../_helpers/const/const";
 import Box from "@mui/material/Box";
 import Modal from "@mui/material/Modal";
 import { ModelStyle } from "../../_helpers/const/model.const";
-import axios from "axios";
 import { loadingService } from "../../_services/loading.service";
 
 export default function HandleLocation() {
   const [data, setData] = useState<any>({
     locationName: "",
-    areaId: null,
+    areaId: 0,
     urlImage: "",
 
     xLocation: 0,
     yLocation: 0,
     locationImage: "",
-    streetId: "",
+    streetId: 0,
   });
 
   const navigate = useNavigate();
@@ -230,7 +229,13 @@ export default function HandleLocation() {
 
   function drawLocation() {
     if (!imageCanvas.current) return;
-    locationPin.forEach((pin) => {
+    const locationPins = locationPin.map(pin => {
+      return {
+        ...pin,
+        streetId: areas.data.find(area => area.areaId == pin.areaId).streetId
+      }
+    })
+    locationPins.filter(pin => pin.streetId == getValues().streetId).forEach((pin) => {
       const x = pin.xLocation * imageCanvas.current.width;
       const y = pin.yLocation * imageCanvas.current.height;
       const ctx = imageCanvas.current.getContext("2d");

@@ -8,7 +8,7 @@ import config from "../../config";
 import { Role } from "../../models/Role";
 import { fileService } from "../../_services/file.service";
 import { alertService } from "../../_services/alert.service";
-import { LOCATION, ROUTER, STORE, STREET } from "../../_helpers/const/const";
+import { AREA, LOCATION, ROUTER, STORE, STREET } from "../../_helpers/const/const";
 import { Box, Modal } from "@mui/material";
 import { ModelStyle } from "../../_helpers/const/model.const";
 import { loadingService } from "../../_services/loading.service";
@@ -44,6 +44,7 @@ export default function HandleStore() {
 
   const [selectedFile, setSelectedFile] = useState<any>();
   const [preview, setPreview] = useState();
+  const [areas, setAreas] = useState<any>([]);
   const [streets, setStreets] = useState<any>([]);
   const [locations, setLocations] = useState<any>([]);
   const [users, setUsers] = useState<any>([]);
@@ -95,21 +96,24 @@ export default function HandleStore() {
   }, [watch("locationId")]);
 
   async function fetAllData() {
-    let streetsPromise = getOption(STREET);
+    let areaPromise = getOption(AREA);
     let locationsPromise: any = getOption(LOCATION);
 
     let usersPromise: any = getOption("Auth");
     let storePrm = getOption(STORE);
+    let streetPrm = getOption(STREET);
+    
 
     const fetall = await fetchWrapper.AxiosAll([
-      streetsPromise,
+      areaPromise,
       locationsPromise,
       usersPromise,
       storePrm,
+      streetPrm
     ]);
 
-    setStreets(fetall[0].list);
-
+    setAreas(fetall[0].list);
+    setStreets(fetall[4].list)
     locationsPromise = fetall[1].list.filter(
       (location) => !location.storeId || location.storeId == params.id
     );
@@ -265,7 +269,16 @@ export default function HandleStore() {
   }
 
   function drawLocation() {
-    locationPin.forEach((pin) => {
+    const locationPins = locationPin.map(pin => {
+      return {
+        ...pin,
+        streetId: areas.find(area => area.areaId == pin.areaId).streetId
+      }
+    })
+    const areaChoose = locationPins.find(pin => pin.locationId == getValues().locationId).areaId
+
+    const streetChoose = areas.find(area => area.areaId == areaChoose).streetId;
+    locationPins.filter(pin => pin.streetId == streetChoose ).forEach((pin) => {
       const x = pin.xLocation * imageCanvas.current.width;
       const y = pin.yLocation * imageCanvas.current.height;
       const ctx = imageCanvas.current.getContext("2d");

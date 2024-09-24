@@ -323,7 +323,7 @@ export default function AddBook() {
               </div>
               <div>
                 <label htmlFor="editionYear">
-                  <b>Năm xuất bản: </b>
+                  <b>Năm tái bản: </b>
                 </label>
                 <input
                   id="editionYear"

@@ -77,6 +77,10 @@ export default function ListBrowseScores() {
             field: "status",
             value: status.toString(),
             operand: 0,
+          },          {
+            field: "storeId",
+            value: user.user.storeId.toString(),
+            operand: 0,
           },
         ],
       },
