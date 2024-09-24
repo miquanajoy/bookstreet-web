@@ -216,8 +216,8 @@ export default function PointStore() {
 
   function DialogUptoPoint(props: any) {
     return (
-      <div className="p-6">
-        <h2 className="mb-4">Tăng điểm</h2>
+      <div className="p-2">
+        <h2 className="mb-4">Đơn cộng điểm</h2>
         <div className="mb-2">
           <div>Tên cửa hàng: {dataDetail?.storeName} </div>
           <div>Vị trí: {dataDetail?.locationName}</div>
@@ -266,7 +266,7 @@ export default function PointStore() {
   return (
     <div className="px-6">
       <div className="flex items-center justify-between mb-2">
-        <h1 className="title">{ROUTER.roleManager.pointHistory.name}</h1>
+        <h1 className="title">{ROUTER.roleAdmin.pointHistory.name}</h1>
       </div>
       <MDBTable align="middle" hover>
         <MDBTableHead>

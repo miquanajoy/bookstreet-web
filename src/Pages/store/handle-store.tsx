@@ -101,7 +101,7 @@ export default function HandleStore() {
     let usersPromise: any = getOption("Auth");
     let storePrm = getOption(STORE);
 
-    const fetall = await axios.all([
+    const fetall = await fetchWrapper.AxiosAll([
       streetsPromise,
       locationsPromise,
       usersPromise,
@@ -116,9 +116,10 @@ export default function HandleStore() {
     setLocationPin(fetall[1].list);
     let listStoreHasUser: number[] = fetall[3].list.map((v) => v.userId);
     setLocations(locationsPromise);
+
     usersPromise = fetall[2].list.filter((val) => {
       return (
-        val.role == Role.Store &&
+        (val.role == Role.Store || val.role == Role.GiftStore) &&
         (!params.id ? !listStoreHasUser.includes(val.id) : true)
       );
     });
@@ -146,7 +147,7 @@ export default function HandleStore() {
   }
 
   function getOption(url) {
-    return fetchWrapper.Post2GetByPaginate(
+    return fetchWrapper.Post2GetByPaginateWithoutCall(
       config.apiUrl + url,
       1,
       undefined,

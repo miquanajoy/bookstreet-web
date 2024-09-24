@@ -584,14 +584,14 @@ const router = createBrowserRouter([
   },
   // Gift
   {
-    path: ROUTER.roleStore.gift.url,
+    path: ROUTER.roleGiftStore.gift.url,
     element: <HomePage />,
     children: [
       {
         path: "",
         element: (
           <AuthGuard>
-            <RoleBasedGuard accessibleRoles={[Role.Store]}>
+            <RoleBasedGuard accessibleRoles={[Role.GiftStore]}>
               <ShowGift />
             </RoleBasedGuard>
           </AuthGuard>
@@ -601,7 +601,7 @@ const router = createBrowserRouter([
         path: "create",
         element: (
           <AuthGuard>
-            <RoleBasedGuard accessibleRoles={[Role.Store]}>
+            <RoleBasedGuard accessibleRoles={[Role.GiftStore]}>
               <HandleGift />
             </RoleBasedGuard>
           </AuthGuard>
@@ -611,7 +611,7 @@ const router = createBrowserRouter([
         path: "update/:id",
         element: (
           <AuthGuard>
-            <RoleBasedGuard accessibleRoles={[Role.Store]}>
+            <RoleBasedGuard accessibleRoles={[Role.GiftStore]}>
               <HandleGift />
             </RoleBasedGuard>
           </AuthGuard>
@@ -658,7 +658,7 @@ const router = createBrowserRouter([
   },
   // Gift history
   {
-    path: ROUTER.roleManager.pointHistory.url,
+    path: ROUTER.roleAdmin.pointHistory.url,
     element: <HomePage />,
     children: [
       {

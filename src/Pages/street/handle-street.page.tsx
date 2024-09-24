@@ -28,7 +28,7 @@ export default function HandleStreetPage() {
   });
   const [data, setData] = useState<any>({
     streetName: "",
-    publicDay: new Date(),
+    publicDay: dayjs(new Date()).format("YYYY-MM-DD"),
     address: "",
     description: "",
     openingHours: "08:00",

@@ -17,6 +17,9 @@ export const fetchWrapper = {
   delete: _delete,
   confirmedDelete,
   postUpgrade,
+  AxiosAll,
+  Post2GetByPaginateWithoutCall,
+  getWithoutCall
 };
 
 function get(url) {
@@ -26,6 +29,14 @@ function get(url) {
     headers: authHeader(url),
   };
   return fetch(url, requestOptions).then(handleResponse);
+}
+function getWithoutCall(url) {
+  loadingService.showLoading();
+  const requestOptions = {
+    method: "GET",
+    headers: authHeader(url),
+  };
+  return axios.get(url, requestOptions);
 }
 
 function Post2GetByPaginate(
@@ -50,6 +61,30 @@ function Post2GetByPaginate(
     headers: requestOptions,
   }).then(handleResponseForPost2Get);
 }
+
+function Post2GetByPaginateWithoutCall(
+  url,
+  pageNumber = 1,
+  filter?,
+  limit = PAGINATOR.LIMIT
+) {
+  loadingService.showLoading();
+  const requestOptions = {
+    ...authHeader(url),
+  };
+
+  return axios({
+    url: url + PAGINATOR.URL,
+    method: "post",
+    data: {
+      page: pageNumber,
+      limit: limit,
+      ...filter,
+    },
+    headers: requestOptions,
+  });
+}
+
 
 function getByValue(url, value) {
   loadingService.showLoading();
@@ -84,12 +119,17 @@ function post(url, body) {
 
 function postUpgrade(url, body) {
   loadingService.showLoading();
-  const requestOptions: any = {
-    method: "POST",
-    headers: { "Content-Type": "application/json", ...authHeader(url) },
-    body: JSON.stringify(body),
+
+  const requestOptions = {
+    ...authHeader(url),
   };
-  return fetch(url, requestOptions).then(handleResponseForPost);
+  return axios
+    .post(url, body, {
+      headers: {
+        ...requestOptions,
+      },
+    })
+    .then(handleResponseForPost);
 }
 
 function put(url, body) {
@@ -120,7 +160,6 @@ async function confirmedDelete(url) {
   loadingService.showLoading();
 
   return await axios.delete(url).then((response) => {
-    console.log("response :>> ", response);
     if (response.data.message || !response.data.success) {
       alertService.alert({
         content: response.data.message,
@@ -130,6 +169,24 @@ async function confirmedDelete(url) {
       deleteService.$isReload.next(true);
     }
     return response.data;
+  });
+}
+
+async function AxiosAll(promies) {
+  loadingService.showLoading();
+  let data: any = await axios.all(promies);
+  return new Promise((resolve, reject) => {
+  loadingService.hiddenLoading();
+    if (data.length) {
+      data = data.map(val =>  {
+        if(val.data?.data?.list) {
+          return val.data.data
+        } else {
+          return val.data
+        }
+      })
+      resolve(data);
+    }
   });
 }
 
@@ -163,6 +220,7 @@ function handleResponse(response) {
 }
 
 function handleResponseForPost2Get(response) {
+  console.log('response :>> ', response);
   loadingService.hiddenLoading();
 
   const data = response.data.data;
@@ -181,10 +239,10 @@ function handleResponseForPost2Get(response) {
 
 function handleResponseForPost(response) {
   loadingService.hiddenLoading();
-  console.log(response);
+  response = response.data;
   if ([400].includes(response.status)) {
     alertService.alert({
-      content: "Không thể tạo",
+      content: response.message,
     });
     return Promise.reject(response.errors);
   }
@@ -203,6 +261,6 @@ function handleResponseForPost(response) {
     alertService.alert({
       content: "Không thể tạo",
     });
-    return Promise.reject(response);
+    return Promise.resolve(response);
   }
 }

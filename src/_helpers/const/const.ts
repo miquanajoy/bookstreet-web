@@ -19,7 +19,7 @@ export const CATEGORY = "Category";
 export const CUSTOMER = "Customer";
 export const POINT_HISTORY = "PointHistory";
 export const GIFT = "Gift";
-export const KIOS = "Kios";
+export const KIOS = "Kiosk";
 
 export const ROUTER = {
   book: {
@@ -43,8 +43,8 @@ export const ROUTER = {
     url: "/store-management",
   },
   kios: {
-    name: "Máy kios",
-    url: "/kios",
+    name: "Máy Kiosk",
+    url: "/Kiosk",
   },
   author: {
     name: "Tác giả",
@@ -71,16 +71,21 @@ export const ROUTER = {
       name: "Duyệt điểm",
       url: "/browse-scores",
     },
-    gift: {
-      name: "Quà tặng",
-      url: "/gift",
-    },
   },
-  roleManager: {
+  roleAdmin: {
     pointHistory: {
       name: "Lịch sử cộng điểm",
       url: "/point-history",
     },
+  },
+  roleManager: {
+ 
+  },
+  roleGiftStore: {
+    gift: {
+      name: "Quà tặng",
+      url: "/gift",
+    }
   },
 };
 export const ROUTERS = [
@@ -164,12 +169,12 @@ export const ROUTERS = [
   },
   {
     logo: "",
-    ...ROUTER.roleStore.gift,
+    ...ROUTER.roleGiftStore.gift,
     roles: [Role.Store],
   },
   {
     logo: "",
-    ...ROUTER.roleManager.pointHistory,
+    ...ROUTER.roleAdmin.pointHistory,
     roles: [Role.Admin],
   },
 ];

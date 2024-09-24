@@ -107,7 +107,6 @@ export default function ShowUserPage() {
       <ListComponent
         title="Quản lý Tài khoản"
         buttonName="Tạo Tài khoản"
-        deleteItem={deleteItem}
         header={headers}
         data={data.list}
         totalPage={data.totalPage}

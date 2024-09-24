@@ -32,11 +32,10 @@ import axios from "axios";
 import dayjs from "dayjs";
 import { URL_IMG } from "../../_helpers/const/csv.const";
 import { searchService, typeSearch } from "../../_services/home/search.service";
-import { MOCKDATA_BOOK } from "../../_helpers/const/mock-data";
-import { loadingService } from "../../_services/loading.service";
 import DialogDetailComponent, {
   dialogDetailService,
 } from "./dialog-detail.component";
+import { Dialog, DialogContent } from "@mui/material";
 
 export default function ShowBook() {
   const user = JSON.parse(localStorage.getItem("userInfo"));
@@ -195,7 +194,7 @@ export default function ShowBook() {
         listImportImg.push("");
       }
     });
-    await axios.all(listImportImg).then((val) => {
+    await fetchWrapper.AxiosAll(listImportImg).then((val) => {
       valueToSubmit = getValues().author.map((v, index) => {
         let urlImage = val[index];
         if (typeof v.UrlImage != "object") {
@@ -277,7 +276,11 @@ export default function ShowBook() {
 
   const listImportBook = () => {
     return (
-      <TableContainer sx={{ maxHeight: 440 }} component={Paper}>
+      <TableContainer
+        sx={{ maxHeight: 440 }}
+        component={Paper}
+        className="import-book"
+      >
         <Table stickyHeader sx={{ minWidth: 440 }} aria-label="simple table">
           <TableHead>
             <TableRow>
@@ -331,7 +334,7 @@ export default function ShowBook() {
                   <div className="flex flex-column items-center gap-2">
                     <label
                       htmlFor={"imageUpload" + index}
-                      className="block h-20 w-20 bg-slate-50 bg-contain bg-no-repeat bg-center"
+                      className="block h-12 w-12 bg-slate-50 bg-contain bg-no-repeat bg-center"
                       style={{
                         backgroundImage: "url(" + row?.UrlImage + ")",
                       }}
@@ -380,7 +383,7 @@ export default function ShowBook() {
 
                 <TableCell align="left">
                   <input
-                    className="form-control"
+                    className="form-control h-12"
                     type="text"
                     {...register(`author.${index}.AuthorName`)}
                   />
@@ -413,7 +416,8 @@ export default function ShowBook() {
 
                 <TableCell align="left">
                   <textarea
-                    className="form-control min-h-30 max-h-50"
+                    className="form-control"
+                    rows={4}
                     {...register(`author.${index}.Description`)}
                   ></textarea>
                 </TableCell>
@@ -587,7 +591,7 @@ export default function ShowBook() {
             {templateRoleStore(
               "update/" + val.productId,
               <div
-                className="h-60 bg-cover bg-no-repeat bg-center"
+                className="h-60 bg-contain bg-no-repeat bg-center"
                 style={{
                   backgroundImage: `url(${
                     val.urlImage ? val.urlImage : AVATARDEFAULT
@@ -618,7 +622,7 @@ export default function ShowBook() {
               "update/" + val.productId,
               <div className="mt-1 text-dark">
                 <h6 className="mb-0 line-clamp-2">{val.productName}</h6>
-                <div>{val.price} vnd</div>
+                {val.price ? <div>Giá: {val.price} vnd</div> : <></>}
                 {isBookScreen ? (
                   <div>
                     {val?.authors ? (
@@ -654,14 +658,16 @@ export default function ShowBook() {
           <></>
         )}
       </div>
-      <Modal
+      <Dialog
+        maxWidth="xl"
         open={open}
         onClose={handleClose}
         aria-labelledby="modal-modal-title"
         aria-describedby="modal-modal-description"
       >
-        <div className="p-6">
-          <Box sx={ModelStyle}>
+        <div className="mx-[-10px]">
+          <DialogContent>
+            {/* <Box sx={ModelStyle}> */}
             <div className="max-h-50vh overflow-auto">
               {isBookScreen ? listImportBook() : listImportSouvenir()}
             </div>
@@ -672,9 +678,10 @@ export default function ShowBook() {
             >
               Submit
             </button>
-          </Box>
+          </DialogContent>
+          {/* </Box> */}
         </div>
-      </Modal>
+      </Dialog>
 
       <DialogDetailComponent />
     </div>

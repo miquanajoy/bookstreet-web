@@ -93,3 +93,9 @@ p {
   background-color: #dc3545;
   border-color: #dc3545;
 }
+
+
+/* Show book screen */
+.import-book .form-control {
+  font-size: 12px;
+}

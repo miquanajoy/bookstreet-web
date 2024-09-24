@@ -52,7 +52,7 @@ export default function ListComponent(props) {
             key={indexColumn}
             className="flex-inline items-center text-dark p-2"
           >
-            <div>
+            <div className="">
               {Object.keys(td)[0] == "image" ? (
                 <div className="relative">
                   <div
@@ -66,7 +66,9 @@ export default function ListComponent(props) {
                   ></div>
                 </div>
               ) : (
-                <p className="text-center line-clamp-6">{td[Object.keys(td)[0]]}</p>
+                <p className="text-center line-clamp-2">
+                  {td[Object.keys(td)[0]]}
+                </p>
               )}
             </div>
           </td>
@@ -81,19 +83,24 @@ export default function ListComponent(props) {
             >
               <EditIcon />
             </button>
-            <button
-              className="fw-bold"
-              onClick={(event: any) => {
-                props.deleteItem(findId(rowLine));
-              }}
-            >
-              <Trash fill="#000" />
-            </button>
+            {props.deleteItem ? (
+              <button
+                className="fw-bold"
+                onClick={(event: any) => {
+                  props.deleteItem(findId(rowLine));
+                }}
+              >
+                <Trash fill="#000" />
+              </button>
+            ) : (
+              <></>
+            )}
           </div>
         </td>
       </tr>
     ));
   }
+
   return (
     <div className="px-6">
       <div className="flex items-center justify-between mb-2">
@@ -110,11 +117,18 @@ export default function ListComponent(props) {
         <MDBTableHead>
           <tr className="text-center">
             {props.header.map((v) => (
-              <th key={v.key} scope="col">
-                {filterHeader(v.name)}
+              <th
+                key={v.key}
+                scope="col"
+                className={v.key == "description" ? "w-[300px]" : ""}
+              >
+                <div>{filterHeader(v.name)}</div>
               </th>
             ))}
-            <th scope="col">Sửa / Xóa</th>
+            <th scope="col" className="">
+              Sửa
+              {props.deleteItem ? <> / Xóa</> : <></>}
+            </th>
           </tr>
         </MDBTableHead>
         <MDBTableBody>{renderTdUi()}</MDBTableBody>

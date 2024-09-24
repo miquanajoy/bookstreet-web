@@ -36,6 +36,7 @@ import { useForm } from "react-hook-form";
 import { ModelStyle } from "../../../../_helpers/const/model.const";
 import dayjs from "dayjs";
 import { CalendarIcon } from "@mui/x-date-pickers";
+import CreateBillForm from "./form-create-bill";
 
 export const WAIT_BROWSE_SCORE = 1;
 export const HISTORY_BROWSE_SCORE = 2;
@@ -69,14 +70,9 @@ export default function ListBrowseScores() {
   async function fetAllData(pageNumber = 1, status = WAIT_BROWSE_SCORE) {
     const pointHistory = await fetchWrapper.Post2GetByPaginate(
       config.apiUrl + POINT_HISTORY,
-      -1,
+      pageNumber,
       {
         filters: [
-          {
-            field: "storeId",
-            value: user.user.storeId.toString(),
-            operand: 0,
-          },
           {
             field: "status",
             value: status.toString(),
@@ -144,7 +140,14 @@ export default function ListBrowseScores() {
     setSelectedValue(value);
   };
 
-  const [openPoint, setOpenPoint] = useState(false);
+  const [openCreateBillForm, setOpenPoint] = useState(false);
+  function closeFormBill(v?) {
+    if(v) {fetAllData()}
+    setOpenPoint(false);
+  }
+  function openFormBill() {
+    setOpenPoint(true);
+  }
 
   function DialogDetail(props: any) {
     const { onClose, selectedValue, open } = props;
@@ -236,7 +239,6 @@ export default function ListBrowseScores() {
 
   const handleChange = (_, newValue) => {
     setValue(newValue);
-    console.log("newValue :>> ", newValue);
     fetAllData(1, newValue ? HISTORY_BROWSE_SCORE : WAIT_BROWSE_SCORE);
   };
 
@@ -247,6 +249,12 @@ export default function ListBrowseScores() {
           <h1 className="title">
             Quản lý {ROUTER.roleStore.customerPoint.name}
           </h1>
+          <button
+            className="bg-success text-white rounded-lg px-3 py-0.5"
+            onClick={openFormBill}
+          >
+            Tạo hoá đơn
+          </button>
         </div>
         <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
           <Tabs
@@ -293,6 +301,16 @@ export default function ListBrowseScores() {
           open={open}
           onClose={handleClose}
         />
+        <Modal
+          open={openCreateBillForm}
+          onClose={closeFormBill}
+          aria-labelledby="modal-modal-title"
+          aria-describedby="modal-modal-description"
+        >
+          <Box sx={{ ...ModelStyle, width: "auto" }}>
+            <CreateBillForm close={closeFormBill} />
+          </Box>
+        </Modal>
       </div>
     </>
   );

@@ -194,7 +194,7 @@ export default function ShowAuthorPage() {
         listImportImg.push("");
       }
     });
-    await axios.all(listImportImg).then((val) => {
+    await fetchWrapper.AxiosAll(listImportImg).then((val) => {
       valueToSubmit = getValues().author.map((v, index) => {
         let urlImage = val[index];
         if (typeof v.UrlImage != "object") {

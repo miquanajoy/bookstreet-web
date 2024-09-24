@@ -78,16 +78,7 @@ export default function ShowGift() {
   async function fetAllData(pageNumber = 1) {
     const customers = await fetchWrapper.Post2GetByPaginate(
       config.apiUrl + CUSTOMER,
-      -1,
-      {
-        filters: [
-          {
-            field: "customerId",
-            value: user.user.storeId.toString(),
-            operand: 0,
-          },
-        ],
-      }
+      -1
     );
     setCustomer(
       customers.list.map((v) => ({
@@ -268,7 +259,7 @@ export default function ShowGift() {
         listImportImg.push("");
       }
     });
-    await axios.all(listImportImg).then((val) => {
+    await fetchWrapper.AxiosAll(listImportImg).then((val) => {
       valueToSubmit = getValues().gift.map((v, index) => {
         let urlImage = val[index];
         if (typeof v.UrlImage != "object") {
@@ -474,6 +465,21 @@ export default function ShowGift() {
           // onSubmit={handleSubmit()}
           className="d-flex flex-column gap-2 col-6 mx-auto"
         >
+          <div>
+            <b>Số điện thoại: </b>
+            <FormControl fullWidth>
+              <Autocomplete
+                disablePortal
+                options={customerPhone}
+                defaultValue={customerPhoneDetail}
+                sx={{ width: 300 }}
+                onChange={handleOnSearchPhone}
+                renderInput={(params) => (
+                  <TextField {...params} label="Số điện thoại" />
+                )}
+              />
+            </FormControl>
+          </div>
           <b>Khách hàng: </b>
           <FormControl fullWidth>
             <Autocomplete
@@ -494,19 +500,6 @@ export default function ShowGift() {
           ) : (
             <></>
           )}
-          <b>Số điện thoại: </b>
-          <FormControl fullWidth>
-            <Autocomplete
-              disablePortal
-              options={customerPhone}
-              defaultValue={customerPhoneDetail}
-              sx={{ width: 300 }}
-              onChange={handleOnSearchPhone}
-              renderInput={(params) => (
-                <TextField {...params} label="Số điện thoại" />
-              )}
-            />
-          </FormControl>
 
           <div>
             <label htmlFor="vd">
@@ -559,7 +552,7 @@ export default function ShowGift() {
     <div className="px-6">
       <div className="flex items-center justify-between mb-2">
         <h1 className="title">Quản lý quà tặng</h1>
-        {user.role == Role.Store ? (
+        {user.role == Role.GiftStore ? (
           <div className="d-flex gap-2">
             <button
               className="bg-info text-white rounded-lg px-3 py-0.5"

@@ -108,14 +108,12 @@ export default function HandleCustomer() {
 
     process
       .then((val) => {
-        console.log('val :>> ', val);
         if (val.success) {
           alertService.alert({
             content: params.id ? "Thay đổi thành công" : "Tạo mới thành công",
           });
           return;
         }
-        console.log('val.success', val); 
         alertService.alert({
           content: params.id ? "Thay đổi thành công" : "Tạo mới thành công",
         });

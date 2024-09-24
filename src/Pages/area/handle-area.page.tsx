@@ -6,6 +6,7 @@ import { alertService } from "../../_services/alert.service";
 import config from "../../config";
 import { fetchWrapper } from "../../_helpers/fetch-wrapper";
 import { fileService } from "../../_services/file.service";
+import { AREA } from "../../_helpers/const/const";
 // import { alertService, onAlert } from '../_services';
 
 export default function HandleAreaPage() {
@@ -37,8 +38,11 @@ export default function HandleAreaPage() {
   };
 
   async function fetAllData() {
-    const streets = await fetchWrapper.Post2GetByPaginate(config.apiUrl + "Street", -1);
-      setStreets(streets.list);
+    const streets = await fetchWrapper.Post2GetByPaginate(
+      config.apiUrl + "Street",
+      -1
+    );
+    setStreets(streets.list);
     setValue("streetId", streets.list[0].streetId);
 
     if (!params.id) return;
@@ -47,7 +51,7 @@ export default function HandleAreaPage() {
       setValue("areaName", val.areaName);
       setValue("streetId", val.streetId);
       setData(val);
-      setPreview(val.urlImage)
+      setPreview(val.urlImage);
     });
   }
 
@@ -56,7 +60,6 @@ export default function HandleAreaPage() {
   }, []);
 
   const savedata = async (val) => {
-    console.log('val :>> ', val);
     setErrForm([]);
     const dataPost = {
       ...data,
@@ -74,11 +77,11 @@ export default function HandleAreaPage() {
       );
       dataPost.urlImage = await fileService.postFile(formData);
     } else {
-      dataPost.urlImage = preview ?? '';
+      dataPost.urlImage = preview ?? "";
     }
     const connectApi = params.id
-      ? fetchWrapper.put(config.apiUrl + "Area/" + params.id, dataPost)
-      : fetchWrapper.post(config.apiUrl + "Area", dataPost);
+      ? fetchWrapper.put(config.apiUrl + AREA + "/" + params.id, dataPost)
+      : fetchWrapper.post(config.apiUrl + AREA, dataPost);
 
     connectApi.then((res) => {
       if (res.errors) {
@@ -95,7 +98,7 @@ export default function HandleAreaPage() {
         return;
       }
       alertService.alert({
-        content: params.id ?  "Thay đổi thành công" : "Tạo mới thành công",
+        content: params.id ? "Thay đổi thành công" : "Tạo mới thành công",
       });
       navigate("/area", { replace: true });
     });
@@ -115,7 +118,8 @@ export default function HandleAreaPage() {
             style={{ backgroundImage: "url(" + preview + ")" }}
           ></label>
           <input
-            type="file" accept="image/png, image/jpeg"
+            type="file"
+            accept="image/png, image/jpeg"
             onChange={onSelectFile}
             id="imageUpload"
             className="hidden"
@@ -135,8 +139,13 @@ export default function HandleAreaPage() {
               id="nm"
               type="text"
               className="form-control"
-              placeholder=""
-              {...register("areaName")}
+              placeholder="Tên khu vực"
+              {...register("areaName", {
+                required: {
+                  message: "required",
+                  value: true,
+                },
+              })}
             />
           </label>
           <label className="uppercase" htmlFor="street">

@@ -35,6 +35,7 @@ import { MenuItem, Select } from "@mui/material";
 import dayjs from "dayjs";
 import { URL_IMG } from "../../_helpers/const/csv.const";
 import { searchService, typeSearch } from "../../_services/home/search.service";
+import DialogDetailComponent, { dialogDetailService } from "./dialog-detail.component";
 
 export default function ShowSouvenir() {
   const user = JSON.parse(localStorage.getItem("userInfo"));
@@ -190,7 +191,7 @@ export default function ShowSouvenir() {
         listImportImg.push("");
       }
     });
-    await axios.all(listImportImg).then((val) => {
+    await fetchWrapper.AxiosAll(listImportImg).then((val) => {
       valueToSubmit = getValues().author.map((v, index) => {
         let urlImage = val[index];
         if (typeof v.UrlImage != "object") {
@@ -523,9 +524,14 @@ export default function ShowSouvenir() {
     };
     reader.readAsDataURL(e.target.files[0]);
   }
+  
   // End Model
 
   // Template role store
+  const handleClickOpenDetail = (v) => {
+    dialogDetailService.showDialog(v);
+  };
+  
   function templateRoleStore(link, template) {
     if (user.role == Role.Store) {
       return <Link to={link}>{template}</Link>;
@@ -590,6 +596,12 @@ export default function ShowSouvenir() {
                 }}
               ></div>
             )}
+            <button
+              onClick={() => {
+                handleClickOpenDetail(val);
+              }}
+              className={`${listStyle["info-icon"]} position-absolute top-0 left-0 bg-slate-400 rounded p-3 opacity-50 cursor-pointer`}
+            ></button>
             {user.role == Role.Store ? (
               <div
                 onClick={(_: any) => {
@@ -644,7 +656,7 @@ export default function ShowSouvenir() {
         aria-describedby="modal-modal-description"
       >
         <div className="p-6">
-          <Box sx={{...ModelStyle, width: "65vw"}}>
+          <Box sx={{ ...ModelStyle, width: "65vw" }}>
             <div className="max-h-50vh overflow-auto">
               {isBookScreen ? listImportBook() : listImportSouvenir()}
             </div>
@@ -658,6 +670,8 @@ export default function ShowSouvenir() {
           </Box>
         </div>
       </Modal>
+      <DialogDetailComponent />
+
     </div>
   );
 }

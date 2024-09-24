@@ -77,7 +77,7 @@ export default function HandleLocation() {
 
     let areas = getOption(AREA);
     let streets: any = getOption(STREET);
-    const allApiResult = await axios.all([areas, streets, locationsPromise]);
+    const allApiResult = await fetchWrapper.AxiosAll([areas, streets, locationsPromise]);
     // .then((v) => {
     const areasFilter = allApiResult[0].list.filter(
       (area) => area.streetId == allApiResult[0].list[0].streetId
@@ -118,7 +118,7 @@ export default function HandleLocation() {
     };
 
     function getOption(url) {
-      return fetchWrapper.Post2GetByPaginate(
+      return fetchWrapper.Post2GetByPaginateWithoutCall(
         config.apiUrl + url,
         1,
         undefined,
@@ -355,13 +355,18 @@ export default function HandleLocation() {
 
         <div className="flex flex-column gap-2">
           <label className="uppercase" htmlFor="nm">
-            <b>Vị trí: </b>
+            <b>Tên vị trí: </b>
             <input
               id="nm"
               type="text"
               className="form-control"
-              placeholder=""
-              {...register("locationName")}
+              placeholder="Tên vị trí"
+              {...register("locationName", {
+                required: {
+                  message: "required",
+                  value: true,
+                },
+              })}
             />
           </label>
           <label className="uppercase" htmlFor="street">

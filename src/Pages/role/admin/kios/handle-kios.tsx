@@ -39,7 +39,7 @@ export default function HandleKios() {
 
   async function fetAllData() {
     let locationsPromise: any = getOption(LOCATION);
-    const fetall = await axios.all([locationsPromise]);
+    const fetall = await fetchWrapper.AxiosAll([locationsPromise]);
 
     locationsPromise = fetall[0].list.filter(
       (location) => !location.kiosId || location.kiosId == params.id
@@ -62,7 +62,7 @@ export default function HandleKios() {
   }
 
   function getOption(url) {
-    return fetchWrapper.Post2GetByPaginate(
+    return fetchWrapper.Post2GetByPaginateWithoutCall(
       config.apiUrl + url,
       1,
       undefined,

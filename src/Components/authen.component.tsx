@@ -64,16 +64,21 @@ export default function AuthenPage() {
         return;
       }
       if (val.statusCode === 200) {
-        
         switch (val.data.role) {
           case Role.Admin:
             navigate(ROUTER.book.url, { replace: true });
             break;
+          case Role.GiftStore:
+            navigate(ROUTER.roleGiftStore.gift.url, { replace: true });
+            break;
+          // case Role.Manager:
+          //   navigate(ROUTER.roleManager.customerPoint.url, { replace: true });
+          //   break;
           case Role.Store:
-            if(!val.data.user.storeId) {
+            if (!val.data.user.storeId) {
               alertService.alert({
-                content: "Chưa được ủy quyền"
-              })
+                content: "Chưa được ủy quyền",
+              });
               logout();
               return;
             }

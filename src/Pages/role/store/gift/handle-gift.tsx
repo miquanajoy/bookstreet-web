@@ -107,25 +107,34 @@ export default function HandleGift() {
     }
     let process;
     if (params.id) {
-      // val.book = data
       process = fetchWrapper.put(config.apiUrl + GIFT + "/" + params.id, val);
     } else {
       process = fetchWrapper.postUpgrade(config.apiUrl + GIFT, val);
     }
 
-    process.then((val) => {
-      alertService.alert({
-        content: params.id ?  "Thay đổi thành công" : "Tạo mới thành công",
-      });
+    process
+      .then((res) => {
+        console.log('res :>> ', res);
+        if (res.success) {
+          alertService.alert({
+            content: params.id ? "Thay đổi thành công" : "Tạo mới thành công",
+          });
+        } else {
+          alertService.alert({
+            content: res.message,
+          });
+        }
 
-      navigate(ROUTER.roleStore.gift.url, {
-        replace: true,
+        navigate(ROUTER.roleGiftStore.gift.url, {
+          replace: true,
+        });
+      })
+      .catch((e) => {
+        console.log('e :>> ', e);
+        alertService.alert({
+          content: "Can't success, pls try again",
+        });
       });
-    }).catch(() => {
-      alertService.alert({
-        content: "Can't success, pls try again",
-      });
-    });
   };
   return (
     <div className="col-10">
@@ -166,7 +175,7 @@ export default function HandleGift() {
               {...register("giftName", { required: true })}
             />
             <div className="text-danger">
-            {errors.giftName && <div>Trường này là bắt buộc</div>}
+              {errors.giftName && <div>Trường này là bắt buộc</div>}
             </div>
           </div>
 

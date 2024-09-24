@@ -31,7 +31,6 @@ export default function AddUser() {
     return () => URL.revokeObjectURL(objectUrl);
   }, [selectedFile]);
 
-
   const onSelectFile = (e) => {
     if (!e.target.files || e.target.files.length === 0) {
       setSelectedFile(undefined);
@@ -53,14 +52,13 @@ export default function AddUser() {
     if (!params.id) return;
     const result = fetchWrapper.get(config.apiUrl + "Auth/" + params.id);
     result.then((val) => {
-      console.log('val :>> ', val);
       setValue("username", val.username);
       setValue("fullName", val.fullName);
       setValue("password", "");
       setValue("email", val.email);
       setValue("phone", val.phone);
       setValue("address", val.address);
-      setPreview(val.avatar)
+      setPreview(val.avatar);
       setValue("role", val.role);
 
       setData(val);
@@ -78,7 +76,7 @@ export default function AddUser() {
       ...val,
       avatar: val.urlImage,
     };
-   
+
     const formData = new FormData();
     if (selectedFile) {
       formData.append(
@@ -90,7 +88,7 @@ export default function AddUser() {
     } else {
       dataPost.avatar = preview;
     }
-  
+
     const connectApi = params.id
       ? fetchWrapper.put(config.apiUrl + "Auth/" + params.id, dataPost)
       : fetchWrapper.post(config.apiUrl + "Auth", dataPost);
@@ -109,7 +107,7 @@ export default function AddUser() {
         return;
       }
       alertService.alert({
-        content: params.id ?  "Thay đổi thành công" : "Tạo mới thành công",
+        content: params.id ? "Thay đổi thành công" : "Tạo mới thành công",
       });
       navigate("/user-management", { replace: true });
     });
@@ -129,7 +127,8 @@ export default function AddUser() {
             style={{ backgroundImage: "url(" + preview + ")" }}
           ></label>
           <input
-            type="file" accept="image/png, image/jpeg"
+            type="file"
+            accept="image/png, image/jpeg"
             onChange={onSelectFile}
             id="imageUpload"
             className="hidden"

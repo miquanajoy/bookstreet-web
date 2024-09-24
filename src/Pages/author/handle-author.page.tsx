@@ -42,11 +42,6 @@ export default function HandleAuthorPage() {
   const [preview, setPreview] = useState();
   const [selectedFile, setSelectedFile] = useState<any>();
 
-  const [editorState, setEditorState] = useState(() => {
-    const content = ContentState.createFromText("");
-    return EditorState.createWithContent(content);
-  });
-
   useEffect(() => {
     if (!selectedFile) {
       setPreview(undefined);

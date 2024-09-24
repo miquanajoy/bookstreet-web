@@ -96,60 +96,97 @@ export default function AddBook() {
     const publishers = getOption(PUBLISHER);
     const distributors = getOption(DISTRIBUTOR);
     const genres = getOption(GENRE);
-    const stores = fetchWrapper.Post2GetByPaginate(config.apiUrl + STORE);
+    const stores = getOption(STORE);
 
-    await axios
-      .all([categories, publishers, distributors, genres, stores])
-      .then((v) => {
-        const status = [
-          {
-            key: "1",
-            value: "In stock",
-          },
-          {
-            key: "2",
-            value: "Out stock",
-          },
-        ];
-        setOption({
-          categories: v[0].list.filter(
-            (val) => val.productTypeId == (isBookScreen ? 1 : 2)
-          ),
-          publishers: v[1].list,
-          distributors: v[2].list,
-          genres: v[3].list,
-          stores: v[4].list,
-          status,
+    if (!params.id) {
+      fetchWrapper
+        .AxiosAll([categories, publishers, distributors, genres, stores])
+        .then((v) => {
+          const status = [
+            {
+              key: "1",
+              value: "Còn hàng",
+            },
+            {
+              key: "2",
+              value: "Sắp về hàng",
+            },
+          ];
+          setOption({
+            categories: v[0].list.filter(
+              (val) => val.productTypeId == (isBookScreen ? 1 : 2)
+            ),
+            publishers: v[1].list,
+            distributors: v[2].list,
+            genres: v[3].list,
+            stores: v[4].list,
+            status,
+          });
+        })
+        .catch((e) => {
+          console.log(e);
         });
-      })
-      .catch((e) => {
-        console.log(e);
-      });
-console.log('categories :>> ', options.categories);
-    if (!params.id) return {
-      ...data,
-      categoryId: options.categories[0]?.categoryId,
-      distributorId: options.distributors[0]?.distributorId,
-      publisherId: options.publishers[0]?.publisherId,
-      genreId: options.genres[0]?.genreId,
-      storeId: options.stores[0]?.storeId
-    };
-    const result = await fetchWrapper.get(
-      config.apiUrl + PRODUCT + "/" + params.id
-    );
-    setData(result);
-    setPreview(result.urlImage);
 
-    return {
-      ...result,
-      ...result.book,
-      publicDay: dayjs(result.book?.publicDay).format("YYYY-MM-DD"),
-      authors: result.book?.authors.join(", "),
-    };
+      return {
+        ...data,
+        categoryId: options.categories[0]?.categoryId,
+        distributorId: options.distributors[0]?.distributorId,
+        publisherId: options.publishers[0]?.publisherId,
+        genreId: options.genres[0]?.genreId,
+        storeId: options.stores[0]?.storeId,
+      };
+    } else {
+      const result = fetchWrapper.getWithoutCall(
+        config.apiUrl + PRODUCT + "/" + params.id
+      );
+
+      return await fetchWrapper
+        .AxiosAll([
+          categories,
+          publishers,
+          distributors,
+          genres,
+          stores,
+          result,
+        ])
+        .then((v) => {
+          const status = [
+            {
+              key: "1",
+              value: "Còn hàng",
+            },
+            {
+              key: "2",
+              value: "Sắp về hàng",
+            },
+          ];
+          setOption({
+            categories: v[0].list.filter(
+              (val) => val.productTypeId == (isBookScreen ? 1 : 2)
+            ),
+            publishers: v[1].list,
+            distributors: v[2].list,
+            genres: v[3].list,
+            stores: v[4].list,
+            status,
+          });
+          setData(v[5]);
+          setPreview(v[5].urlImage);
+          return {
+            ...v[5],
+            ...v[5].book,
+            publicDay: dayjs(v[5].book?.publicDay).format("YYYY-MM-DD"),
+            authors: v[5].book?.authors.join(", "),
+          };
+        })
+        .catch((e) => {
+          console.log(e);
+        });
+    }
   }
 
   function getOption(url) {
-    return fetchWrapper.Post2GetByPaginate(
+    return fetchWrapper.Post2GetByPaginateWithoutCall(
       config.apiUrl + url,
       1,
       undefined,
@@ -162,16 +199,20 @@ console.log('categories :>> ', options.categories);
     const distributorId = Number(val.distributorId);
     const publisherId = Number(val.publisherId);
     const genreId = Number(val.genreId);
-    const book = {
-      ...data.book,
-      distributorId: distributorId,
-      publisherId: publisherId,
-      genreId: genreId,
-      publicDay: val.publicDay,
-      editionYear: val.editionYear,
-      editionNumber: val.editionNumber,
-      authors: val.authors.split(", "),
-    };
+    let book;
+    if (isBookScreen) {
+      book = {
+        ...data.book,
+        distributorId: distributorId,
+        publisherId: publisherId,
+        genreId: genreId,
+        publicDay: val.publicDay,
+        editionYear: val.editionYear,
+        editionNumber: val.editionNumber,
+        authors: val.authors.split(", "),
+      };
+    }
+
     let dataPost = {
       book,
       productId: params.id,
@@ -184,11 +225,9 @@ console.log('categories :>> ', options.categories);
       urlImage: val.urlImage,
       status: val.status,
       storeId: user.user.storeId,
-      authorName: val.authors.split(", "),
     };
     if (!isBookScreen) {
       delete dataPost.book;
-      delete dataPost.authorName;
     }
     const formData = new FormData();
     if (selectedFile) {
