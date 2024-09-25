@@ -14,7 +14,7 @@ import HandleStore from "../store/handle-store";
 // import { alertService, onAlert } from '../_services';
 
 export default function ProrilePage() {
- const userLocal = JSON.parse(localStorage.getItem("userInfo"))?.user;
+  const userLocal = JSON.parse(localStorage.getItem("userInfo"))?.user;
 
   const [value, setValue] = useState(0);
 
@@ -34,7 +34,7 @@ export default function ProrilePage() {
           <Tab label="câp nhât thông tin tài khoản" />
         </Tabs>
       );
-    } else if (userLocal.role == Role.Manager) {
+    } else {
       return <></>;
     }
   }
@@ -46,12 +46,24 @@ export default function ProrilePage() {
             <HandleStore storeId={userLocal.storeId} />
           </CustomTabPanel>
           <CustomTabPanel value={value} index={1}>
-            <AddUser userId={userLocal.id}/>
+            < AddUser userId={userLocal.id} />
           </CustomTabPanel>
         </>
       );
     } else if (userLocal.role == Role.Manager) {
-      return <></>;
+      return (
+        <>
+          <CustomTabPanel value={value} index={0}>
+            <AddUser userId={userLocal.id} />
+          </CustomTabPanel>
+        </>
+      );
+    } else {
+      return (
+        <CustomTabPanel value={value} index={0}>
+          <AddUser />
+        </CustomTabPanel>
+      );
     }
   }
 

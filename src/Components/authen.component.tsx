@@ -66,14 +66,13 @@ export default function AuthenPage() {
       if (val.statusCode === 200) {
         switch (val.data.role) {
           case Role.Admin:
-            navigate(ROUTER.book.url, { replace: true });
+            navigate(ROUTER.user.url, { replace: true });
             break;
           case Role.GiftStore:
             navigate(ROUTER.roleGiftStore.gift.url, { replace: true });
             break;
-          // case Role.Manager:
-          //   navigate(ROUTER.roleManager.customerPoint.url, { replace: true });
-          //   break;
+          case Role.Manager:
+            navigate(ROUTER.book.url, { replace: true });            break;
           case Role.Store:
             if (!val.data.user.storeId) {
               alertService.alert({

@@ -22,7 +22,10 @@ export const GIFT = "Gift";
 export const KIOS = "Kiosk";
 
 export const ROUTER = {
-  book: {
+  user: {
+    name: "Tài khoản",
+    url: "/user-management",
+  },  book: {
     name: "Sách",
     url: "/books",
   },
@@ -91,76 +94,75 @@ export const ROUTER = {
 export const ROUTERS = [
   {
     logo: "",
-    name: "Tài khoản",
-    url: "/user-management",
+    ...ROUTER.user,
     roles: [Role.Admin],
   },
   {
     logo: "",
     ...ROUTER.store,
-    roles: [Role.Admin],
+    roles: [Role.Manager],
   },
   {
     logo: "",
     ...ROUTER.kios,
-    roles: [Role.Admin],
+    roles: [Role.Manager],
   },
   {
     logo: "",
     ...ROUTER.author,
-    roles: [Role.Admin],
+    roles: [Role.Manager],
   },
   {
     logo: "",
     ...ROUTER.souvenir,
-    roles: [Role.Admin, Role.Store],
+    roles: [Role.Manager, Role.Store],
   },
   {
     logo: "",
     ...ROUTER.book,
-    roles: [Role.Admin, Role.Store],
+    roles: [Role.Manager, Role.Store],
   },
   {
     logo: "",
     ...ROUTER.publisher,
-    roles: [Role.Admin],
+    roles: [Role.Manager],
   },
   {
     logo: "",
     ...ROUTER.event,
-    roles: [Role.Admin],
+    roles: [Role.Manager],
   },
   {
     logo: "",
     ...ROUTER.street,
-    roles: [Role.Admin],
+    roles: [Role.Manager],
   },
   {
     logo: "",
     name: "Khu vực",
     url: "/area",
-    roles: [Role.Admin],
+    roles: [Role.Manager],
   },
   {
     logo: "",
     name: "Vị trí",
     url: "/location",
-    roles: [Role.Admin],
+    roles: [Role.Manager],
   },
   {
     logo: "",
     ...ROUTER.genre,
-    roles: [Role.Admin],
+    roles: [Role.Manager],
   },
   {
     logo: "",
     ...ROUTER.distributor,
-    roles: [Role.Admin],
+    roles: [Role.Manager],
   },
   {
     logo: "",
     ...ROUTER.category,
-    roles: [Role.Admin],
+    roles: [Role.Manager],
   },
   {
     logo: "",
@@ -170,7 +172,7 @@ export const ROUTERS = [
   {
     logo: "",
     ...ROUTER.roleAdmin.pointHistory,
-    roles: [Role.Admin],
+    roles: [Role.Manager],
   },
 ];
 
