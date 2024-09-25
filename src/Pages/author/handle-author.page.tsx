@@ -150,7 +150,7 @@ export default function HandleAuthorPage() {
 
         <div className="d-flex flex-column gap-2">
           <div className="grid grid-cols-2 gap-2">
-            <label className="uppercase" htmlFor="nm">
+            <label className="" htmlFor="nm">
               <b>Tên tác giả: </b>
               <input
                 id="nm"
@@ -159,7 +159,7 @@ export default function HandleAuthorPage() {
                 {...register("authorName")}
               />
             </label>
-            <label className="uppercase" htmlFor="anm">
+            <label className="" htmlFor="anm">
               <b>Ngày sinh: </b>
               <input
                 id="anm"
@@ -172,7 +172,7 @@ export default function HandleAuthorPage() {
           </div>
 
           <div>
-            <label className="uppercase d-block" htmlFor="biography">
+            <label className=" d-block" htmlFor="biography">
               <b>Tiểu sử: </b>
               <input
                 id="biography"

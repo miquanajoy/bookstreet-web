@@ -6,6 +6,7 @@ import { loadingService } from "./loading.service";
 import { alertService } from "./alert.service";
 
 const userSubject = new BehaviorSubject(null);
+
 const baseUrl = `${config.apiUrl}Auth/`;
 
 export const accountService = {

@@ -408,7 +408,7 @@ export default function ListCustomerPoint() {
             >
               <div className="d-flex flex-column gap-2">
                 <div className="grid grid-cols-2 gap-2">
-                  <label className="uppercase" htmlFor="nm">
+                  <label className="" htmlFor="nm">
                     <b>Tổng tiền đơn hàng: </b>
                     <input
                       id="nm"
@@ -420,7 +420,7 @@ export default function ListCustomerPoint() {
                   </label>
                 </div>
                 <div className="grid grid-cols-2 gap-2">
-                  <label className="uppercase" htmlFor="nm">
+                  <label className="" htmlFor="nm">
                     <b>Điểm cộng: </b>
                     <input
                       id="nm"

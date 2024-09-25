@@ -155,7 +155,7 @@ export default function HandleDistributorPage() {
 
         <div className="d-flex flex-column gap-2">
           <div className="grid grid-cols-2 gap-2">
-            <label className="uppercase" htmlFor="nm">
+            <label className="" htmlFor="nm">
               <b>Tên nhà phân phối: </b>
               <input
                 id="nm"
@@ -164,7 +164,7 @@ export default function HandleDistributorPage() {
                 {...register("distriName")}
               />
             </label>
-            <label className="uppercase" htmlFor="anm">
+            <label className="" htmlFor="anm">
               <b>Số nhà phân phối: </b>
               <input
                 id="anm"
@@ -175,7 +175,7 @@ export default function HandleDistributorPage() {
               />
             </label>
             <div>
-            <label className="uppercase d-block" htmlFor="biography">
+            <label className=" d-block" htmlFor="biography">
               <b>Website: </b>
               <input
                 id="biography"
@@ -186,7 +186,7 @@ export default function HandleDistributorPage() {
               />
             </label>
           </div>
-            <label className="uppercase" htmlFor="anm">
+            <label className="" htmlFor="anm">
               <b>Năm: </b>
               <input
                 id="anm"

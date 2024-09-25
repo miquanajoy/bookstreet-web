@@ -133,7 +133,7 @@ export default function HandleAreaPage() {
         </div>
 
         <div className="flex flex-column gap-4">
-          <label className="uppercase" htmlFor="nm">
+          <label className="" htmlFor="nm">
             <b>Tên khu vực: </b>
             <input
               id="nm"
@@ -148,7 +148,7 @@ export default function HandleAreaPage() {
               })}
             />
           </label>
-          <label className="uppercase" htmlFor="street">
+          <label className="" htmlFor="street">
             <b>Đường sách </b>
             <select
               {...register("streetId")}

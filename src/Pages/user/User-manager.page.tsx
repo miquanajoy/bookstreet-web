@@ -10,8 +10,6 @@ import { AUTH } from "../../_helpers/const/const";
 import { SearchModel, searchService, typeSearch } from "../../_services/home/search.service";
 
 export default function ShowUserPage() {
-  const { pathname } = useLocation();
-
   const [data, setData] = useState({
     list: [],
     totalPage: 0,

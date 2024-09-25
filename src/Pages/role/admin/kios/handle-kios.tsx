@@ -211,7 +211,7 @@ export default function HandleKios() {
           </div>
           <div className="d-flex items-end pb-2 mt-1">
             <div
-              className="cursor-pointer bg-info text-white uppercase rounded-lg px-3 py-0.5"
+              className="cursor-pointer bg-info text-white  rounded-lg px-3 py-0.5"
               onClick={showLocation}
             >
               <b>Xem bản đồ</b>

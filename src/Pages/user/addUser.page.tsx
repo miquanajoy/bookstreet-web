@@ -9,10 +9,14 @@ import { Role, Roles } from "../../models/Role";
 import { fileService } from "../../_services/file.service";
 // import { alertService, onAlert } from '../_services';
 
-export default function AddUser() {
+export default function AddUser(props) {
+  const user = JSON.parse(localStorage.getItem("userInfo"));
+
   const { register, handleSubmit, setValue } = useForm();
   const [errForm, setErrForm] = useState<any>();
   const params = useParams();
+  const userId = props.userId ?? params.id;
+
   const [data, setData] = useState<any>();
   const navigate = useNavigate();
 
@@ -106,16 +110,41 @@ export default function AddUser() {
 
         return;
       }
-      alertService.alert({
-        content: params.id ? "Thay đổi thành công" : "Tạo mới thành công",
-      });
-      navigate("/user-management", { replace: true });
+      if (res.success == true) {
+        console.log(
+          "res.data.userId ,user.userId :>> ",
+          res.data.id,
+          user.userId
+        );
+        if (res.data.id == user.userId) {
+          const currentUser = JSON.parse(localStorage.getItem("userInfo"));
+          localStorage.removeItem("userInfo");
+          localStorage.setItem(
+            "userInfo",
+            JSON.stringify({
+              ...currentUser,
+              user: {
+                ...res.data,
+              },
+            })
+          );
+        }
+
+        alertService.alert({
+          content: params.id ? "Thay đổi thành công" : "Tạo mới thành công",
+        });
+        navigate(props.userId ? "" : "/user-management", { replace: true });
+      } else {
+        alertService.alert({
+          content: res.title,
+        });
+      }
     });
   };
 
   return (
     <div className="container">
-      <h1 className="title">Quản lý tài khoản</h1>
+      {!props.userId ? <h1 className="title">Quản lý tài khoản</h1> : <></>}
       <form
         onSubmit={handleSubmit(savedata)}
         className="grid grid-cols-2 gap-4 jumbotron mt-4"
@@ -142,7 +171,7 @@ export default function AddUser() {
         </div>
 
         <div className="grid grid-cols-2 gap-4">
-          <label className="uppercase" htmlFor="nm">
+          <label className="" htmlFor="nm">
             <b>Tên Tài khoản: </b>
             <input
               id="nm"
@@ -153,18 +182,23 @@ export default function AddUser() {
             />
             <p className="text-danger">{errForm?.Username}</p>
           </label>
-          <label className="uppercase" htmlFor="fullName">
+          <label className="" htmlFor="fullName">
             <b>Tên đầy đủ: </b>
             <input
               id="fullName"
               type="text"
               className="form-control"
               placeholder=""
-              {...register("fullName")}
+              {...register("fullName", {
+                required: {
+                  message: "required",
+                  value: true,
+                },
+              })}
             />
             <p className="text-danger">{errForm?.FullName}</p>
           </label>
-          <label className="uppercase" htmlFor="anm">
+          <label className="" htmlFor="anm">
             <b>Mật khẩu mới: </b>
             <input
               id="anm"
@@ -175,18 +209,23 @@ export default function AddUser() {
             />
           </label>
 
-          <label className="uppercase" htmlFor="avb">
+          <label className="" htmlFor="avb">
             <b>Email: </b>
             <input
               id="avb"
               type="text"
               className="form-control"
               placeholder=""
-              {...register("email")}
+              {...register("email", {
+                required: {
+                  message: "required",
+                  value: true,
+                },
+              })}
             />
             <p className="text-danger">{errForm?.Email}</p>
           </label>
-          <label className="uppercase" htmlFor="phone">
+          <label className="" htmlFor="phone">
             <b>Điện thoại: </b>
             <input
               id="phone"
@@ -196,7 +235,7 @@ export default function AddUser() {
               {...register("phone")}
             />
           </label>
-          <label className="uppercase" htmlFor="addr">
+          <label className="" htmlFor="addr">
             <b>Địa chỉ: </b>
             <input
               id="addr"
@@ -206,17 +245,21 @@ export default function AddUser() {
               {...register("address")}
             />
           </label>
+          {!props.userId ? (
+            <label className="" htmlFor="role">
+              <b>Vai trò: </b>
+              <select {...register("role")} id="role" className="form-control">
+                {Roles.map((v) => (
+                  <option key={v} value={v}>
+                    {v}
+                  </option>
+                ))}
+              </select>
+            </label>
+          ) : (
+            <></>
+          )}
 
-          <label className="uppercase" htmlFor="role">
-            <b>Vai trò: </b>
-            <select {...register("role")} id="role" className="form-control">
-              {Roles.map((v) => (
-                <option key={v} value={v}>
-                  {v}
-                </option>
-              ))}
-            </select>
-          </label>
           <input type="submit" className="btn btn-dark mt-2" value="Lưu" />
         </div>
       </form>

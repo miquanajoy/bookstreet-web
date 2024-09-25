@@ -209,7 +209,7 @@ export default function HandleStreetPage() {
 
         <div className="col-start-2 col-span-2">
           <div>
-            <label className="w-100 uppercase" htmlFor="addr">
+            <label className="w-100 " htmlFor="addr">
               <b>Địa chỉ: </b>
               <input
                 id="addr"

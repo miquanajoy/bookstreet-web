@@ -97,7 +97,7 @@ export default function HandleCategoryPage() {
       <form onSubmit={handleSubmit(savedata)} className="col-7 mx-auto mt-4">
         <div className="d-flex flex-column gap-2">
           <div className="grid grid-cols-2 gap-2">
-            <label className="uppercase" htmlFor="nm">
+            <label className="" htmlFor="nm">
               <b>Tên danh mục: </b>
               <input
                 id="nm"

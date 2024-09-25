@@ -38,6 +38,7 @@ import ListKios from "../Pages/role/admin/kios/list-kios";
 import HandleKios from "../Pages/role/admin/kios/handle-kios";
 import PointStore from "../Pages/role/manager/manager-point/point-store";
 import ListBrowseScores from "../Pages/role/store/browse-scores/list-browse-scores";
+import ProrilePage from "../Pages/user/profile.page";
 
 const router = createBrowserRouter([
   {
@@ -47,6 +48,22 @@ const router = createBrowserRouter([
         path: "",
         element: <AuthenPage />,
       },
+    ],
+  },
+  {
+    path: "/",
+    element: <HomePage />,
+    children: [
+      {
+        path: "profile/:id",
+        element: (
+          <AuthGuard>
+            <RoleBasedGuard accessibleRoles={[Role.Admin, Role.Store, Role.GiftStore, Role.Manager]}>
+              <ProrilePage />
+            </RoleBasedGuard>
+          </AuthGuard>
+        ),
+      }
     ],
   },
   {

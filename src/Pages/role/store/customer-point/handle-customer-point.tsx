@@ -132,7 +132,7 @@ export default function HandleCustomer() {
       <form onSubmit={handleSubmit(savedata)} className="col-6">
         <div className="d-flex flex-column gap-2">
           <div className="grid grid-cols-2 gap-2">
-            <label className="uppercase" htmlFor="nm">
+            <label className="" htmlFor="nm">
               <b>Tên khách hàng: </b>
               <input
                 id="nm"
@@ -141,7 +141,7 @@ export default function HandleCustomer() {
                 {...register("customerName")}
               />
             </label>
-            <label className="uppercase" htmlFor="anm">
+            <label className="" htmlFor="anm">
               <b>Số điện thoại: </b>
               <input
                 id="anm"
@@ -155,7 +155,7 @@ export default function HandleCustomer() {
 
           <div className="grid grid-cols-2 gap-2">
             {/* <div>
-              <label className="uppercase d-block" htmlFor="biography">
+              <label className=" d-block" htmlFor="biography">
                 <b>Điểm: </b>
                 <input
                   id="biography"
@@ -167,7 +167,7 @@ export default function HandleCustomer() {
               </label>
             </div> */}
             {/* <div>
-              <label className="uppercase d-block" htmlFor="store">
+              <label className=" d-block" htmlFor="store">
                 <b>Cửa hàng: </b>
                 <select
                   id="store"

@@ -166,7 +166,7 @@ export default function HandleCalenderPage() {
         </div>
 
         <div>
-          <label className="uppercase" htmlFor="nm">
+          <label className="" htmlFor="nm">
             <b>Tên sự kiện: </b>
           </label>
           <input
@@ -176,7 +176,7 @@ export default function HandleCalenderPage() {
             {...register("title")}
           />
           <br />
-          <label className="uppercase" htmlFor="loca">
+          <label className="" htmlFor="loca">
             <b>Vị trí: </b>
           </label>
           <select
@@ -191,7 +191,7 @@ export default function HandleCalenderPage() {
             ))}
           </select>
           <br />
-          <label className="uppercase" htmlFor="anm">
+          <label className="" htmlFor="anm">
             <b>Mục đích: </b>
           </label>
           <input
@@ -201,7 +201,7 @@ export default function HandleCalenderPage() {
             {...register("purpose")}
           />
           <br />
-          <label className="uppercase" htmlFor="avb">
+          <label className="" htmlFor="avb">
             <b>Ban Tổ Chức: </b>
           </label>
           <input

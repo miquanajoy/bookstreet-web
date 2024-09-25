@@ -359,7 +359,7 @@ export default function HandleLocation() {
         </div>
 
         <div className="flex flex-column gap-2">
-          <label className="uppercase" htmlFor="nm">
+          <label className="" htmlFor="nm">
             <b>Tên vị trí: </b>
             <input
               id="nm"
@@ -374,7 +374,7 @@ export default function HandleLocation() {
               })}
             />
           </label>
-          <label className="uppercase" htmlFor="street">
+          <label className="" htmlFor="street">
             <b>Đường sách </b>
             <select
               {...register("streetId")}
@@ -388,7 +388,7 @@ export default function HandleLocation() {
               ))}
             </select>
           </label>
-          <label className="uppercase" htmlFor="area">
+          <label className="" htmlFor="area">
             <b>Khu vực: </b>
             <select {...register("areaId")} id="area" className="form-control">
               {areas.filterData.map((v) => (
@@ -401,7 +401,7 @@ export default function HandleLocation() {
 
           <div className="d-flex items-end pb-2 mt-1">
             <div
-              className="cursor-pointer bg-info text-white uppercase rounded-lg px-3 py-0.5"
+              className="cursor-pointer bg-info text-white  rounded-lg px-3 py-0.5"
               onClick={showLocation}
             >
               <b>Xem bản đồ</b>
@@ -429,7 +429,7 @@ export default function HandleLocation() {
                 onClick={() => {
                   clearAllLocations();
                 }}
-                className="bg-info text-white uppercase rounded-lg px-3 py-0.5"
+                className="bg-info text-white  rounded-lg px-3 py-0.5"
               >
                 Xóa tất cả các điểm
               </button>
@@ -437,7 +437,7 @@ export default function HandleLocation() {
                 onClick={() => {
                   completeChoosePoint();
                 }}
-                className="bg-info text-white uppercase rounded-lg px-3 py-0.5 ml-2"
+                className="bg-info text-white  rounded-lg px-3 py-0.5 ml-2"
               >
                 Hoàn tất
               </button>

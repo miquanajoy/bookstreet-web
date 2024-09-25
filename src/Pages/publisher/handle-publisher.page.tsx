@@ -153,7 +153,7 @@ export default function HandlePublisher() {
 
           <div className="grid grid-cols-2 gap-2 jumbotron mt-4">
             <div>
-              <label className="uppercase" htmlFor="nm">
+              <label className="" htmlFor="nm">
                 <b>Tên nhà xuất bản: </b>
               </label>
               <input
@@ -164,7 +164,7 @@ export default function HandlePublisher() {
               />
             </div>
             <div>
-              <label className="uppercase" htmlFor="nm">
+              <label className="" htmlFor="nm">
                 <b>Số nhà xuất bản: </b>
               </label>
               <input
@@ -176,7 +176,7 @@ export default function HandlePublisher() {
               />
             </div>
             <div>
-              <label className="uppercase" htmlFor="nm">
+              <label className="" htmlFor="nm">
                 <b>Website: </b>
               </label>
               <input
@@ -188,7 +188,7 @@ export default function HandlePublisher() {
               />
             </div>
             <div>
-              <label className="uppercase" htmlFor="nm">
+              <label className="" htmlFor="nm">
                 <b>Năm: </b>
               </label>
               <input
@@ -199,7 +199,7 @@ export default function HandlePublisher() {
               />
             </div>
             <div className="col-span-2">
-              <label className="uppercase" htmlFor="Description">
+              <label className="" htmlFor="Description">
                 <b>Mô tả: </b>
               </label>
               <textarea
