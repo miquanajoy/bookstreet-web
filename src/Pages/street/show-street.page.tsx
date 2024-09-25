@@ -90,14 +90,14 @@ export default function ShowStreetPage() {
                 }}
               ></div>
             </Link>
-            <div
+            {/* <div
               onClick={(event: any) => {
                 deleteItem(val);
               }}
               className={`${listStyle["trash-box"]} position-absolute top-0 right-0 bg-slate-400 rounded px-2 py-1 opacity-50 hover:!opacity-100`}
             >
               <Trash />
-            </div>
+            </div> */}
             <Link to={"update/" + val.streetId}>
               <div className="mt-1 text-dark">
                 <h6 className="mb-0 line-clamp-2">{val.streetName}</h6>

@@ -74,7 +74,7 @@ export const ROUTER = {
   },
   roleAdmin: {
     pointHistory: {
-      name: "Lịch sử cộng điểm",
+      name: "Quản lý cộng điểm",
       url: "/point-history",
     },
   },
@@ -165,11 +165,6 @@ export const ROUTERS = [
   {
     logo: "",
     ...ROUTER.roleStore.customerPoint,
-    roles: [Role.Store],
-  },
-  {
-    logo: "",
-    ...ROUTER.roleGiftStore.gift,
     roles: [Role.Store],
   },
   {

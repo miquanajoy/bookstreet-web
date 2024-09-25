@@ -16,7 +16,6 @@ import {
   STORE,
 } from "../../_helpers/const/const";
 import dayjs from "dayjs";
-import axios from "axios";
 
 export default function AddBook() {
   const user = JSON.parse(localStorage.getItem("userInfo"));
@@ -38,7 +37,9 @@ export default function AddBook() {
   const {
     register,
     handleSubmit,
+    getValues,
     formState: { errors },
+    watch
   } = useForm({
     defaultValues: async () => {
       return await fetAllData();
@@ -57,7 +58,10 @@ export default function AddBook() {
     categories: [],
     publishers: [],
     distributors: [],
-    genres: [],
+    genres: {
+      data: [],
+      filter: []
+    },
     stores: [],
     status: [],
   });
@@ -74,6 +78,23 @@ export default function AddBook() {
     return () => URL.revokeObjectURL(objectUrl);
   }, [selectedFile]);
 
+  useEffect(() => {
+    const dataFilter = options.genres.data.filter(
+      (genre) => genre.categoryId == getValues().categoryId
+    )
+    const currentOptions = options
+    setOption(
+     {
+      ...currentOptions,
+      genres: {
+        data: currentOptions.genres.data,
+        filter: dataFilter
+      }
+     }
+
+    )
+  }, [watch("categoryId")]);
+  
   const onSelectFile = (e) => {
     if (!e.target.files || e.target.files.length === 0) {
       setSelectedFile(undefined);
@@ -118,7 +139,12 @@ export default function AddBook() {
             ),
             publishers: v[1].list,
             distributors: v[2].list,
-            genres: v[3].list,
+            genres: {
+              data: v[3].list,
+              filter: v[3].list.filter(
+                (genre) => genre.categoryId == v[0].list[0].categoryId
+              )
+            },
             stores: v[4].list,
             status,
           });
@@ -381,7 +407,7 @@ export default function AddBook() {
                 id="genr"
                 className="form-control"
               >
-                {options.genres.map((val) => (
+                {options.genres.filter.map((val) => (
                   <option key={val.genreId} value={val.genreId}>
                     {val.genreName}
                   </option>

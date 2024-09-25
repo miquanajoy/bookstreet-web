@@ -73,10 +73,9 @@ export default function DialogDetailComponent(prop) {
                 <div
                   className="block h-full w-full bg-slate-50 bg-contain bg-no-repeat bg-center"
                   style={{
-                    backgroundImage:
-                      "url(" + detail.urlImage
-                        ? detail.urlImage
-                        : AVATARDEFAULT + ")",
+                    backgroundImage: `url(${
+                      detail.urlImage ? detail.urlImage : AVATARDEFAULT
+                    })`,
                   }}
                 ></div>
               </div>

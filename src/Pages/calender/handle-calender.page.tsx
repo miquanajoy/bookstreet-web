@@ -202,7 +202,7 @@ export default function HandleCalenderPage() {
           />
           <br />
           <label className="uppercase" htmlFor="avb">
-            <b>Tên máy chủ: </b>
+            <b>Ban Tổ Chức: </b>
           </label>
           <input
             id="avb"
