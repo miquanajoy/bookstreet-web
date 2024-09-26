@@ -58,6 +58,8 @@ export default function PointStore() {
   async function fetAllData(pageNumber = 1) {
     const auth = await fetchWrapper.Post2GetByPaginate(
       config.apiUrl + AUTH,
+      -1,
+      undefined,
       -1
     );
     const result = fetchWrapper.Post2GetByPaginate(
@@ -74,14 +76,18 @@ export default function PointStore() {
       }
     );
     result.then((res: any) => {
-      const storeList = auth.list.filter(store => store.role == Role.Store).map(val => val.id);
+      const storeList = auth.list
+        .filter((store) => store.role == Role.Store)
+        .map((val) => val.id);
       setData({
-        list: res.list.filter(data => storeList.includes(data.storeId)),
+        list: res.list.filter((data) => storeList.includes(data.storeId)),
         totalPage: res.totalPage,
       });
     });
     const customers = await fetchWrapper.Post2GetByPaginate(
       config.apiUrl + CUSTOMER,
+      -1,
+      undefined,
       -1
     );
 
@@ -100,7 +106,6 @@ export default function PointStore() {
         id: v.customerId,
       }))
     );
-
   }
 
   useEffect(() => {

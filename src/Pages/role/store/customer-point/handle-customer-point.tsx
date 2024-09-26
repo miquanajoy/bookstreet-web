@@ -67,6 +67,7 @@ export default function HandleCustomer() {
   async function fetAllData() {
     const stores = await fetchWrapper.Post2GetByPaginate(
       config.apiUrl + STORE,
+      -1,undefined,
       -1
     );
     setStores(stores.list);

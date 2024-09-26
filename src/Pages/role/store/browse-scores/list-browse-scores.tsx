@@ -74,10 +74,6 @@ export default function ListBrowseScores() {
       {
         filters: [
           {
-            field: "status",
-            value: status.toString(),
-            operand: 0,
-          },          {
             field: "storeId",
             value: user.user.storeId.toString(),
             operand: 0,
@@ -146,7 +142,9 @@ export default function ListBrowseScores() {
 
   const [openCreateBillForm, setOpenPoint] = useState(false);
   function closeFormBill(v?) {
-    if(v) {fetAllData()}
+    if (v) {
+      fetAllData();
+    }
     setOpenPoint(false);
   }
   function openFormBill() {

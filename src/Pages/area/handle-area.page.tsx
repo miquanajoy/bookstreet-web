@@ -40,7 +40,7 @@ export default function HandleAreaPage() {
   async function fetAllData() {
     const streets = await fetchWrapper.Post2GetByPaginate(
       config.apiUrl + "Street",
-      -1
+      -1, {}, -1
     );
     setStreets(streets.list);
     setValue("streetId", streets.list[0].streetId);

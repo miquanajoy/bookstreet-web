@@ -24,7 +24,7 @@ export default function HandleLocation() {
   });
 
   const navigate = useNavigate();
-  const { register, handleSubmit, getValues, watch } = useForm({
+  const { register, handleSubmit, getValues,setValue, watch } = useForm({
     defaultValues: async () => {
       return await fetAllData();
     },
@@ -44,14 +44,66 @@ export default function HandleLocation() {
 
   // Start Effect
   useEffect(() => {
+    if (!getValues().streetId) return;
+
     const areasFilter = areas.data.filter(
       (area) => area.streetId == getValues().streetId
     );
+    
     setAreas((prevAreas) => ({
       ...prevAreas,
       filterData: areasFilter,
     }));
+    setValue("areaId", areasFilter[0].areaId)
+    drawLocation()
+
+    // console.log("locationPin :>> ", locationPin);
+    // let locationPinCurrent = locationPin.filter((val) => val.locationId);
+
+    // const locationPintDetail = locationPin.find(
+    //   (val) => val.locationId == params.id && params.id
+    // );
+    // const newLocation = {
+    //   xLocation: 0,
+    //   yLocation: 0,
+    //   locationName: getValues().locationName ?? "",
+    //   areaId: getValues().areaId
+    // };
+
+    // if (locationPintDetail) {
+    //   locationPintDetail.xLocation = newLocation.xLocation;
+    //   locationPintDetail.yLocation = newLocation.yLocation;
+    //   locationPintDetail.locationName = newLocation.locationName;
+    //   setLocationPin([...locationPinCurrent]);
+    // } else {
+    //   setLocationPin([...locationPinCurrent]);
+    // }
   }, [watch("streetId")]);
+
+  // useEffect(() => {
+  //   let locationPinCurrent = locationPin.filter((val) => val.locationId);
+
+  //   const locationPintDetail = locationPinCurrent.find(
+  //     (val) => val.locationId == params.id && params.id
+  //   );
+  //   const newLocation = {
+  //     xLocation,
+  //     yLocation,
+  //     locationName: getValues().locationName ?? "",
+  //     areaId: getValues().areaId,
+  //   };
+  //   console.log("getValues().areaId :>> ", getValues().areaId);
+  //   if (locationPintDetail) {
+  //     locationPintDetail.xLocation = newLocation.xLocation;
+  //     locationPintDetail.yLocation = newLocation.yLocation;
+  //     locationPintDetail.locationName = newLocation.locationName;
+  //     locationPintDetail.areaId = newLocation.areaId;
+  //     setLocationPin([...locationPinCurrent]);
+  //   } else {
+  //     setLocationPin([...locationPinCurrent, newLocation]);
+  //   }
+  // }, [watch("areaId")]);
+
   // End Effect
 
   const onSelectFile = (e) => {
@@ -76,7 +128,11 @@ export default function HandleLocation() {
 
     let areas = getOption(AREA);
     let streets: any = getOption(STREET);
-    const allApiResult = await fetchWrapper.AxiosAll([areas, streets, locationsPromise]);
+    const allApiResult = await fetchWrapper.AxiosAll([
+      areas,
+      streets,
+      locationsPromise,
+    ]);
     // .then((v) => {
     const areasFilter = allApiResult[0].list.filter(
       (area) => area.streetId == allApiResult[0].list[0].streetId
@@ -156,12 +212,15 @@ export default function HandleLocation() {
     ).urlImage;
     let process;
     if (params.id) {
-      process = fetchWrapper.put(
-        config.apiUrl + LOCATION + "/" + params.id,
-        {...val, event: []}
-      );
+      process = fetchWrapper.put(config.apiUrl + LOCATION + "/" + params.id, {
+        ...val,
+        events: [],
+      });
     } else {
-      process = fetchWrapper.post(config.apiUrl + LOCATION, {...val, event: []});
+      process = fetchWrapper.post(config.apiUrl + LOCATION, {
+        ...val,
+        events: [],
+      });
     }
 
     process.then((res) => {
@@ -229,25 +288,35 @@ export default function HandleLocation() {
 
   function drawLocation() {
     if (!imageCanvas.current) return;
-    const locationPins = locationPin.map(pin => {
+    const locationPins = locationPin.map((pin) => {
+      let streetId = areas.data.find(
+        (area) => area.areaId == pin.areaId
+      )?.streetId;
+      if (params.id && pin.locationId == params.id) {
+        streetId = areas.data.find(
+          (area) => area.areaId == getValues().areaId
+        )?.streetId;
+      }
       return {
         ...pin,
-        streetId: areas.data.find(area => area.areaId == pin.areaId).streetId
-      }
-    })
-    locationPins.filter(pin => pin.streetId == getValues().streetId).forEach((pin) => {
-      const x = pin.xLocation * imageCanvas.current.width;
-      const y = pin.yLocation * imageCanvas.current.height;
-      const ctx = imageCanvas.current.getContext("2d");
-
-      ctx.beginPath();
-      ctx.arc(x, y, 5, 0, 2 * Math.PI);
-      ctx.fillStyle = "red";
-      ctx.fill();
-      ctx.closePath();
-      ctx.font = "20px Arial";
-      ctx.fillText(pin.locationName, x, y);
+        streetId,
+      };
     });
+    locationPins
+      .filter((pin) => pin.streetId == getValues().streetId)
+      .forEach((pin) => {
+        const x = pin.xLocation * imageCanvas.current.width;
+        const y = pin.yLocation * imageCanvas.current.height;
+        const ctx = imageCanvas.current.getContext("2d");
+
+        ctx.beginPath();
+        ctx.arc(x, y, 5, 0, 2 * Math.PI);
+        ctx.fillStyle = "red";
+        ctx.fill();
+        ctx.closePath();
+        ctx.font = "20px Arial";
+        ctx.fillText(pin.locationName, x, y);
+      });
   }
 
   useEffect(drawLocation, [locationPin]);
@@ -306,18 +375,20 @@ export default function HandleLocation() {
       const xLocation = x / imageCanvas.current.width;
       const yLocation = y / imageCanvas.current.height;
 
-      const locationPintDetail = locationPin.find(
+      const locationPintDetail = locationPinCurrent.find(
         (val) => val.locationId == params.id && params.id
       );
       const newLocation = {
         xLocation,
         yLocation,
         locationName: getValues().locationName ?? "",
+        areaId: getValues().areaId,
       };
       if (locationPintDetail) {
         locationPintDetail.xLocation = newLocation.xLocation;
         locationPintDetail.yLocation = newLocation.yLocation;
         locationPintDetail.locationName = newLocation.locationName;
+        locationPintDetail.areaId = newLocation.areaId;
         setLocationPin([...locationPinCurrent]);
       } else {
         setLocationPin([...locationPinCurrent, newLocation]);
@@ -425,14 +496,7 @@ export default function HandleLocation() {
               <canvas ref={imageCanvas} onClick={choosePoint}></canvas>
             </div>
             <div className="mt-2">
-              <button
-                onClick={() => {
-                  clearAllLocations();
-                }}
-                className="bg-info text-white  rounded-lg px-3 py-0.5"
-              >
-                Xóa tất cả các điểm
-              </button>
+             
               <button
                 onClick={() => {
                   completeChoosePoint();

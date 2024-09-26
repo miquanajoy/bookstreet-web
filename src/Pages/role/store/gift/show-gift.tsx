@@ -78,6 +78,7 @@ export default function ShowGift() {
   async function fetAllData(pageNumber = 1) {
     const customers = await fetchWrapper.Post2GetByPaginate(
       config.apiUrl + CUSTOMER,
+      -1,undefined,
       -1
     );
     setCustomer(
