@@ -79,6 +79,7 @@ export default function AddBook() {
   }, [selectedFile]);
 
   useEffect(() => {
+    if(!getValues().categoryId) return;
     const dataFilter = options.genres.data.filter(
       (genre) => genre.categoryId == getValues().categoryId
     )
@@ -133,6 +134,7 @@ export default function AddBook() {
               value: "Sắp về hàng",
             },
           ];
+          console.log('v[3].list :>> ', v[3].list);
           setOption({
             categories: v[0].list.filter(
               (val) => val.productTypeId == (isBookScreen ? 1 : 2)
@@ -192,7 +194,10 @@ export default function AddBook() {
             ),
             publishers: v[1].list,
             distributors: v[2].list,
-            genres: v[3].list,
+            genres: {
+              data: v[3].list,
+              filter: []
+            },
             stores: v[4].list,
             status,
           });

@@ -84,7 +84,7 @@ export default function ListBrowseScores() {
           },
         ],
       },
-      -1
+      10
     );
     setData({
       list: pointHistory.list.filter((val) => val.invoiceCode && !val.giftId),

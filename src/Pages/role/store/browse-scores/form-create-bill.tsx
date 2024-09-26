@@ -37,7 +37,7 @@ export default function CreateBillForm(props) {
       return await fetAllData();
     },
   });
-  const [tgthd] = useState<any>(0);
+  const [tgthd, setTghd] = useState<any>(0);
   const [openConfirm, setopenComfirm] = useState(false);
 
   const [preview, setPreview] = useState();
@@ -48,8 +48,8 @@ export default function CreateBillForm(props) {
     invoiceCode: "",
     customerName: "",
     customerPhone: "",
+    amount: 0,
     pointAmount: 0,
-    quantity: 0,
     storeId: 0,
   });
 
@@ -66,8 +66,8 @@ export default function CreateBillForm(props) {
   }
 
   const saveData = async () => {
-    const val = getValues();
-
+    let val = getValues();
+    val.amount = tgthd;
     const formData = new FormData();
     if (selectedFile) {
       formData.append(
@@ -85,7 +85,7 @@ export default function CreateBillForm(props) {
     connectApi.then((res) => {
       if (res.success) {
         alertService.alert({
-          content: `cộng ${val.pointAmount} điểm cho nguời dùng ${val.customerPhone}`,
+          content: `cộng ${tgthd} điểm cho nguời dùng ${val.customerPhone}`,
         });
         openFormBill();
         props.close(res.data);
@@ -118,7 +118,8 @@ export default function CreateBillForm(props) {
   }
 
   function calculatorQuantity(e) {
-    setValue("quantity", Math.floor(e.target.value / 1000));
+    setTghd(e.target.value);
+    setValue("pointAmount", Math.floor(e.target.value / 1000));
   }
 
   function FormBill() {
@@ -182,7 +183,7 @@ export default function CreateBillForm(props) {
                 type="number"
                 className="form-control"
                 min={0}
-                {...register("quantity")}
+                {...register("pointAmount")}
               />
             </label>
           </div>
@@ -242,11 +243,10 @@ export default function CreateBillForm(props) {
   }
 
   function ConfirmDialog() {
-    const pointAmount = getValues().pointAmount;
     const sdt = getValues().customerPhone;
     return (
       <>
-        Xác nhận cộng {pointAmount} điểm cho nguời dùng {sdt}?
+        Xác nhận cộng {tgthd} điểm cho nguời dùng {sdt}?
       </>
     );
   }

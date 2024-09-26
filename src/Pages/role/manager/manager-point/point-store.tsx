@@ -9,6 +9,8 @@ import {
   CUSTOMER,
   STORE,
   POINT_HISTORY,
+  AUTHOR,
+  AUTH,
 } from "../../../../_helpers/const/const";
 
 import { fetchWrapper } from "../../../../_helpers/fetch-wrapper";
@@ -27,6 +29,7 @@ import HistoryStore from "./history-store";
 import CustomTabPanel from "../../../../Components/customTabPanel";
 import HistoryCustomer from "./history-customer";
 import { SearchIcon } from "../../../../assets/icon/search";
+import { Role, Roles } from "../../../../models/Role";
 
 export default function PointStore() {
   const user = JSON.parse(localStorage.getItem("userInfo"));
@@ -53,24 +56,9 @@ export default function PointStore() {
   const [customerPhone, setCustomerPhone] = useState<any>([]);
 
   async function fetAllData(pageNumber = 1) {
-    const customers = await fetchWrapper.Post2GetByPaginate(
-      config.apiUrl + CUSTOMER,
+    const auth = await fetchWrapper.Post2GetByPaginate(
+      config.apiUrl + AUTH,
       -1
-    );
-    setCustomer(
-      customers.list.map((v) => ({
-        ...v,
-        label: v.customerName,
-        id: v.customerId,
-      }))
-    );
-
-    setCustomerPhone(
-      customers.list.map((v) => ({
-        ...v,
-        label: v.phone,
-        id: v.customerId,
-      }))
     );
     const result = fetchWrapper.Post2GetByPaginate(
       config.apiUrl + STORE,
@@ -86,11 +74,33 @@ export default function PointStore() {
       }
     );
     result.then((res: any) => {
+      const storeList = auth.list.filter(store => store.role == Role.Store).map(val => val.id);
       setData({
-        list: res.list,
+        list: res.list.filter(data => storeList.includes(data.storeId)),
         totalPage: res.totalPage,
       });
     });
+    const customers = await fetchWrapper.Post2GetByPaginate(
+      config.apiUrl + CUSTOMER,
+      -1
+    );
+
+    setCustomer(
+      customers.list.map((v) => ({
+        ...v,
+        label: v.customerName,
+        id: v.customerId,
+      }))
+    );
+
+    setCustomerPhone(
+      customers.list.map((v) => ({
+        ...v,
+        label: v.phone,
+        id: v.customerId,
+      }))
+    );
+
   }
 
   useEffect(() => {

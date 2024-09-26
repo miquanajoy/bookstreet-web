@@ -158,10 +158,10 @@ export default function HandleLocation() {
     if (params.id) {
       process = fetchWrapper.put(
         config.apiUrl + LOCATION + "/" + params.id,
-        val
+        {...val, event: []}
       );
     } else {
-      process = fetchWrapper.post(config.apiUrl + LOCATION, val);
+      process = fetchWrapper.post(config.apiUrl + LOCATION, {...val, event: []});
     }
 
     process.then((res) => {

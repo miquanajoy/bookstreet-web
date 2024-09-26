@@ -45,7 +45,7 @@ export default function DialogDetailComponent(prop) {
   };
 
   useEffect(() => {
-    dialogDetailService.$data.subscribe({
+   dialogDetailService.$data.subscribe({
       next: (v) => {
         if (v) {
           handleClickOpen();
@@ -54,6 +54,7 @@ export default function DialogDetailComponent(prop) {
         }
       },
     });
+    return () => dialogDetailService.hiddenDialog()
   }, []);
   if (dialogDetailService.$data.value) {
     const value = dialogDetailService.$data.value;
