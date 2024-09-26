@@ -77,7 +77,7 @@ export const ROUTER = {
   },
   roleAdmin: {
     pointHistory: {
-      name: "Quản lý cộng điểm",
+      name: "Quản lý cấp điểm",
       url: "/point-history",
     },
   },

@@ -248,6 +248,7 @@ export default function HandleStore(props) {
       (location) => location.locationId == getValues().locationId
     ).locationImage;
     img.src = imgLocation;
+    console.log('imgLocation :>> ', imgLocation);
     if (!imgLocation) {
       alert("khu vực này chưa có ảnh");
       return;

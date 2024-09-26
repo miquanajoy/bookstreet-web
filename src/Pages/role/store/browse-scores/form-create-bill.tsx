@@ -89,6 +89,12 @@ export default function CreateBillForm(props) {
         });
         openFormBill();
         props.close(res.data);
+      } else {
+        alertService.alert({
+          content: res.message,
+        });
+        openFormBill();
+        props.close(res.data);
       }
     });
   };
@@ -179,6 +185,7 @@ export default function CreateBillForm(props) {
             <label className="col-6  d-block" htmlFor="biography">
               <div className="text-xs">Số điểm quy đổi: </div>
               <input
+              disabled
                 id="biography"
                 type="number"
                 className="form-control"
@@ -246,7 +253,7 @@ export default function CreateBillForm(props) {
     const sdt = getValues().customerPhone;
     return (
       <>
-        Xác nhận cộng {billFormService.getTgthdBillForm()} điểm cho nguời dùng {sdt}?
+        Xác nhận cộng {getValues().pointAmount} điểm cho nguời dùng {sdt}?
       </>
     );
   }

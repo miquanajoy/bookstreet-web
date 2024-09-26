@@ -8,6 +8,7 @@ import {
   CUSTOMER,
   POINT_HISTORY,
   ROUTER,
+  STORE,
 } from "../../../../_helpers/const/const";
 import { Link, useNavigate } from "react-router-dom";
 import {
@@ -37,6 +38,7 @@ import { ModelStyle } from "../../../../_helpers/const/model.const";
 import dayjs from "dayjs";
 import { CalendarIcon } from "@mui/x-date-pickers";
 import CreateBillForm from "./form-create-bill";
+import { billFormService } from "../../../../_services/bill-form.service";
 
 export const WAIT_BROWSE_SCORE = 1;
 export const HISTORY_BROWSE_SCORE = 2;
@@ -59,7 +61,7 @@ export default function ListBrowseScores() {
     list: [],
     totalPage: 0,
   });
-
+  const [pointStore, setPointStore] = useState(0);
   async function fetAllData(pageNumber = 1, status = WAIT_BROWSE_SCORE) {
     const pointHistory = await fetchWrapper.Post2GetByPaginate(
       config.apiUrl + POINT_HISTORY,
@@ -79,6 +81,14 @@ export default function ListBrowseScores() {
       list: pointHistory.list.filter((val) => val.invoiceCode && !val.giftId),
       totalPage: pointHistory.totalPage,
     });
+    fetchWrapper.getWithoutCall(
+      config.apiUrl + STORE + "/" + user.user.storeId
+    ).then((v:any) => {
+      loadingService.hiddenLoading()
+      setPointStore(v.data.totalPoint);
+
+    })
+    
     return pointHistory;
   }
 
@@ -141,6 +151,7 @@ export default function ListBrowseScores() {
     setOpenPoint(false);
   }
   function openFormBill() {
+    billFormService.setTgthdBillForm(0);
     setOpenPoint(true);
   }
 
@@ -251,11 +262,10 @@ export default function ListBrowseScores() {
             Tạo hoá đơn
           </button>
         </div>
+        <h4>Số điểm trong ví: {pointStore} điểm </h4>
+
         <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
-          <Tabs
-            value={value}
-            onChange={handleChange}
-          >
+          <Tabs value={value} onChange={handleChange}>
             <Tab label="Chờ duyệt" id="simple-tab-1" />
             <Tab label="Lịch sử duyệt" id="simple-tab-2" />
           </Tabs>

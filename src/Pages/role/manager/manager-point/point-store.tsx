@@ -79,8 +79,14 @@ export default function PointStore() {
       const storeList = auth.list
         .filter((store) => store.role == Role.Store)
         .map((val) => val.id);
+      console.log(res.list.filter((data) => storeList.find(v => {
+        return v == data.storeId
+      })))
+        console.log('res.list :>> ', res.list);
       setData({
-        list: res.list.filter((data) => storeList.includes(data.storeId)),
+        list: res.list.filter((data) => storeList.find(v => {
+          return v == data.userId
+        })),
         totalPage: res.totalPage,
       });
     });
