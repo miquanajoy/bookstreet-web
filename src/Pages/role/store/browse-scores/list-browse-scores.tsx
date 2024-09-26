@@ -28,7 +28,7 @@ import {
   SearchModel,
   searchService,
   typeSearch,
-} from "../../../../_services/home/search.service";
+} from "../../../../_services/search.service";
 import CustomTabPanel from "../../../../Components/customTabPanel";
 import HistoryStore from "../../manager/manager-point/history-store";
 import HistoryCustomer from "../../manager/manager-point/history-customer";
@@ -59,13 +59,6 @@ export default function ListBrowseScores() {
     list: [],
     totalPage: 0,
   });
-  const [dataDetail, setDataDetail] = useState<any>();
-  const headers = [
-    { key: "customerName", name: "Tên khách hàng" },
-    { key: "point", name: "Điểm" },
-    { key: "phone", name: "Điện thoại" },
-    { key: "action", name: "Hoạt động" },
-  ];
 
   async function fetAllData(pageNumber = 1, status = WAIT_BROWSE_SCORE) {
     const pointHistory = await fetchWrapper.Post2GetByPaginate(
@@ -262,7 +255,6 @@ export default function ListBrowseScores() {
           <Tabs
             value={value}
             onChange={handleChange}
-            aria-label="basic tabs example"
           >
             <Tab label="Chờ duyệt" id="simple-tab-1" />
             <Tab label="Lịch sử duyệt" id="simple-tab-2" />

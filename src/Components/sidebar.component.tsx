@@ -2,7 +2,7 @@ import { Link, NavLink, Outlet } from "react-router-dom";
 
 import styles from "../styles/sidebar.module.css";
 import { accountService } from "../_services";
-import { searchService } from "../_services/home/search.service";
+import { searchService } from "../_services/search.service";
 import { AVATARDEFAULT } from "../_helpers/const/const";
 
 export interface LinkInterface {

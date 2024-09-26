@@ -10,7 +10,7 @@ import { ROUTERS } from "../_helpers/const/const";
 import { isLoadingVarialble } from "../_services/loading.service";
 import DeleteDialog from "./delete-dialog.component";
 import { useForm } from "react-hook-form";
-import { searchService } from "../_services/home/search.service";
+import { searchService } from "../_services/search.service";
 
 export default function HomePage() {
   const {

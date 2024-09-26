@@ -23,7 +23,7 @@ import {
   SearchModel,
   searchService,
   typeSearch,
-} from "../../../../_services/home/search.service";
+} from "../../../../_services/search.service";
 import { MDBTable, MDBTableBody, MDBTableHead } from "mdb-react-ui-kit";
 import HistoryStore from "./history-store";
 import CustomTabPanel from "../../../../Components/customTabPanel";

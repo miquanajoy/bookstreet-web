@@ -34,7 +34,7 @@ import axios from "axios";
 import { MenuItem, Select } from "@mui/material";
 import dayjs from "dayjs";
 import { URL_IMG } from "../../_helpers/const/csv.const";
-import { searchService, typeSearch } from "../../_services/home/search.service";
+import { searchService, typeSearch } from "../../_services/search.service";
 import DialogDetailComponent, { dialogDetailService } from "./dialog-detail.component";
 
 export default function ShowSouvenir() {

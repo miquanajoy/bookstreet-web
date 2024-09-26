@@ -45,7 +45,7 @@ import {
   SearchModel,
   searchService,
   typeSearch,
-} from "../../../../_services/home/search.service";
+} from "../../../../_services/search.service";
 
 export default function ShowGift() {
   const user = JSON.parse(localStorage.getItem("userInfo"));

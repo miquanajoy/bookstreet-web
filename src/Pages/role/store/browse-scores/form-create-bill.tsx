@@ -29,6 +29,7 @@ import config from "../../../../config";
 import { useEffect, useState } from "react";
 import { fileService } from "../../../../_services/file.service";
 import { alertService } from "../../../../_services";
+import { billFormService } from "../../../../_services/bill-form.service";
 export default function CreateBillForm(props) {
   const user = JSON.parse(localStorage.getItem("userInfo"));
 
@@ -37,7 +38,6 @@ export default function CreateBillForm(props) {
       return await fetAllData();
     },
   });
-  const [tgthd, setTghd] = useState<any>(0);
   const [openConfirm, setopenComfirm] = useState(false);
 
   const [preview, setPreview] = useState();
@@ -67,7 +67,7 @@ export default function CreateBillForm(props) {
 
   const saveData = async () => {
     let val = getValues();
-    val.amount = tgthd;
+    val.amount = billFormService.getTgthdBillForm();
     const formData = new FormData();
     if (selectedFile) {
       formData.append(
@@ -85,7 +85,7 @@ export default function CreateBillForm(props) {
     connectApi.then((res) => {
       if (res.success) {
         alertService.alert({
-          content: `cộng ${tgthd} điểm cho nguời dùng ${val.customerPhone}`,
+          content: `cộng ${billFormService.getTgthdBillForm()} điểm cho nguời dùng ${val.customerPhone}`,
         });
         openFormBill();
         props.close(res.data);
@@ -118,7 +118,7 @@ export default function CreateBillForm(props) {
   }
 
   function calculatorQuantity(e) {
-    setTghd(e.target.value);
+    billFormService.setTgthdBillForm(e.target.value);
     setValue("pointAmount", Math.floor(e.target.value / 1000));
   }
 
@@ -164,15 +164,15 @@ export default function CreateBillForm(props) {
             />
           </label>
           <div className="row justify-between">
-            <label className="col-6 " htmlFor="tgthd">
+            <label className="col-6 " htmlFor="billFormService.getTgthdBillForm()">
               <div className="text-xs">Tổng giá trị hoá đơn: </div>
               <input
-                id="tgthd"
+                id="billFormService.getTgthdBillForm()"
                 type="number"
                 min={0}
                 className="form-control"
                 onChange={calculatorQuantity}
-                defaultValue={tgthd}
+                defaultValue={billFormService.getTgthdBillForm()}
               />
             </label>
 
@@ -246,7 +246,7 @@ export default function CreateBillForm(props) {
     const sdt = getValues().customerPhone;
     return (
       <>
-        Xác nhận cộng {tgthd} điểm cho nguời dùng {sdt}?
+        Xác nhận cộng {billFormService.getTgthdBillForm()} điểm cho nguời dùng {sdt}?
       </>
     );
   }

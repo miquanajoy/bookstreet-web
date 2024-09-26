@@ -7,7 +7,7 @@ import {
   GENRE,
 } from "../../_helpers/const/const";
 import ListComponent from "../../Components/list.component";
-import { SearchModel, searchService, typeSearch } from "../../_services/home/search.service";
+import { SearchModel, searchService, typeSearch } from "../../_services/search.service";
 
 export default function ShowGenrePage() {
   const navigate = useNavigate();

@@ -9,7 +9,7 @@ import {
   SearchModel,
   searchService,
   typeSearch,
-} from "../../_services/home/search.service";
+} from "../../_services/search.service";
 
 export default function ListStore() {
   const [data, setData] = useState({

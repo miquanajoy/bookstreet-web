@@ -6,7 +6,7 @@ import {
   SearchModel,
   searchService,
   typeSearch,
-} from "../../../../_services/home/search.service";
+} from "../../../../_services/search.service";
 import ListComponent from "../../../../Components/list.component";
 
 export default function ListKios() {

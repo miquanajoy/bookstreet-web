@@ -9,7 +9,7 @@ import config from "../../config";
 import { STREET, ROUTER } from "../../_helpers/const/const";
 import { fileService } from "../../_services/file.service";
 import { alertService } from "../../_services";
-import { SearchModel, searchService } from "../../_services/home/search.service";
+import { SearchModel, searchService } from "../../_services/search.service";
 
 export default function HandleStreetPage() {
   const navigate = useNavigate();

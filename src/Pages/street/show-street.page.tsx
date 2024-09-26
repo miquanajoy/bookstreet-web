@@ -7,7 +7,7 @@ import { fetchWrapper } from "../../_helpers/fetch-wrapper";
 import config from "../../config";
 import Pagination from "@mui/material/Pagination";
 import { STREET, AVATARDEFAULT } from "../../_helpers/const/const";
-import { SearchModel, searchService, typeSearch } from "../../_services/home/search.service";
+import { SearchModel, searchService, typeSearch } from "../../_services/search.service";
 
 export default function ShowStreetPage() {
   const navigate = useNavigate();

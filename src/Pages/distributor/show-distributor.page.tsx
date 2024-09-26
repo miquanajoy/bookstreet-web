@@ -9,7 +9,7 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { Trash } from "../../assets/icon/trash";
 import { Pagination } from "@mui/material";
-import { SearchModel, searchService, typeSearch } from "../../_services/home/search.service";
+import { SearchModel, searchService, typeSearch } from "../../_services/search.service";
 
 export default function ShowDistributor() {
   const navigate = useNavigate();

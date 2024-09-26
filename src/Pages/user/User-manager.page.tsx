@@ -7,7 +7,7 @@ import { Role } from "../../models/Role";
 import { fetchWrapper } from "../../_helpers/fetch-wrapper";
 import config from "../../config";
 import { AUTH } from "../../_helpers/const/const";
-import { SearchModel, searchService, typeSearch } from "../../_services/home/search.service";
+import { SearchModel, searchService, typeSearch } from "../../_services/search.service";
 
 export default function ShowUserPage() {
   const [data, setData] = useState({

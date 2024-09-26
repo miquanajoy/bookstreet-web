@@ -4,7 +4,7 @@ import { Trash } from "../assets/icon/trash";
 import { MDBTable, MDBTableHead, MDBTableBody } from "mdb-react-ui-kit";
 import { EditIcon } from "../assets/icon/edit";
 import Pagination from "@mui/material/Pagination";
-import { searchService } from "../_services/home/search.service";
+import { searchService } from "../_services/search.service";
 
 export default function ListComponent(props) {
   const navigate = useNavigate();

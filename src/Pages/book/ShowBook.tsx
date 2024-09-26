@@ -27,7 +27,7 @@ import { Role, Roles } from "../../models/Role";
 import { fileService } from "../../_services/file.service";
 import dayjs from "dayjs";
 import { URL_IMG } from "../../_helpers/const/csv.const";
-import { searchService, typeSearch } from "../../_services/home/search.service";
+import { searchService, typeSearch } from "../../_services/search.service";
 import DialogDetailComponent, {
   dialogDetailService,
 } from "./dialog-detail.component";

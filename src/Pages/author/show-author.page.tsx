@@ -29,7 +29,7 @@ import { excelService, TYPE_AUTHOR } from "../../_services/excel.service";
 import { fileService } from "../../_services/file.service";
 import axios from "axios";
 import { URL_IMG } from "../../_helpers/const/csv.const";
-import { SearchModel, searchService, typeSearch } from "../../_services/home/search.service";
+import { SearchModel, searchService, typeSearch } from "../../_services/search.service";
 
 export default function ShowAuthorPage() {
   const navigate = useNavigate();

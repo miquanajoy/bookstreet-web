@@ -110,7 +110,7 @@ export default function AuthenPage() {
             id="form2"
             onSubmit={handleSubmit(loginHandle)}
           >
-            <h2 className="form__title">Sign In</h2>
+            <h2 className="form__title">Đăng nhập</h2>
             <input
               type="text"
               placeholder="Email"
@@ -124,7 +124,7 @@ export default function AuthenPage() {
               {...register("password")}
             />
 
-            <button className="btn">Sign In</button>
+            <button className="btn">Đăng nhập</button>
           </form>
         </div>
       </div>
