@@ -89,13 +89,11 @@ export default function CreateBillForm(props) {
         alertService.alert({
           content: `cộng ${billFormService.getTgthdBillForm()} điểm cho nguời dùng ${val.customerPhone}`,
         });
-        openFormBill();
         props.close(res.data);
       } else {
         alertService.alert({
           content: res.message,
         });
-        openFormBill();
         props.close(res.data);
       }
     });

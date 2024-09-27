@@ -62,8 +62,7 @@ export default function ListBrowseScores() {
     totalPage: 0,
   });
   const [pointStore, setPointStore] = useState(0);
-  async function fetAllData(pageNumber = 1, status = WAIT_BROWSE_SCORE) {
-    console.log('pageNumber :>> ', pageNumber);
+  async function fetAllData(pageNumber = 1, status = value.toString()) {
     const pointHistory = await fetchWrapper.Post2GetByPaginate(
       config.apiUrl + POINT_HISTORY,
       pageNumber,
@@ -73,28 +72,27 @@ export default function ListBrowseScores() {
             field: "storeId",
             value: user.user.storeId.toString(),
             operand: 0,
-          },{
+          },
+          {
             field: "status",
-            value: status,
-            operand: status !== HISTORY_BROWSE_SCORE ? 0 : 1,
+            value: "1",
+            operand: status,
           },
         ],
       },
       10
     );
-    console.log('pointHistory.totalPage :>> ', pointHistory.totalPage);
     setData({
       list: pointHistory.list.filter((val) => val.invoiceCode && !val.giftId),
       totalPage: pointHistory.totalPage,
     });
-    fetchWrapper.getWithoutCall(
-      config.apiUrl + STORE + "/" + user.user.storeId
-    ).then((v:any) => {
-      loadingService.hiddenLoading()
-      setPointStore(v.data.totalPoint);
+    fetchWrapper
+      .getWithoutCall(config.apiUrl + STORE + "/" + user.user.storeId)
+      .then((v: any) => {
+        loadingService.hiddenLoading();
+        setPointStore(v.data.totalPoint);
+      });
 
-    })
-    
     return pointHistory;
   }
 
@@ -120,7 +118,7 @@ export default function ListBrowseScores() {
       }
     );
     if (updatePoint.success) {
-      fetAllData(1, HISTORY_BROWSE_SCORE).then(() => {
+      fetAllData(1, value.toString()).then(() => {
         if (status == REJECT_BROWSE_SCORE) {
           alertService.alert({
             content: `Đã từ chối mã hoá đơn ${data.invoiceCode}`,
@@ -168,9 +166,6 @@ export default function ListBrowseScores() {
       onClose(selectedValue);
     };
 
-    const handleListItemClick = (value: string) => {
-      onClose(value);
-    };
     const [value, setValue] = useState(0);
 
     const handleChange = (event, newValue) => {
@@ -251,7 +246,7 @@ export default function ListBrowseScores() {
 
   const handleChange = (_, newValue) => {
     setValue(newValue);
-    fetAllData(1, newValue ? HISTORY_BROWSE_SCORE : WAIT_BROWSE_SCORE);
+    fetAllData(1, newValue);
   };
 
   return (

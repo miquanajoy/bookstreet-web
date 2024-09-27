@@ -17,8 +17,6 @@ import {
   REJECT_BROWSE_SCORE,
 } from "../../store/browse-scores/list-browse-scores";
 export default function HistoryCustomer(props) {
-  const vc = props.totalPage;
-  console.log("props.totalPage :>> ", props.totalPage);
   const user = JSON.parse(localStorage.getItem("userInfo"));
 
   function HistoryStoreTable() {
