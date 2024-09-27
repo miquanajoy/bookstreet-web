@@ -80,7 +80,9 @@ export default function CreateBillForm(props) {
       val.urlImage = preview ?? "";
     }
     // }
-    const connectApi = fetchWrapper.post(config.apiUrl + POINT_HISTORY, val);
+    const connectApi = fetchWrapper.post(config.apiUrl + POINT_HISTORY, {
+      ...val, status: 1
+    });
 
     connectApi.then((res) => {
       if (res.success) {

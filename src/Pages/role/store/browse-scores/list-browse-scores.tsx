@@ -40,9 +40,9 @@ import { CalendarIcon } from "@mui/x-date-pickers";
 import CreateBillForm from "./form-create-bill";
 import { billFormService } from "../../../../_services/bill-form.service";
 
-export const WAIT_BROWSE_SCORE = 1;
-export const HISTORY_BROWSE_SCORE = 2;
-export const REJECT_BROWSE_SCORE = 3;
+export const WAIT_BROWSE_SCORE = "1";
+export const HISTORY_BROWSE_SCORE = "2";
+export const REJECT_BROWSE_SCORE = "3";
 
 export default function ListBrowseScores() {
   const user = JSON.parse(localStorage.getItem("userInfo"));
@@ -63,6 +63,7 @@ export default function ListBrowseScores() {
   });
   const [pointStore, setPointStore] = useState(0);
   async function fetAllData(pageNumber = 1, status = WAIT_BROWSE_SCORE) {
+    console.log('pageNumber :>> ', pageNumber);
     const pointHistory = await fetchWrapper.Post2GetByPaginate(
       config.apiUrl + POINT_HISTORY,
       pageNumber,
@@ -72,11 +73,16 @@ export default function ListBrowseScores() {
             field: "storeId",
             value: user.user.storeId.toString(),
             operand: 0,
+          },{
+            field: "status",
+            value: status,
+            operand: status !== HISTORY_BROWSE_SCORE ? 0 : 1,
           },
         ],
       },
       10
     );
+    console.log('pointHistory.totalPage :>> ', pointHistory.totalPage);
     setData({
       list: pointHistory.list.filter((val) => val.invoiceCode && !val.giftId),
       totalPage: pointHistory.totalPage,
@@ -274,6 +280,8 @@ export default function ListBrowseScores() {
           {data.list.length ? (
             <HistoryCustomer
               data={data.list}
+              totalPage={data.totalPage}
+              fetAllData={fetAllData}
               browseScore={browseScore}
               isRejectBrowseScore={HISTORY_BROWSE_SCORE}
               getPointHistory={browseScore}
