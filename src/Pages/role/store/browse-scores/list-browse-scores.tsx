@@ -118,7 +118,7 @@ export default function ListBrowseScores() {
       }
     );
     if (updatePoint.success) {
-      fetAllData(1, value.toString()).then(() => {
+      fetAllData(1, "1").then(() => {
         if (status == REJECT_BROWSE_SCORE) {
           alertService.alert({
             content: `Đã từ chối mã hoá đơn ${data.invoiceCode}`,

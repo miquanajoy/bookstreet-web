@@ -3,22 +3,22 @@ import { useAuth } from "../hooks/userAuth";
 import { Role } from "../models/Role";
 
 export interface RoleBasedGuardProps {
-    accessibleRoles: Array<string>;
-    children: ReactNode;
+  accessibleRoles: Array<string>;
+  children: ReactNode;
 }
 const RoleBasedGuard: FC<RoleBasedGuardProps> = ({
-    children,
-    accessibleRoles,
+  children,
+  accessibleRoles,
 }) => {
-    const user = useAuth();
-    if (!accessibleRoles.includes(user!.role)) {
-        return (
-            <div>
-                <div>Permission Denied</div>
-                You do not have permission to access this page
-            </div >
-        );
-    };
-    return <>{children}</>;
-}
+  const user = useAuth();
+  if (!accessibleRoles.includes(user!.role)) {
+    return (
+      <div>
+        <div>Quyền bị từ chối</div>
+       <div>Bạn không có quyền truy cập vào trang này</div>
+      </div>
+    );
+  }
+  return <>{children}</>;
+};
 export default RoleBasedGuard;

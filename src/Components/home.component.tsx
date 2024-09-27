@@ -56,15 +56,15 @@ export default function HomePage() {
   const savedata = async (val) => {
     searchService.setValueSearch({
       dataSearch: val["search-input"],
-      isClickSearch:  true
-    })
+      isClickSearch: true,
+    });
   };
-  
+
   function updateSearchValue(e) {
     searchService.setValueSearch({
       dataSearch: e.target.value,
-      isClickSearch: false
-    })
+      isClickSearch: false,
+    });
   }
 
   return (
@@ -161,6 +161,7 @@ export default function HomePage() {
           </div>
         </div>
       </div>
+      
     </div>
   );
 }
