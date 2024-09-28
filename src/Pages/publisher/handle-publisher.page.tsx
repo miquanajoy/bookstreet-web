@@ -125,7 +125,6 @@ export default function HandlePublisher() {
   return (
     <div className="container">
       <div className="col-10 mx-auto">
-        <h1 className="title">Quản lý nhà xuất bản</h1>
         <form
           onSubmit={handleSubmit(savedata)}
           className="grid grid-cols-2 gap-2 jumbotron mt-4"

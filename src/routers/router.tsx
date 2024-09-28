@@ -1,4 +1,9 @@
-import { Navigate, createBrowserRouter, useRoutes } from "react-router-dom";
+import {
+  Navigate,
+  createBrowserRouter,
+  useLocation,
+  useRoutes,
+} from "react-router-dom";
 import AuthGuard from "../guards/AuthGuard";
 import AuthenPage from "../Components/authen.component";
 import RoleBasedGuard from "../guards/RoleBaseGuard";
@@ -15,7 +20,7 @@ import HandleStore from "../Pages/store/handle-store";
 import ShowLocation from "../Pages/location/show-location";
 import HandleLocation from "../Pages/location/handle-location";
 import PublisheranagerPage from "../Pages/publisher/publisher-manager.page";
-import { ROUTER } from "../_helpers/const/const";
+import { QUAN_LY, ROUTER } from "../_helpers/const/const";
 import HandleAuthorPage from "../Pages/author/handle-author.page";
 import ShowAuthorPage from "../Pages/author/show-author.page";
 import ShowGenrePage from "../Pages/genre/show-genre.page";
@@ -28,19 +33,18 @@ import HandleStreetPage from "../Pages/street/handle-street.page";
 import ShowStreetPage from "../Pages/street/show-street.page";
 import HandleAreaPage from "../Pages/area/handle-area.page";
 import ShowAreaPage from "../Pages/area/show-area.page";
-import ListCustomerPoint from "../Pages/role/store/customer-point/list-customer-point";
 import ShowUserPage from "../Pages/user/User-manager.page";
 import ShowGift from "../Pages/role/store/gift/show-gift";
 import HandleGift from "../Pages/role/store/gift/handle-gift";
-import HandleCustomer from "../Pages/role/store/customer-point/handle-customer-point";
 import ShowSouvenir from "../Pages/book/show-souvenir";
 import ListKios from "../Pages/role/admin/kios/list-kios";
 import HandleKios from "../Pages/role/admin/kios/handle-kios";
 import PointStore from "../Pages/role/manager/manager-point/point-store";
 import ListBrowseScores from "../Pages/role/store/browse-scores/list-browse-scores";
 import ProrilePage from "../Pages/user/profile.page";
+
 const user = JSON.parse(localStorage.getItem("userInfo"));
-const firstLogin = () => {
+const afterLogin = () => {
   switch (user?.user?.role) {
     case Role.Admin:
       return <Navigate to={ROUTER.user.url} />;
@@ -62,13 +66,14 @@ const firstLogin = () => {
       return <AuthenPage />;
   }
 };
+
 const router = createBrowserRouter([
   {
     path: "",
     children: [
       {
         path: "",
-        element: firstLogin(),
+        element: afterLogin(),
       },
     ],
   },
@@ -76,7 +81,7 @@ const router = createBrowserRouter([
     path: "/",
     element: (
       <AuthGuard>
-        <HomePage />
+        <HomePage title={QUAN_LY + "Hồ sơ"} />
       </AuthGuard>
     ),
     children: [
@@ -93,10 +98,10 @@ const router = createBrowserRouter([
     ],
   },
   {
-    path: "/books",
+    path: ROUTER.book.url,
     element: (
       <AuthGuard>
-        <HomePage />
+        <HomePage title={QUAN_LY + ROUTER.book.name.toLocaleLowerCase()} />
       </AuthGuard>
     ),
     children: [
@@ -156,7 +161,7 @@ const router = createBrowserRouter([
     path: "/souvenir",
     element: (
       <AuthGuard>
-        <HomePage />
+        <HomePage title={QUAN_LY + ROUTER.souvenir.name.toLocaleLowerCase()} />
       </AuthGuard>
     ),
     children: [
@@ -216,7 +221,7 @@ const router = createBrowserRouter([
     path: "/user-management",
     element: (
       <AuthGuard>
-        <HomePage />
+        <HomePage title={QUAN_LY + ROUTER.user.name.toLocaleLowerCase()} />
       </AuthGuard>
     ),
     children: [
@@ -256,7 +261,7 @@ const router = createBrowserRouter([
     path: "/publisher-management",
     element: (
       <AuthGuard>
-        <HomePage />
+        <HomePage title={QUAN_LY + ROUTER.publisher.name.toLocaleLowerCase()} />
       </AuthGuard>
     ),
     children: [
@@ -296,7 +301,7 @@ const router = createBrowserRouter([
     path: "/event-management",
     element: (
       <AuthGuard>
-        <HomePage />
+        <HomePage title={QUAN_LY + ROUTER.event.name.toLocaleLowerCase()} />
       </AuthGuard>
     ),
     children: [
@@ -337,7 +342,7 @@ const router = createBrowserRouter([
     path: "/store-management",
     element: (
       <AuthGuard>
-        <HomePage />
+        <HomePage title={QUAN_LY + ROUTER.store.name.toLocaleLowerCase()} />
       </AuthGuard>
     ),
     children: [
@@ -378,7 +383,9 @@ const router = createBrowserRouter([
     path: "/area",
     element: (
       <AuthGuard>
-        <HomePage />
+        <HomePage
+          title={QUAN_LY + ROUTER.roleManager.area.name.toLocaleLowerCase()}
+        />
       </AuthGuard>
     ),
     children: [
@@ -419,7 +426,9 @@ const router = createBrowserRouter([
     path: "/location",
     element: (
       <AuthGuard>
-        <HomePage />
+        <HomePage
+          title={QUAN_LY + ROUTER.roleManager.location.name.toLocaleLowerCase()}
+        />
       </AuthGuard>
     ),
     children: [
@@ -460,7 +469,7 @@ const router = createBrowserRouter([
     path: ROUTER.author.url,
     element: (
       <AuthGuard>
-        <HomePage />
+        <HomePage title={QUAN_LY + ROUTER.author.name.toLocaleLowerCase()} />
       </AuthGuard>
     ),
     children: [
@@ -501,7 +510,7 @@ const router = createBrowserRouter([
     path: ROUTER.genre.url,
     element: (
       <AuthGuard>
-        <HomePage />
+        <HomePage title={QUAN_LY + ROUTER.genre.name.toLocaleLowerCase()} />
       </AuthGuard>
     ),
     children: [
@@ -542,7 +551,9 @@ const router = createBrowserRouter([
     path: ROUTER.distributor.url,
     element: (
       <AuthGuard>
-        <HomePage />
+        <HomePage
+          title={QUAN_LY + ROUTER.distributor.name.toLocaleLowerCase()}
+        />
       </AuthGuard>
     ),
     children: [
@@ -583,7 +594,7 @@ const router = createBrowserRouter([
     path: ROUTER.category.url,
     element: (
       <AuthGuard>
-        <HomePage />
+        <HomePage title={QUAN_LY + ROUTER.category.name.toLocaleLowerCase()} />
       </AuthGuard>
     ),
     children: [
@@ -624,7 +635,7 @@ const router = createBrowserRouter([
     path: ROUTER.street.url,
     element: (
       <AuthGuard>
-        <HomePage />
+        <HomePage title={QUAN_LY + ROUTER.street.name.toLocaleLowerCase()} />
       </AuthGuard>
     ),
     children: [
@@ -665,7 +676,11 @@ const router = createBrowserRouter([
     path: ROUTER.roleStore.customerPoint.url,
     element: (
       <AuthGuard>
-        <HomePage />
+        <HomePage
+          title={
+            QUAN_LY + ROUTER.roleStore.customerPoint.name.toLocaleLowerCase()
+          }
+        />
       </AuthGuard>
     ),
     children: [
@@ -686,7 +701,9 @@ const router = createBrowserRouter([
     path: ROUTER.roleGiftStore.gift.url,
     element: (
       <AuthGuard>
-        <HomePage />
+        <HomePage
+          title={QUAN_LY + ROUTER.roleGiftStore.gift.name.toLocaleLowerCase()}
+        />
       </AuthGuard>
     ),
     children: [
@@ -727,7 +744,7 @@ const router = createBrowserRouter([
     path: ROUTER.kios.url,
     element: (
       <AuthGuard>
-        <HomePage />
+        <HomePage title={QUAN_LY + ROUTER.kios.name.toLocaleLowerCase()} />
       </AuthGuard>
     ),
     children: [
@@ -768,7 +785,11 @@ const router = createBrowserRouter([
     path: ROUTER.roleAdmin.pointHistory.url,
     element: (
       <AuthGuard>
-        <HomePage />
+        <HomePage
+          title={
+            QUAN_LY + ROUTER.roleAdmin.pointHistory.name.toLocaleLowerCase()
+          }
+        />
       </AuthGuard>
     ),
     children: [

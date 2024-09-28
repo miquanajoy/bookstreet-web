@@ -547,7 +547,6 @@ export default function ShowGift() {
   return (
     <div className="px-6">
       <div className="flex items-center justify-between mb-2">
-        <h1 className="title">Quản lý quà tặng</h1>
         {user.role == Role.GiftStore ? (
           <div className="d-flex gap-2">
             <button
@@ -571,7 +570,7 @@ export default function ShowGift() {
               onChange={(event) => importExcel(event)}
             />
             <Link to="create">
-              <button className="bg-black text-white rounded-lg px-3 py-0.5">
+              <button className="bg-info text-white rounded-lg px-3 py-0.5">
                 Tạo quà tặng
               </button>
             </Link>
@@ -625,7 +624,7 @@ export default function ShowGift() {
           </div>
         ))}
       </div>
-      <div className="mt-2">
+      <div className="mt-2 p-2">
         {data.totalPage ? (
           <div className="flex justify-center">
             <span>

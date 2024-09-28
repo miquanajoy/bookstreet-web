@@ -144,7 +144,6 @@ export default function AddUser(props) {
 
   return (
     <div className="container">
-      {!props.userId ? <h1 className="title">Quản lý tài khoản</h1> : <></>}
       <form
         onSubmit={handleSubmit(savedata)}
         className="grid grid-cols-2 gap-4 jumbotron mt-4"

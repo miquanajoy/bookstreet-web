@@ -128,7 +128,6 @@ export default function HandleCustomer() {
 
   return (
     <div className="container">
-      <h1 className="title">Quản lý khách hàng</h1>
       <form onSubmit={handleSubmit(savedata)} className="col-6">
         <div className="d-flex flex-column gap-2">
           <div className="grid grid-cols-2 gap-2">

@@ -457,9 +457,8 @@ export default function ListCustomerPoint() {
     <>
       <div className="px-6">
         <div className="flex items-center justify-between mb-2">
-          <h1 className="title">Quản lý Khách hàng </h1>
           <Link to="create">
-            <button className="bg-black text-white rounded-lg px-3 py-0.5">
+            <button className="bg-info text-white rounded-lg px-3 py-0.5">
               Tạo khách hàng
             </button>
           </Link>

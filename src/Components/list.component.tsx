@@ -102,49 +102,52 @@ export default function ListComponent(props) {
   }
 
   return (
-    <div className="px-6">
-      <div className="flex items-center justify-between mb-2">
-        <h1 className="title">{props.title}</h1>
+    <div className="">
+      <div className="flex items-center justify-between mb-2 bg-slate-50 pb-3">
         {props.buttonName && (
-          <Link to="create">
-            <button className="bg-black text-white rounded-lg px-3 py-0.5">
-              {props.buttonName}
-            </button>
-          </Link>
+          <div className="d-flex justify-end gap-2 w-full bg-white px-6 py-3">
+            <Link to="create">
+              <button className="bg-info text-white rounded-lg px-3 py-0.5">
+                {props.buttonName}
+              </button>
+            </Link>
+          </div>
         )}
       </div>
-      <MDBTable align="middle" hover>
-        <MDBTableHead>
-          <tr className="text-center">
-            {props.header.map((v) => (
-              <th
-                key={v.key}
-                scope="col"
-                className={v.key == "description" ? "w-[300px]" : ""}
-              >
-                <div>{filterHeader(v.name)}</div>
+      <div className="p-2">
+        <MDBTable align="middle" hover>
+          <MDBTableHead>
+            <tr className="text-center whitespace-nowrap">
+              {props.header.map((v) => (
+                <th
+                  key={v.key}
+                  scope="col"
+                  className={v.key == "description" ? "w-[300px]" : ""}
+                >
+                  <div>{filterHeader(v.name)}</div>
+                </th>
+              ))}
+              <th scope="col" className="whitespace-nowrap">
+                Sửa
+                {props.deleteItem ? <> / Xóa</> : <></>}
               </th>
-            ))}
-            <th scope="col" className="">
-              Sửa
-              {props.deleteItem ? <> / Xóa</> : <></>}
-            </th>
-          </tr>
-        </MDBTableHead>
-        <MDBTableBody>{renderTdUi()}</MDBTableBody>
-      </MDBTable>
-      {props.totalPage ? (
-        <div className="flex justify-center">
-          <span>
-            <Pagination
-              count={props.totalPage}
-              onChange={(_, pageNumber) => props.handleChange(pageNumber)}
-            />
-          </span>
-        </div>
-      ) : (
-        <></>
-      )}
+            </tr>
+          </MDBTableHead>
+          <MDBTableBody>{renderTdUi()}</MDBTableBody>
+        </MDBTable>
+        {props.totalPage ? (
+          <div className="flex justify-center">
+            <span>
+              <Pagination
+                count={props.totalPage}
+                onChange={(_, pageNumber) => props.handleChange(pageNumber)}
+              />
+            </span>
+          </div>
+        ) : (
+          <></>
+        )}
+      </div>
     </div>
   );
 }

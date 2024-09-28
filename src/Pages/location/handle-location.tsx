@@ -277,22 +277,6 @@ export default function HandleLocation() {
 
   useEffect(drawLocation, [locationPin]);
 
-  function clearAllLocations() {
-    setLocationPin([]);
-    const canv = imageCanvas.current.getContext("2d");
-    const img = new Image();
-    img.src = streets.find(
-      (street) => street.streetId == getValues().streetId
-    )?.urlImage;
-
-    img.onload = () => {
-      imageCanvas.current.width = img.width;
-      imageCanvas.current.height = img.height;
-
-      canv.drawImage(img, 0, 0);
-    };
-  }
-
   function choosePoint(event) {
     let locationPinCurrent = locationPin.filter((val) => val.locationId);
     const canv = imageCanvas.current.getContext("2d");
@@ -343,12 +327,11 @@ export default function HandleLocation() {
 
   return (
     <div className="container">
-      <h1 className="title">Quản lý vị trí</h1>
       <form
         onSubmit={handleSubmit(savedata)}
         className="grid grid-cols-2 gap-4 jumbotron mt-4"
       >
-        <div className="flex flex-column items-center gap-2">
+        {/* <div className="flex flex-column items-center gap-2">
           <label
             htmlFor="imageUpload"
             className="block h-52 w-52 bg-slate-50 bg-contain bg-no-repeat bg-center"
@@ -367,7 +350,7 @@ export default function HandleLocation() {
           >
             Chọn hình ảnh
           </label>
-        </div>
+        </div> */}
 
         <div className="flex flex-column gap-2">
           <label className="" htmlFor="nm">
@@ -435,7 +418,7 @@ export default function HandleLocation() {
             <div className="overflow-auto w-100 h-70-screen">
               <canvas ref={imageCanvas} onClick={choosePoint}></canvas>
             </div>
-            <div className="mt-2">
+            <div className="mt-2 p-2">
              
               <button
                 onClick={() => {

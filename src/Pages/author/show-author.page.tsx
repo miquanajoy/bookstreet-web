@@ -29,7 +29,11 @@ import { excelService, TYPE_AUTHOR } from "../../_services/excel.service";
 import { fileService } from "../../_services/file.service";
 import axios from "axios";
 import { URL_IMG } from "../../_helpers/const/csv.const";
-import { SearchModel, searchService, typeSearch } from "../../_services/search.service";
+import {
+  SearchModel,
+  searchService,
+  typeSearch,
+} from "../../_services/search.service";
 
 export default function ShowAuthorPage() {
   const navigate = useNavigate();
@@ -229,10 +233,9 @@ export default function ShowAuthorPage() {
   }
 
   return (
-    <div className="px-6">
-      <div className="flex items-center justify-between mb-2">
-        <h1 className="title">Quản lý tác giả</h1>
-        <div className="d-flex gap-2">
+    <div className="">
+      <div className="flex items-center justify-between mb-2 bg-slate-50 pb-3">
+        <div className="d-flex justify-end gap-2 w-full bg-white px-6 py-3">
           <button
             className="bg-info text-white rounded-lg px-3 py-0.5"
             onClick={() => getCsv()}
@@ -255,13 +258,13 @@ export default function ShowAuthorPage() {
           />
 
           <Link to="create">
-            <button className="bg-black text-white rounded-lg px-3 py-0.5">
+            <button className="bg-info text-white rounded-lg px-3 py-0.5">
               Tạo tác giả
             </button>
           </Link>
         </div>
       </div>
-      <div className="grid grid-cols-5 gap-4">
+      <div className="grid grid-cols-5 gap-4 px-6">
         {data.list.map((val) => (
           <div
             key={val.authorId}
@@ -293,7 +296,7 @@ export default function ShowAuthorPage() {
           </div>
         ))}
       </div>
-      <div className="mt-2">
+      <div className="mt-2 p-2">
         {data.totalPage ? (
           <div className="flex justify-center">
             <span>

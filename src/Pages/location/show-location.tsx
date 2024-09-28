@@ -17,10 +17,10 @@ export default function ShowLocation() {
     totalPage: 0,
   });
   const headers = [
-    {
-      key: "image",
-      name: "urlImage",
-    },
+    // {
+    //   key: "image",
+    //   name: "urlImage",
+    // },
     {
       key: "locationName",
       name: "locationName",

@@ -106,12 +106,11 @@ export default function HandleAreaPage() {
 
   return (
     <div className="container">
-      <h1 className="title">Quản lý khu vực</h1>
       <form
         onSubmit={handleSubmit(savedata)}
         className="grid grid-cols-2 gap-4 jumbotron mt-4"
       >
-        <div className="flex flex-column items-center gap-2">
+        {/* <div className="flex flex-column items-center gap-2">
           <label
             htmlFor="imageUpload"
             className="block h-52 w-52 bg-slate-50 bg-contain bg-no-repeat bg-center"
@@ -130,7 +129,7 @@ export default function HandleAreaPage() {
           >
             Chọn hình ảnh
           </label>
-        </div>
+        </div> */}
 
         <div className="flex flex-column gap-4">
           <label className="" htmlFor="nm">

@@ -129,7 +129,6 @@ export default function HandleStreetPage() {
 
   return (
     <div className="container">
-      <h1 className="title">Quản lý Đường sách</h1>
       <form
         onSubmit={handleSubmit(savedata)}
         className="grid grid-cols-3 gap-2 jumbotron mt-4"

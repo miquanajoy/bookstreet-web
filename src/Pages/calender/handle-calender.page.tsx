@@ -141,7 +141,6 @@ export default function HandleCalenderPage() {
 
   return (
     <div className="container">
-      <h1 className="title">QUẢN LÝ SỰ KIỆN</h1>
       <form
         onSubmit={handleSubmit(savedata)}
         className="grid grid-cols-2 gap-4 jumbotron mt-4"

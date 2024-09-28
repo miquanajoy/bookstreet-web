@@ -246,62 +246,67 @@ export default function ListBrowseScores() {
 
   const handleChange = (_, newValue) => {
     setValue(newValue);
+    setData({
+      list: [],
+      totalPage: 0,
+    });
     fetAllData(1, newValue);
   };
 
   return (
     <>
-      <div className="px-6">
-        <div className="flex items-center justify-between mb-2">
-          <h1 className="title">
-            Quản lý {ROUTER.roleStore.customerPoint.name}
-          </h1>
-          <button
-            className="bg-success text-white rounded-lg px-3 py-0.5"
-            onClick={openFormBill}
-          >
-            Tạo hoá đơn
-          </button>
+      <div className="">
+        <div className="flex items-center justify-between mb-2 bg-slate-50 pb-3">
+          <div className="d-flex justify-end gap-2 w-full bg-white px-6 py-3">
+            <button
+              className="bg-success text-white rounded-lg px-3 py-0.5"
+              onClick={openFormBill}
+            >
+              Tạo hoá đơn
+            </button>
+          </div>
         </div>
-        <h4>Số điểm trong ví: {pointStore} điểm </h4>
+        <div className="p-2">
+          <h4>Số điểm trong ví: {pointStore} điểm </h4>
 
-        <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
-          <Tabs value={value} onChange={handleChange}>
-            <Tab label="Chờ duyệt" id="simple-tab-1" />
-            <Tab label="Lịch sử duyệt" id="simple-tab-2" />
-          </Tabs>
-        </Box>
-        <CustomTabPanel value={value} index={0}>
-          {data.list.length ? (
-            <HistoryCustomer
-              data={data.list}
-              totalPage={data.totalPage}
-              fetAllData={fetAllData}
-              browseScore={browseScore}
-              isRejectBrowseScore={HISTORY_BROWSE_SCORE}
-              getPointHistory={browseScore}
-            />
-          ) : (
-            <div className="mt-2 ">Không có dữ liệu</div>
-          )}
-        </CustomTabPanel>
-        <CustomTabPanel value={value} index={1}>
-          {data.list.length ? (
-            <HistoryCustomer
-              data={data.list}
-              isRejectBrowseScore={REJECT_BROWSE_SCORE}
-            />
-          ) : (
-            <div className="mt-2">Không có dữ liệu</div>
-          )}
-        </CustomTabPanel>
-        <div className="flex justify-center">
-          <span>
-            <Pagination
-              count={data.totalPage}
-              onChange={(_, pageNumber) => fetAllData(pageNumber)}
-            />
-          </span>
+          <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
+            <Tabs value={value} onChange={handleChange}>
+              <Tab label="Chờ duyệt" id="simple-tab-1" />
+              <Tab label="Lịch sử duyệt" id="simple-tab-2" />
+            </Tabs>
+          </Box>
+          <CustomTabPanel value={value} index={0}>
+            {data.list.length ? (
+              <HistoryCustomer
+                data={data.list}
+                totalPage={data.totalPage}
+                fetAllData={fetAllData}
+                browseScore={browseScore}
+                isRejectBrowseScore={HISTORY_BROWSE_SCORE}
+                getPointHistory={browseScore}
+              />
+            ) : (
+              <div className="mt-2 ">Không có dữ liệu</div>
+            )}
+          </CustomTabPanel>
+          <CustomTabPanel value={value} index={1}>
+            {data.list.length ? (
+              <HistoryCustomer
+                data={data.list}
+                isRejectBrowseScore={REJECT_BROWSE_SCORE}
+              />
+            ) : (
+              <div className="mt-2 p-2">Không có dữ liệu</div>
+            )}
+          </CustomTabPanel>
+          <div className="flex justify-center">
+            <span>
+              <Pagination
+                count={data.totalPage}
+                onChange={(_, pageNumber) => fetAllData(pageNumber)}
+              />
+            </span>
+          </div>
         </div>
         <DialogDetail
           selectedValue={selectedValue}

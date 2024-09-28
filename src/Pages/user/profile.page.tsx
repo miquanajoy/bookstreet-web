@@ -46,7 +46,7 @@ export default function ProrilePage() {
             <HandleStore storeId={userLocal.storeId} />
           </CustomTabPanel>
           <CustomTabPanel value={value} index={1}>
-            < AddUser userId={userLocal.id} />
+            <AddUser userId={userLocal.id} />
           </CustomTabPanel>
         </>
       );

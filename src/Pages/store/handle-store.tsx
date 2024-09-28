@@ -449,7 +449,7 @@ export default function HandleStore(props) {
             <div className="overflow-auto w-100 h-70-screen">
               <canvas ref={imageCanvas}></canvas>
             </div>
-            <div className="mt-2">
+            <div className="mt-2 p-2">
               <button
                 onClick={handleClose}
                 className="bg-info text-white  rounded-lg px-3 py-0.5"

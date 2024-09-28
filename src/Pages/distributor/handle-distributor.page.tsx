@@ -127,7 +127,6 @@ export default function HandleDistributorPage() {
 
   return (
     <div className="container">
-      <h1 className="title">Quản lý nhà phân phối</h1>
       <form
         onSubmit={handleSubmit(savedata)}
         className="grid grid-cols-2 gap-2 jumbotron mt-4"

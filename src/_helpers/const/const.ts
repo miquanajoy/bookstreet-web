@@ -88,7 +88,16 @@ export const ROUTER = {
       url: "/point-history",
     },
   },
-  roleManager: {},
+  roleManager: {
+    area: {
+      name: "Quản lý khu vực",
+      url: "/area",
+    },
+    location: {
+      name: "Quản lý vị trí",
+      url: "/location",
+    },
+  },
   roleGiftStore: {
     gift: {
       name: "Quà tặng",
@@ -182,3 +191,4 @@ export const ROUTERS = [
 ];
 
 export const AVATARDEFAULT = bgDefault;
+export const QUAN_LY = "Quản lý ";

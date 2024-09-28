@@ -66,18 +66,17 @@ export default function ShowDistributor() {
     // End Search area
     
   return (
-    <div className="px-6">
-      <div className="flex items-center justify-between mb-2">
-        <h1 className="title">Quản lý nhà phân phối</h1>
-        <div className="d-flex gap-2">
+    <div className="">
+      <div className="flex items-center justify-between mb-2 bg-slate-50 pb-3">
+        <div className="d-flex justify-end gap-2 w-full bg-white px-6 py-3">
           <Link to="create">
-            <button className="bg-black text-white rounded-lg px-3 py-0.5">
+            <button className="bg-info text-white rounded-lg px-3 py-0.5">
               Tạo nhà phân phối
             </button>
           </Link>
         </div>
       </div>
-      <div className="grid grid-cols-5 gap-4">
+      <div className="grid grid-cols-5 gap-4 px-6">
         {data.list.map((val) => (
           <div
             key={val.distributorId}
@@ -107,7 +106,7 @@ export default function ShowDistributor() {
           </div>
         ))}
       </div>
-      <div className="mt-2">
+      <div className="mt-2 p-2">
         {data.totalPage ? (
           <div className="flex justify-center">
             <span>

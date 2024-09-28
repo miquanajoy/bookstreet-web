@@ -68,16 +68,17 @@ export default function PublisheranagerPage() {
   }
 
   return (
-    <div className="px-6">
-      <div className="flex items-center justify-between mb-2">
-        <h1 className="title">Quản lý nhà xuất bản</h1>
-        <Link to="create">
-          <button className="bg-black text-white rounded-lg px-3 py-0.5">
-            Tạo nhà xuất bản
-          </button>
-        </Link>
+    <div className="">
+      <div className="flex items-center justify-between mb-2 bg-slate-50 pb-3">
+        <div className="d-flex justify-end gap-2 w-full bg-white px-6 py-3">
+          <Link to="create">
+            <button className="bg-info text-white rounded-lg px-3 py-0.5">
+              Tạo nhà xuất bản
+            </button>
+          </Link>
+        </div>
       </div>
-      <div className="grid grid-cols-5 gap-4">
+      <div className="grid grid-cols-5 gap-4 px-6">
         {data.list.map((val) => (
           <div
             key={val.publisherId}

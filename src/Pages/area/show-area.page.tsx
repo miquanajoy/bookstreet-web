@@ -17,10 +17,10 @@ export default function ShowAreaPage() {
     totalPage: 0,
   });
   const headers = [
-    {
-      key: "image",
-      name: "urlImage",
-    },
+    // {
+    //   key: "image",
+    //   name: "urlImage",
+    // },
     { key: "areaName", name: "areaName" },
     { key: "streetName", name: "streetName" },
   ];

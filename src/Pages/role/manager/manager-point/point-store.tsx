@@ -79,14 +79,12 @@ export default function PointStore() {
       const storeList = auth.list
         .filter((store) => store.role == Role.Store)
         .map((val) => val.id);
-      console.log(res.list.filter((data) => storeList.find(v => {
-        return v == data.storeId
-      })))
-        console.log('res.list :>> ', res.list);
       setData({
-        list: res.list.filter((data) => storeList.find(v => {
-          return v == data.userId
-        })),
+        list: res.list.filter((data) =>
+          storeList.find((v) => {
+            return v == data.userId;
+          })
+        ),
         totalPage: res.totalPage,
       });
     });
@@ -285,10 +283,7 @@ export default function PointStore() {
   }
 
   return (
-    <div className="px-6">
-      <div className="flex items-center justify-between mb-2">
-        <h1 className="title">{ROUTER.roleAdmin.pointHistory.name}</h1>
-      </div>
+    <div className="">
       <MDBTable align="middle" hover>
         <MDBTableHead>
           <tr className="text-center">
@@ -428,7 +423,7 @@ export default function PointStore() {
               {customerByStore.filterData.length ? (
                 <HistoryCustomer data={customerByStore.filterData} />
               ) : (
-                <div className="mt-2">Chưa có giao dịch nào</div>
+                <div className="mt-2 p-2">Chưa có giao dịch nào</div>
               )}
             </CustomTabPanel>
           </Box>

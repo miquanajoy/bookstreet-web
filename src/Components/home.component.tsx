@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Outlet } from "react-router-dom";
+import { Outlet, useLocation } from "react-router-dom";
 
 import SidebarPage, { LinkInterface } from "./sidebar.component";
 import AlertContext from "./alert.component";
@@ -12,7 +12,11 @@ import DeleteDialog from "./delete-dialog.component";
 import { useForm } from "react-hook-form";
 import { searchService } from "../_services/search.service";
 
-export default function HomePage() {
+export default function HomePage(props) {
+  console.log('props :>> ', props);
+// const location = useLocation();
+
+
   const {
     register,
     handleSubmit,
@@ -69,8 +73,11 @@ export default function HomePage() {
 
   function Header() {
     return (
-      <div className="lg:col-span-8 col-span-10 row-span-1">
-        <div className="header w-full flex items-center justify-between p-2">
+      <div className="lg:col-span-8 col-span-10 row-span-1 p-2">
+        <div className="bg-white px-6">
+        <div className="header w-full flex items-center justify-between">
+          <h1 className="title">{props?.title}</h1>
+
           <form className="max-w-lg w-full" onSubmit={handleSubmit(savedata)}>
             <label
               htmlFor="default-search"
@@ -146,6 +153,7 @@ export default function HomePage() {
             </div>
           </button>
         </div>
+        </div>
       </div>
     );
   }
@@ -156,12 +164,13 @@ export default function HomePage() {
       <LoadingComponent onLoading={isShowLoading} />
       <AlertContext onAlert={isShowAlert} content="Demo alert" />
 
-      <Header />
-      <div className="flex items-start">
-        <div className="lg:col-1 col-2 row-12 sticky top-0">
+      <div className="row items-start">
+        <div className="lg:col-1 col-2 row-12 sticky top-0 p-0">
           <SidebarPage routerList={routerList} />
         </div>
-        <div className="lg:col-11 col-10">
+
+        <div className="lg:col-11 col-10 bg-slate-50 p-2">
+          <Header />
           <div className="bg-slate-50 p-2">
             <div className="bg-white">
               <Outlet />
