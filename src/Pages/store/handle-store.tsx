@@ -216,7 +216,7 @@ export default function HandleStore(props) {
         alertService.alert({
           content: idStore ? "Thay đổi thành công" : "Tạo mới thành công",
         });
- 
+
         navigate(props.storeId ? "" : ROUTER.store.url, { replace: true });
       } else {
         alertService.alert({
@@ -248,7 +248,7 @@ export default function HandleStore(props) {
       (location) => location.locationId == getValues().locationId
     ).locationImage;
     img.src = imgLocation;
-    console.log('imgLocation :>> ', imgLocation);
+    console.log("imgLocation :>> ", imgLocation);
     if (!imgLocation) {
       alert("khu vực này chưa có ảnh");
       return;
@@ -304,7 +304,8 @@ export default function HandleStore(props) {
           ctx.drawImage(img, x - 50, y - 50, 100, 100);
           ctx.restore();
         };
-        img.src = pin.storeImage;
+        img.src =
+          pin.storeId == params.id ? preview ?? pin.storeImage : pin.storeImage;
       });
   }
 
