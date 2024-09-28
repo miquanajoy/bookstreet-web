@@ -15,6 +15,7 @@ import { StreetIcon } from "../../assets/icon/street";
 import { GenreIcon } from "../../assets/icon/genre";
 import { DistributorIcon } from "../../assets/icon/distributorIcon";
 import { CategoryIcon } from "../../assets/icon/category";
+import { AuthorIcon } from "../../assets/icon/author";
 
 export const AUTH = "Auth";
 export const STORE = "Store";
@@ -132,7 +133,7 @@ export const ROUTERS = [
     roles: [Role.Manager],
   },
   {
-    logo: Address,
+    logo: AuthorIcon,
     ...ROUTER.author,
     roles: [Role.Manager],
   },
@@ -174,11 +175,6 @@ export const ROUTERS = [
     roles: [Role.Manager],
   },
   {
-    logo: GenreIcon,
-    ...ROUTER.genre,
-    roles: [Role.Manager],
-  },
-  {
     logo: DistributorIcon,
     ...ROUTER.distributor,
     roles: [Role.Manager],
@@ -186,6 +182,11 @@ export const ROUTERS = [
   {
     logo: CategoryIcon,
     ...ROUTER.category,
+    roles: [Role.Manager],
+  },
+  {
+    logo: GenreIcon,
+    ...ROUTER.genre,
     roles: [Role.Manager],
   },
   {
