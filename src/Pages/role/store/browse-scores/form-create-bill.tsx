@@ -62,7 +62,7 @@ export default function CreateBillForm(props) {
     return {
       ...data,
       customerPhone: 0,
-      storeId: stores.list[0].storeId,
+      storeId: stores.list.find(store => store.storeId == user.user.storeId).storeId,
     };
   }
 

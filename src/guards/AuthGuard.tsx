@@ -1,18 +1,14 @@
 import { FC, PropsWithChildren, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { Navigate, redirect, useNavigate } from "react-router-dom";
 import { useAuth } from "../hooks/userAuth";
 type ProtectedRouteProps = PropsWithChildren;
 
 export default function AuthGuard({ children }: ProtectedRouteProps) {
-    const user = useAuth();
-    const navigate = useNavigate();
+  const user = useAuth();
 
-    useEffect(() => {
-        if (!user.isInitialized) {
-            navigate('/', { replace: true });
-        }
-    }, [navigate, user]);
-    if (!user.isInitialized) return <>You dont have permission</>;
+  if (!user.isInitialized) {
+    return <Navigate to={"/"} />
+  }
 
-    return (<>{children}</>);
+  return <>{children}</>;
 }

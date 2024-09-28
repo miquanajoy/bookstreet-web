@@ -39,20 +39,46 @@ import HandleKios from "../Pages/role/admin/kios/handle-kios";
 import PointStore from "../Pages/role/manager/manager-point/point-store";
 import ListBrowseScores from "../Pages/role/store/browse-scores/list-browse-scores";
 import ProrilePage from "../Pages/user/profile.page";
-
+const user = JSON.parse(localStorage.getItem("userInfo"));
+const firstLogin = () => {
+  switch (user?.user?.role) {
+    case Role.Admin:
+      return <Navigate to={ROUTER.user.url} />;
+    case Role.GiftStore:
+      return <Navigate to={ROUTER.roleGiftStore.gift.url} />;
+    case Role.Manager:
+      return <Navigate to={ROUTER.book.url} />;
+    case Role.Store:
+      if (!user?.user?.storeId) {
+        return (
+          <div>
+            <div>Quyền bị từ chối</div>
+            <div>Chưa được ủy quyền</div>
+          </div>
+        );
+      }
+      return <Navigate to={ROUTER.book.url} />;
+    default:
+      return <AuthenPage />;
+  }
+};
 const router = createBrowserRouter([
   {
     path: "",
     children: [
       {
         path: "",
-        element: <AuthenPage />,
+        element: firstLogin(),
       },
     ],
   },
   {
     path: "/",
-    element: <HomePage />,
+    element: (
+      <AuthGuard>
+        <HomePage />
+      </AuthGuard>
+    ),
     children: [
       {
         path: "profile/:id",
@@ -63,12 +89,16 @@ const router = createBrowserRouter([
             </RoleBasedGuard>
           </AuthGuard>
         ),
-      }
+      },
     ],
   },
   {
     path: "/books",
-    element: <HomePage />,
+    element: (
+      <AuthGuard>
+        <HomePage />
+      </AuthGuard>
+    ),
     children: [
       {
         path: "",
@@ -124,7 +154,11 @@ const router = createBrowserRouter([
   },
   {
     path: "/souvenir",
-    element: <HomePage />,
+    element: (
+      <AuthGuard>
+        <HomePage />
+      </AuthGuard>
+    ),
     children: [
       {
         path: "",
@@ -180,7 +214,11 @@ const router = createBrowserRouter([
   },
   {
     path: "/user-management",
-    element: <HomePage />,
+    element: (
+      <AuthGuard>
+        <HomePage />
+      </AuthGuard>
+    ),
     children: [
       {
         path: "",
@@ -216,7 +254,11 @@ const router = createBrowserRouter([
   },
   {
     path: "/publisher-management",
-    element: <HomePage />,
+    element: (
+      <AuthGuard>
+        <HomePage />
+      </AuthGuard>
+    ),
     children: [
       {
         path: "",
@@ -252,7 +294,11 @@ const router = createBrowserRouter([
   },
   {
     path: "/event-management",
-    element: <HomePage />,
+    element: (
+      <AuthGuard>
+        <HomePage />
+      </AuthGuard>
+    ),
     children: [
       {
         path: "",
@@ -289,7 +335,11 @@ const router = createBrowserRouter([
   // Store
   {
     path: "/store-management",
-    element: <HomePage />,
+    element: (
+      <AuthGuard>
+        <HomePage />
+      </AuthGuard>
+    ),
     children: [
       {
         path: "",
@@ -326,7 +376,11 @@ const router = createBrowserRouter([
   // Area
   {
     path: "/area",
-    element: <HomePage />,
+    element: (
+      <AuthGuard>
+        <HomePage />
+      </AuthGuard>
+    ),
     children: [
       {
         path: "",
@@ -363,7 +417,11 @@ const router = createBrowserRouter([
   // Location
   {
     path: "/location",
-    element: <HomePage />,
+    element: (
+      <AuthGuard>
+        <HomePage />
+      </AuthGuard>
+    ),
     children: [
       {
         path: "",
@@ -400,7 +458,11 @@ const router = createBrowserRouter([
   // Author
   {
     path: ROUTER.author.url,
-    element: <HomePage />,
+    element: (
+      <AuthGuard>
+        <HomePage />
+      </AuthGuard>
+    ),
     children: [
       {
         path: "",
@@ -437,7 +499,11 @@ const router = createBrowserRouter([
   // Genre
   {
     path: ROUTER.genre.url,
-    element: <HomePage />,
+    element: (
+      <AuthGuard>
+        <HomePage />
+      </AuthGuard>
+    ),
     children: [
       {
         path: "",
@@ -474,7 +540,11 @@ const router = createBrowserRouter([
   // Distributor
   {
     path: ROUTER.distributor.url,
-    element: <HomePage />,
+    element: (
+      <AuthGuard>
+        <HomePage />
+      </AuthGuard>
+    ),
     children: [
       {
         path: "",
@@ -511,7 +581,11 @@ const router = createBrowserRouter([
   // Category
   {
     path: ROUTER.category.url,
-    element: <HomePage />,
+    element: (
+      <AuthGuard>
+        <HomePage />
+      </AuthGuard>
+    ),
     children: [
       {
         path: "",
@@ -548,7 +622,11 @@ const router = createBrowserRouter([
   // Street
   {
     path: ROUTER.street.url,
-    element: <HomePage />,
+    element: (
+      <AuthGuard>
+        <HomePage />
+      </AuthGuard>
+    ),
     children: [
       {
         path: "",
@@ -585,7 +663,11 @@ const router = createBrowserRouter([
   // Customer point
   {
     path: ROUTER.roleStore.customerPoint.url,
-    element: <HomePage />,
+    element: (
+      <AuthGuard>
+        <HomePage />
+      </AuthGuard>
+    ),
     children: [
       {
         path: "",
@@ -596,13 +678,17 @@ const router = createBrowserRouter([
             </RoleBasedGuard>
           </AuthGuard>
         ),
-      }
+      },
     ],
   },
   // Gift
   {
     path: ROUTER.roleGiftStore.gift.url,
-    element: <HomePage />,
+    element: (
+      <AuthGuard>
+        <HomePage />
+      </AuthGuard>
+    ),
     children: [
       {
         path: "",
@@ -639,7 +725,11 @@ const router = createBrowserRouter([
   // Kios
   {
     path: ROUTER.kios.url,
-    element: <HomePage />,
+    element: (
+      <AuthGuard>
+        <HomePage />
+      </AuthGuard>
+    ),
     children: [
       {
         path: "",
@@ -676,7 +766,11 @@ const router = createBrowserRouter([
   // Gift history
   {
     path: ROUTER.roleAdmin.pointHistory.url,
-    element: <HomePage />,
+    element: (
+      <AuthGuard>
+        <HomePage />
+      </AuthGuard>
+    ),
     children: [
       {
         path: "",

@@ -72,7 +72,8 @@ export default function AuthenPage() {
             navigate(ROUTER.roleGiftStore.gift.url, { replace: true });
             break;
           case Role.Manager:
-            navigate(ROUTER.book.url, { replace: true });            break;
+            navigate(ROUTER.book.url, { replace: true });
+            break;
           case Role.Store:
             if (!val.data.user.storeId) {
               alertService.alert({

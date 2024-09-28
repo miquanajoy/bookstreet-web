@@ -21,7 +21,6 @@ import { LocalizationProvider } from "@mui/x-date-pickers-pro/LocalizationProvid
 import { AdapterDayjs } from "@mui/x-date-pickers-pro/AdapterDayjs";
 import { DateTimeRangePicker } from "@mui/x-date-pickers-pro/DateTimeRangePicker";
 export default function HandleCalenderPage() {
-
   const [value, setValue] = React.useState([null, null]);
   const [locations, setLocation] = React.useState([]);
 
@@ -100,9 +99,6 @@ export default function HandleCalenderPage() {
 
   const savedata = async (val) => {
     let dataPost = val;
-    // dataPost.description = draftToHtml(
-    //   convertToRaw(editorState.getCurrentContent())
-    // );
     dataPost.starDate = new Date(dayjs(value[0]).format("YYYY-MM-DD HH:mm"));
     dataPost.endDate = new Date(dayjs(value[1]).format("YYYY-MM-DD HH:mm"));
 
@@ -129,10 +125,16 @@ export default function HandleCalenderPage() {
 
     process
       .then((val) => {
-        alertService.alert({
-          content: params.id ?  "Thay đổi thành công" : "Tạo mới thành công",
-        });
-        navigate(ROUTER.event.url, { replace: true });
+        if (val.success) {
+          alertService.alert({
+            content: params.id ? "Thay đổi thành công" : "Tạo mới thành công",
+          });
+          navigate(ROUTER.event.url, { replace: true });
+        } else {
+          alertService.alert({
+            content: val.message,
+          });
+        }
       })
       .catch((e) => {});
   };

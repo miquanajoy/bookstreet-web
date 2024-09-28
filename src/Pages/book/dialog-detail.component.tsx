@@ -14,6 +14,7 @@ import { useLocation } from "react-router-dom";
 import { AVATARDEFAULT, ROUTER } from "../../_helpers/const/const";
 import { Roles } from "../../models/Role";
 import { ModelStyle } from "../../_helpers/const/model.const";
+import dayjs from "dayjs";
 
 export class DialogDetailService {
   $data = new BehaviorSubject(undefined);
@@ -86,7 +87,7 @@ export default function DialogDetailComponent(prop) {
 
                   {detail?.price ? (
                     <div className="text-danger mb-2">
-                      Giá: {detail?.price} vnd
+                      Giá: {detail?.price} vnđ
                     </div>
                   ) : (
                     <></>
@@ -103,7 +104,7 @@ export default function DialogDetailComponent(prop) {
                   {detail?.book?.publicDay ? (
                     <div className="d-flex d-flex border-b pb-2 mb-3 box-author">
                       <div className="col-3">Ngày xuất bản:</div>
-                      <div className="col-9">{detail?.book?.publicDay}</div>
+                      <div className="col-9">{dayjs(detail?.book?.publicDay).format("YYYY-MM-DD")}</div>
                     </div>
                   ) : (
                     <></>

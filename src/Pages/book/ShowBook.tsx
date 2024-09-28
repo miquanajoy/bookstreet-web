@@ -618,7 +618,7 @@ export default function ShowBook() {
               "update/" + val.productId,
               <div className="mt-1 text-dark">
                 <h6 className="mb-0 line-clamp-2">{val.productName}</h6>
-                {val.price ? <div>Giá: {val.price} vnd</div> : <></>}
+                {val.price ? <div>Giá: {val.price} vnđ</div> : <></>}
                 {isBookScreen ? (
                   <div>
                     {val?.authors ? (

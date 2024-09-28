@@ -1,6 +1,7 @@
 import { FC, ReactNode } from "react";
 import { useAuth } from "../hooks/userAuth";
 import { Role } from "../models/Role";
+import { redirect } from "react-router-dom";
 
 export interface RoleBasedGuardProps {
   accessibleRoles: Array<string>;
