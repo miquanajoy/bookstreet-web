@@ -384,7 +384,7 @@ const router = createBrowserRouter([
     element: (
       <AuthGuard>
         <HomePage
-          title={QUAN_LY + ROUTER.roleManager.area.name.toLocaleLowerCase()}
+          title={ ROUTER.roleManager.area.name}
         />
       </AuthGuard>
     ),
@@ -427,7 +427,7 @@ const router = createBrowserRouter([
     element: (
       <AuthGuard>
         <HomePage
-          title={QUAN_LY + ROUTER.roleManager.location.name.toLocaleLowerCase()}
+          title={ ROUTER.roleManager.location.name}
         />
       </AuthGuard>
     ),
@@ -787,7 +787,7 @@ const router = createBrowserRouter([
       <AuthGuard>
         <HomePage
           title={
-            QUAN_LY + ROUTER.roleAdmin.pointHistory.name.toLocaleLowerCase()
+             ROUTER.roleAdmin.pointHistory.name
           }
         />
       </AuthGuard>

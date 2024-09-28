@@ -74,7 +74,7 @@ export default function HomePage(props) {
   function Header() {
     return (
       <div className="lg:col-span-8 col-span-10 row-span-1 p-2">
-        <div className="bg-white px-6">
+        <div className="bg-white px-6 py-2">
         <div className="header w-full flex items-center justify-between">
           <h1 className="title">{props?.title}</h1>
 
@@ -169,9 +169,9 @@ export default function HomePage(props) {
           <SidebarPage routerList={routerList} />
         </div>
 
-        <div className="lg:col-11 col-10 bg-slate-50 p-2">
+        <div className="lg:col-11 col-10 bg-slate-200 p-2">
           <Header />
-          <div className="bg-slate-50 p-2">
+          <div className="bg-slate-200 p-2">
             <div className="bg-white">
               <Outlet />
             </div>

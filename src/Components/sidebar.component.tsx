@@ -48,7 +48,7 @@ export default function SidebarPage(prop) {
                   isActive ? `${styles.active} px-6 py-2` : " px-6 py-2"
                 }
               >
-                {/* <div>{link.logo()}</div> */}
+                <div>{link.logo()}</div>
                 {link.name}
               </NavLink>
             </li>

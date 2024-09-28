@@ -1,10 +1,20 @@
+import { Address } from "../../assets/icon/address";
+import { PublisherIcon } from "../../assets/icon/publisher";
 import { AreaIcon } from "../../assets/icon/area";
-import { Book } from "../../assets/icon/book";
+import { BookIcon } from "../../assets/icon/book";
 import { CustomerPointIcon } from "../../assets/icon/customerPoint";
+import { KioskIcon } from "../../assets/icon/kiosk";
+import { LocationIcon } from "../../assets/icon/location";
 import { Souvenir } from "../../assets/icon/souvenir";
+import { StoreIcon } from "../../assets/icon/store";
 import { UserIcon } from "../../assets/icon/user";
 import { Role } from "../../models/Role";
 import bgDefault from "./../../assets/images/background-default.png";
+import { EventIcon } from "../../assets/icon/event";
+import { StreetIcon } from "../../assets/icon/street";
+import { GenreIcon } from "../../assets/icon/genre";
+import { DistributorIcon } from "../../assets/icon/distributorIcon";
+import { CategoryIcon } from "../../assets/icon/category";
 
 export const AUTH = "Auth";
 export const STORE = "Store";
@@ -112,17 +122,17 @@ export const ROUTERS = [
     roles: [Role.Admin],
   },
   {
-    logo: "",
+    logo: StoreIcon,
     ...ROUTER.store,
     roles: [Role.Manager],
   },
   {
-    logo: "",
+    logo: KioskIcon,
     ...ROUTER.kios,
     roles: [Role.Manager],
   },
   {
-    logo: "",
+    logo: Address,
     ...ROUTER.author,
     roles: [Role.Manager],
   },
@@ -132,49 +142,49 @@ export const ROUTERS = [
     roles: [Role.Manager, Role.Store],
   },
   {
-    logo: Book,
+    logo: BookIcon,
     ...ROUTER.book,
     roles: [Role.Manager, Role.Store],
   },
   {
-    logo: "",
+    logo: PublisherIcon,
     ...ROUTER.publisher,
     roles: [Role.Manager],
   },
   {
-    logo: "",
+    logo: EventIcon,
     ...ROUTER.event,
     roles: [Role.Manager],
   },
   {
-    logo: "",
+    logo: StreetIcon,
     ...ROUTER.street,
     roles: [Role.Manager],
   },
   {
-    logo: "",
+    logo: AreaIcon,
     name: "Khu vực",
     url: "/area",
     roles: [Role.Manager],
   },
   {
-    logo: "",
+    logo: LocationIcon,
     name: "Vị trí",
     url: "/location",
     roles: [Role.Manager],
   },
   {
-    logo: "",
+    logo: GenreIcon,
     ...ROUTER.genre,
     roles: [Role.Manager],
   },
   {
-    logo: "",
+    logo: DistributorIcon,
     ...ROUTER.distributor,
     roles: [Role.Manager],
   },
   {
-    logo: "",
+    logo: CategoryIcon,
     ...ROUTER.category,
     roles: [Role.Manager],
   },
@@ -184,7 +194,7 @@ export const ROUTERS = [
     roles: [Role.Store],
   },
   {
-    logo: "",
+    logo: Address,
     ...ROUTER.roleAdmin.pointHistory,
     roles: [Role.Manager],
   },
