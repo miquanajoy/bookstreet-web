@@ -47,7 +47,7 @@ export default function CreateBillForm(props) {
   const [data, setData] = useState<any>({
     invoiceCode: "",
     customerName: "",
-    customerPhone: "",
+    customerPhone: 0,
     amount: 0,
     pointAmount: 0,
     storeId: 0,
@@ -61,6 +61,7 @@ export default function CreateBillForm(props) {
     setStores(stores.list);
     return {
       ...data,
+      customerPhone: 0,
       storeId: stores.list[0].storeId,
     };
   }
@@ -87,7 +88,7 @@ export default function CreateBillForm(props) {
     connectApi.then((res) => {
       if (res.success) {
         alertService.alert({
-          content: `cộng ${billFormService.getTgthdBillForm()} điểm cho nguời dùng ${val.customerPhone}`,
+          content: `cộng ${getValues().pointAmount} điểm cho nguời dùng ${val.customerPhone}`,
         });
         props.close(res.data);
       } else {
@@ -214,8 +215,9 @@ export default function CreateBillForm(props) {
             <input
               id="anm"
               type="number"
+              min={0}
               className="form-control"
-              placeholder="000-00"
+              placeholder="000"
               {...register("customerPhone", {
                 required: {
                   message: "required",

@@ -1,5 +1,10 @@
+import { AreaIcon } from "../../assets/icon/area";
+import { Book } from "../../assets/icon/book";
+import { CustomerPointIcon } from "../../assets/icon/customerPoint";
+import { Souvenir } from "../../assets/icon/souvenir";
+import { UserIcon } from "../../assets/icon/user";
 import { Role } from "../../models/Role";
-import bgDefault from "./../../assets/images/background-default.png"
+import bgDefault from "./../../assets/images/background-default.png";
 
 export const AUTH = "Auth";
 export const STORE = "Store";
@@ -26,7 +31,8 @@ export const ROUTER = {
   user: {
     name: "Tài khoản",
     url: "/user-management",
-  },  book: {
+  },
+  book: {
     name: "Sách",
     url: "/books",
   },
@@ -82,19 +88,17 @@ export const ROUTER = {
       url: "/point-history",
     },
   },
-  roleManager: {
- 
-  },
+  roleManager: {},
   roleGiftStore: {
     gift: {
       name: "Quà tặng",
       url: "/gift",
-    }
+    },
   },
 };
 export const ROUTERS = [
   {
-    logo: "",
+    logo: UserIcon,
     ...ROUTER.user,
     roles: [Role.Admin],
   },
@@ -114,12 +118,12 @@ export const ROUTERS = [
     roles: [Role.Manager],
   },
   {
-    logo: "",
+    logo: Souvenir,
     ...ROUTER.souvenir,
     roles: [Role.Manager, Role.Store],
   },
   {
-    logo: "",
+    logo: Book,
     ...ROUTER.book,
     roles: [Role.Manager, Role.Store],
   },
@@ -166,7 +170,7 @@ export const ROUTERS = [
     roles: [Role.Manager],
   },
   {
-    logo: "",
+    logo: CustomerPointIcon,
     ...ROUTER.roleStore.customerPoint,
     roles: [Role.Store],
   },
@@ -177,4 +181,4 @@ export const ROUTERS = [
   },
 ];
 
-export const AVATARDEFAULT = bgDefault
+export const AVATARDEFAULT = bgDefault;

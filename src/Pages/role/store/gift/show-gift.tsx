@@ -78,7 +78,8 @@ export default function ShowGift() {
   async function fetAllData(pageNumber = 1) {
     const customers = await fetchWrapper.Post2GetByPaginate(
       config.apiUrl + CUSTOMER,
-      -1,undefined,
+      -1,
+      undefined,
       -1
     );
     setCustomer(
@@ -147,7 +148,7 @@ export default function ShowGift() {
   };
   const handleOnSearchPhone = (e, results) => {
     if (!results) return;
-    setcustomerId(customer.find((v) => v.customerId == results.customerId));
+    setcustomerId(customer.find((v) => v.customerId == results.customerId).customerName);
     setcustomerPhoneDetail(results);
     changeCustomer(results.customerId);
   };
@@ -473,7 +474,7 @@ export default function ShowGift() {
                 disablePortal
                 options={customerPhone}
                 defaultValue={customerPhoneDetail}
-                sx={{ width: 300 }}
+                sx={{ width: 310 }}
                 onChange={handleOnSearchPhone}
                 renderInput={(params) => (
                   <TextField {...params} label="Số điện thoại" />
@@ -482,18 +483,12 @@ export default function ShowGift() {
             </FormControl>
           </div>
           <b>Khách hàng: </b>
-          <FormControl fullWidth>
-            <Autocomplete
-              disablePortal
-              options={customer}
-              defaultValue={customerId}
-              sx={{ width: 300 }}
-              onChange={handleOnSearch}
-              renderInput={(params) => (
-                <TextField {...params} label="Khách hàng" />
-              )}
-            />
-          </FormControl>
+          <input
+            defaultValue={customerId}
+            disabled
+            className="form-control"
+            type="text"
+          />
           {redeemGift && customerChoose?.customerId ? (
             <div className="text-danger mt-2">
               Số điểm của Tài khoản này không đủ

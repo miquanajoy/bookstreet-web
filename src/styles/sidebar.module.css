@@ -16,10 +16,7 @@ a.active {
 }
 
 .link:hover {
-    box-shadow:0px 0px 100px 0px inset #fff;
+    --tw-bg-opacity: 1;
+    background-color: rgb(243 244 246 / var(--tw-bg-opacity));
     transition: all 0.2s;
-}
-
-.link a span {
-    
 }
