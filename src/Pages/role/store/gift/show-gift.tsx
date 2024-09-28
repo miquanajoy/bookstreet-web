@@ -545,10 +545,10 @@ export default function ShowGift() {
     );
   }
   return (
-    <div className="px-6">
-      <div className="flex items-center justify-between mb-2">
+    <div className="">
+        <div className="flex items-center justify-between mb-2 bg-slate-50 pb-3">
         {user.role == Role.GiftStore ? (
-          <div className="d-flex gap-2">
+          <div className="d-flex justify-end gap-2 w-full bg-white px-6 py-3">
             <button
               className="bg-info text-white rounded-lg px-3 py-0.5"
               onClick={() => getCsv()}
@@ -579,7 +579,7 @@ export default function ShowGift() {
           <></>
         )}
       </div>
-      <div className="grid grid-cols-5 gap-4">
+      <div className="grid grid-cols-5 gap-4 px-6 py-2">
         {data.list.map((val) => (
           <div
             key={val.id}
@@ -587,7 +587,7 @@ export default function ShowGift() {
           >
             <Link to={"update/" + val.id}>
               <div
-                className="h-40 bg-cover bg-no-repeat bg-center"
+                className="h-40 bg-contain bg-no-repeat bg-center"
                 style={{
                   backgroundImage: `url(${
                     val.urlImage ? val.urlImage : AVATARDEFAULT
@@ -595,14 +595,14 @@ export default function ShowGift() {
                 }}
               ></div>
             </Link>
-            <div
+            {/* <div
               onClick={() => {
                 deleteItem(val);
               }}
               className={`${listStyle["trash-box"]} position-absolute top-0 right-0 bg-slate-400 rounded px-2 py-1 opacity-50 hover:!opacity-100`}
             >
               <Trash />
-            </div>
+            </div> */}
 
             <Link to={"update/" + val.id}>
               <div className="mt-1 text-dark">

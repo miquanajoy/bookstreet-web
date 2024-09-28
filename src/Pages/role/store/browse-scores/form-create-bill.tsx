@@ -56,7 +56,8 @@ export default function CreateBillForm(props) {
   async function fetAllData() {
     const stores = await fetchWrapper.Post2GetByPaginate(
       config.apiUrl + STORE,
-      -1
+      -1,
+      undefined, -1
     );
     setStores(stores.list);
     return {
@@ -133,9 +134,9 @@ export default function CreateBillForm(props) {
     return (
       <form
         onSubmit={handleSubmit(openFormBill)}
-        className="grid grid-cols-2 mt-4"
+        className=""
       >
-        <div className="flex flex-column items-center gap-2">
+        {/* <div className="flex flex-column items-center gap-2">
           <label
             htmlFor="imageUpload"
             className="block h-52 w-52 bg-slate-50 bg-contain bg-no-repeat bg-center"
@@ -154,7 +155,7 @@ export default function CreateBillForm(props) {
           >
             Chọn hình ảnh
           </label>
-        </div>
+        </div> */}
         <div className="d-flex flex-column gap-2">
           <label className="" htmlFor="mhd">
             <div className="text-xs">Mã hoá đơn: </div>
