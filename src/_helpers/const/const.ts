@@ -1,4 +1,5 @@
 import { Role } from "../../models/Role";
+import bgDefault from "./../../assets/images/background-default.png"
 
 export const AUTH = "Auth";
 export const STORE = "Store";
@@ -176,4 +177,4 @@ export const ROUTERS = [
   },
 ];
 
-export const AVATARDEFAULT = "https://mdbootstrap.com/img/new/avatars/8.jpg";
+export const AVATARDEFAULT = bgDefault

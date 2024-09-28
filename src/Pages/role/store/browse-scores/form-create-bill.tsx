@@ -199,6 +199,7 @@ export default function CreateBillForm(props) {
             <select
               id="store"
               className="form-control"
+              disabled
               {...register("storeId")}
             >
               {stores.map((val) => (
@@ -212,7 +213,7 @@ export default function CreateBillForm(props) {
             <div className="text-xs">Số điện thoại: </div>
             <input
               id="anm"
-              type="text"
+              type="number"
               className="form-control"
               placeholder="000-00"
               {...register("customerPhone", {

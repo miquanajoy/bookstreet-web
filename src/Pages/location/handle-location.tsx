@@ -57,52 +57,8 @@ export default function HandleLocation() {
     setValue("areaId", areasFilter[0].areaId)
     drawLocation()
 
-    // console.log("locationPin :>> ", locationPin);
-    // let locationPinCurrent = locationPin.filter((val) => val.locationId);
-
-    // const locationPintDetail = locationPin.find(
-    //   (val) => val.locationId == params.id && params.id
-    // );
-    // const newLocation = {
-    //   xLocation: 0,
-    //   yLocation: 0,
-    //   locationName: getValues().locationName ?? "",
-    //   areaId: getValues().areaId
-    // };
-
-    // if (locationPintDetail) {
-    //   locationPintDetail.xLocation = newLocation.xLocation;
-    //   locationPintDetail.yLocation = newLocation.yLocation;
-    //   locationPintDetail.locationName = newLocation.locationName;
-    //   setLocationPin([...locationPinCurrent]);
-    // } else {
-    //   setLocationPin([...locationPinCurrent]);
-    // }
   }, [watch("streetId")]);
 
-  // useEffect(() => {
-  //   let locationPinCurrent = locationPin.filter((val) => val.locationId);
-
-  //   const locationPintDetail = locationPinCurrent.find(
-  //     (val) => val.locationId == params.id && params.id
-  //   );
-  //   const newLocation = {
-  //     xLocation,
-  //     yLocation,
-  //     locationName: getValues().locationName ?? "",
-  //     areaId: getValues().areaId,
-  //   };
-  //   console.log("getValues().areaId :>> ", getValues().areaId);
-  //   if (locationPintDetail) {
-  //     locationPintDetail.xLocation = newLocation.xLocation;
-  //     locationPintDetail.yLocation = newLocation.yLocation;
-  //     locationPintDetail.locationName = newLocation.locationName;
-  //     locationPintDetail.areaId = newLocation.areaId;
-  //     setLocationPin([...locationPinCurrent]);
-  //   } else {
-  //     setLocationPin([...locationPinCurrent, newLocation]);
-  //   }
-  // }, [watch("areaId")]);
 
   // End Effect
 
@@ -336,22 +292,6 @@ export default function HandleLocation() {
       canv.drawImage(img, 0, 0);
     };
   }
-
-  // useEffect(() => {
-  //   if (locationPin.length) {
-  //     const locatioinPintDetail = locationPin.find(
-  //       (val) => val.locationId == params.id
-  //     );
-  //     if (locatioinPintDetail) {
-  //       locatioinPintDetail.locationName = getValues().locationName;
-  //     } else {
-
-  //       locationPin[locationPin.length - 1].locationName
-  //       .locationName =
-  //       //   getValues().locationName;
-  //     }
-  //   }
-  // }, [watch("locationName")]);
 
   function choosePoint(event) {
     let locationPinCurrent = locationPin.filter((val) => val.locationId);
