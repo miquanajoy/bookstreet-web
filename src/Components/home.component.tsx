@@ -13,10 +13,6 @@ import { useForm } from "react-hook-form";
 import { searchService } from "../_services/search.service";
 
 export default function HomePage(props) {
-  console.log('props :>> ', props);
-// const location = useLocation();
-
-
   const {
     register,
     handleSubmit,
@@ -172,7 +168,7 @@ export default function HomePage(props) {
         <div className="lg:col-11 col-10 bg-slate-200 p-2">
           <Header />
           <div className="bg-slate-200 p-2">
-            <div className="bg-white">
+            <div className="bg-white p-2">
               <Outlet />
             </div>
           </div>

@@ -87,9 +87,8 @@ export default function HandleGift() {
 
     return {
       ...result,
-      ...result.book,
-      endDate: dayjs(result.book?.publicDay).format("YYYY-MM-DD"),
-      startDate: dayjs(result.book?.publicDay).format("YYYY-MM-DD"),
+      endDate: dayjs(result.endDate).format("YYYY-MM-DD"),
+      startDate: dayjs(result.startDate).format("YYYY-MM-DD"),
     };
   }
 
@@ -137,7 +136,7 @@ export default function HandleGift() {
       });
   };
   return (
-    <div className="col-10">
+    <div className="col-10 p-2">
       <form
         onSubmit={handleSubmit(savedata)}
         className="grid grid-cols-3 gap-2 jumbotron mt-4"
@@ -145,7 +144,7 @@ export default function HandleGift() {
         <div className="row-span-2 flex flex-column items-center gap-2">
           <label
             htmlFor="imageUpload"
-            className="block h-52 w-52 bg-slate-50 bg-contain bg-no-repeat bg-center"
+            className="block h-52 w-52 bg-slate-200 bg-contain bg-no-repeat bg-center"
             style={{ backgroundImage: "url(" + preview + ")" }}
           ></label>
           <input
@@ -157,7 +156,7 @@ export default function HandleGift() {
           />
           <label
             htmlFor="imageUpload"
-            className="block border px-2 py-1 bg-slate-50 rounded"
+            className="block border px-2 py-1 bg-slate-200 rounded"
           >
             Chọn hình ảnh
           </label>

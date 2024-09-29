@@ -256,7 +256,7 @@ export default function ListBrowseScores() {
   return (
     <>
       <div className="">
-        <div className="flex items-center justify-between mb-2 bg-slate-50 pb-3">
+        <div className="flex items-center justify-between mb-2 bg-slate-200 pb-3">
           <div className="d-flex justify-end gap-2 w-full bg-white px-6 py-3">
             <button
               className="bg-success text-white rounded-lg px-3 py-0.5"

@@ -129,7 +129,7 @@ export default function HandleAuthorPage() {
         <div className="flex flex-column items-center gap-2">
           <label
             htmlFor="imageUpload"
-            className="block h-52 w-52 bg-slate-50 bg-contain bg-no-repeat bg-center"
+            className="block h-52 w-52 bg-slate-200 bg-contain bg-no-repeat bg-center"
             style={{ backgroundImage: "url(" + preview + ")" }}
           ></label>
           <input
@@ -141,7 +141,7 @@ export default function HandleAuthorPage() {
           />
           <label
             htmlFor="imageUpload"
-            className="block border px-2 py-1 bg-slate-50 rounded"
+            className="block border px-2 py-1 bg-slate-200 rounded"
           >
             Chọn hình ảnh
           </label>

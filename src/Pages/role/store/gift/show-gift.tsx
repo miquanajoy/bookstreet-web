@@ -19,7 +19,6 @@ import {
   SAVEBATCH,
   CUSTOMER,
   POINT_HISTORY,
-  AUTHOR,
 } from "../../../../_helpers/const/const";
 
 import { fetchWrapper } from "../../../../_helpers/fetch-wrapper";
@@ -50,7 +49,6 @@ import {
 export default function ShowGift() {
   const user = JSON.parse(localStorage.getItem("userInfo"));
   const { pathname } = useLocation();
-  const isBookScreen = pathname == ROUTER.book.url;
   const noteInput = useRef(null);
   const quantityRef = useRef(null);
 
@@ -113,7 +111,6 @@ export default function ShowGift() {
     result.then((res: any) => {
       res.list = res.list.map((v) => ({
         ...v,
-        authors: v?.book?.authors.join(", "),
       }));
 
       setData(res);
@@ -148,7 +145,9 @@ export default function ShowGift() {
   };
   const handleOnSearchPhone = (e, results) => {
     if (!results) return;
-    setcustomerId(customer.find((v) => v.customerId == results.customerId).customerName);
+    setcustomerId(
+      customer.find((v) => v.customerId == results.customerId).customerName
+    );
     setcustomerPhoneDetail(results);
     changeCustomer(results.customerId);
   };
@@ -261,7 +260,8 @@ export default function ShowGift() {
         listImportImg.push("");
       }
     });
-    await fetchWrapper.AxiosAll(listImportImg).then((val) => {
+    await axios.all(listImportImg).then((val) => {
+      console.log("val :>> ", val);
       valueToSubmit = getValues().gift.map((v, index) => {
         let urlImage = val[index];
         if (typeof v.UrlImage != "object") {
@@ -271,6 +271,7 @@ export default function ShowGift() {
             urlImage = v.UrlImage;
           }
         }
+       
         return {
           giftName: v.GiftName,
           description: v.Description,
@@ -395,7 +396,7 @@ export default function ShowGift() {
                   <div className="flex flex-column items-center gap-2">
                     <label
                       htmlFor={"imageUpload" + index}
-                      className="block h-20 w-20 bg-slate-50 bg-contain bg-no-repeat bg-center"
+                      className="block h-20 w-20 bg-slate-200 bg-contain bg-no-repeat bg-center"
                       style={{
                         backgroundImage: "url(" + row?.UrlImage + ")",
                       }}
@@ -545,8 +546,8 @@ export default function ShowGift() {
     );
   }
   return (
-    <div className="">
-        <div className="flex items-center justify-between mb-2 bg-slate-50 pb-3">
+    <div className="m-n2">
+      <div className="flex items-center justify-between mb-2 bg-slate-200 pb-3">
         {user.role == Role.GiftStore ? (
           <div className="d-flex justify-end gap-2 w-full bg-white px-6 py-3">
             <button
@@ -667,7 +668,7 @@ export default function ShowGift() {
               type="button"
               className="mt-4 float-right text-white bg-green-700  rounded-lg text-sm px-5 py-2.5 me-2 mb-2"
             >
-              Lưu
+              Nhập
             </button>
           </Box>
         </div>

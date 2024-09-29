@@ -22,7 +22,7 @@ export default function SidebarPage(prop) {
       <Link to={`/profile/` + user.userId}>
         <div className="flex items-center gap-2 px-6">
           <div
-            className="rounded-full min-h-10 min-w-10 h-10 w-10 bg-slate-50 bg-cover bg-no-repeat bg-center"
+            className="rounded-full min-h-10 min-w-10 h-10 w-10 bg-slate-200 bg-cover bg-no-repeat bg-center"
             style={{
               backgroundImage: `url(${
                 user.user.avatar ? user.user.avatar : AVATARDEFAULT

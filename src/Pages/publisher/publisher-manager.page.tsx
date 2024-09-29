@@ -11,6 +11,7 @@ import {
   searchService,
   typeSearch,
 } from "../../_services/search.service";
+import { ROUTER } from "../../_helpers/const/const";
 
 export default function PublisheranagerPage() {
   const [data, setData] = useState({
@@ -69,7 +70,7 @@ export default function PublisheranagerPage() {
 
   return (
     <div className="">
-      <div className="flex items-center justify-between mb-2 bg-slate-50 pb-3">
+      <div className="flex items-center justify-between mb-2 bg-slate-200 pb-3">
         <div className="d-flex justify-end gap-2 w-full bg-white px-6 py-3">
           <Link to="create">
             <button className="bg-info text-white rounded-lg px-3 py-0.5">
@@ -98,7 +99,7 @@ export default function PublisheranagerPage() {
             >
               <Trash />
             </div>
-            <Link to={"/books"}>
+            <Link to={"update/" + val.publisherId}>
               <div className="px-2">
                 <h6 className="text-dark">{val.publisherName}</h6>
               </div>

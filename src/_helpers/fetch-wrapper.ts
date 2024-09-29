@@ -220,7 +220,6 @@ function handleResponse(response) {
 }
 
 function handleResponseForPost2Get(response) {
-  console.log('response :>> ', response);
   loadingService.hiddenLoading();
 
   const data = response.data.data;

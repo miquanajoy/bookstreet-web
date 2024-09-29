@@ -21,25 +21,26 @@ export default function AddBook() {
   const user = JSON.parse(localStorage.getItem("userInfo"));
 
   const [data, setData] = useState<any>({
-    productName: "",
-    price: 10000,
-    productTypeName: "",
+    // productName: "",
+    // price: 10000,
+    // productTypeName: "",
     publicDay: dayjs(new Date()).format("YYYY-MM-DD"),
-    categoryId: "",
-    genreId: "",
-    distributorId: "",
-    authors: "",
-    description: "",
-    publisherId: "",
-    status: 1,
+    // categoryId: "",
+    // genreId: "",
+    // distributorId: "",
+    // authors: "",
+    // description: "",
+    // publisherId: "",
+    // status: 1,
   });
 
   const {
     register,
     handleSubmit,
     getValues,
+    setValue,
     formState: { errors },
-    watch
+    watch,
   } = useForm({
     defaultValues: async () => {
       return await fetAllData();
@@ -60,10 +61,17 @@ export default function AddBook() {
     distributors: [],
     genres: {
       data: [],
-      filter: []
+      filter: [],
     },
     stores: [],
-    status: [],
+    status: [ {
+      key: 1,
+      value: "Còn hàng",
+    },
+    {
+      key: 2,
+      value: "Sắp về hàng",
+    }],
   });
 
   useEffect(() => {
@@ -79,23 +87,20 @@ export default function AddBook() {
   }, [selectedFile]);
 
   useEffect(() => {
-    if(!getValues().categoryId) return;
+    if (!getValues().categoryId) return;
     const dataFilter = options.genres.data.filter(
       (genre) => genre.categoryId == getValues().categoryId
-    )
-    const currentOptions = options
-    setOption(
-     {
+    );
+    const currentOptions = options;
+    setOption({
       ...currentOptions,
       genres: {
         data: currentOptions.genres.data,
-        filter: dataFilter
-      }
-     }
-
-    )
+        filter: dataFilter,
+      },
+    });
   }, [watch("categoryId")]);
-  
+
   const onSelectFile = (e) => {
     if (!e.target.files || e.target.files.length === 0) {
       setSelectedFile(undefined);
@@ -119,22 +124,35 @@ export default function AddBook() {
     const distributors = getOption(DISTRIBUTOR);
     const genres = getOption(GENRE);
     const stores = getOption(STORE);
-
+    let options;
     if (!params.id) {
       fetchWrapper
         .AxiosAll([categories, publishers, distributors, genres, stores])
         .then((v) => {
           const status = [
             {
-              key: "1",
+              key: 1,
               value: "Còn hàng",
             },
             {
-              key: "2",
+              key: 2,
               value: "Sắp về hàng",
             },
           ];
-          console.log('v[3].list :>> ', v[3].list);
+          options = {
+            categories: v[0].list.filter(
+              (val) => val.productTypeId == (isBookScreen ? 1 : 2)
+            ),
+            publishers: v[1].list,
+            distributors: v[2].list,
+            genres: {
+              data: v[3].list,
+              filter: v[3].list.filter(
+                (genre) => genre.categoryId == v[0].list[0].categoryId
+              ),
+            },
+            stores: v[4].list,
+          };
           setOption({
             categories: v[0].list.filter(
               (val) => val.productTypeId == (isBookScreen ? 1 : 2)
@@ -145,24 +163,25 @@ export default function AddBook() {
               data: v[3].list,
               filter: v[3].list.filter(
                 (genre) => genre.categoryId == v[0].list[0].categoryId
-              )
+              ),
             },
             stores: v[4].list,
             status,
           });
+          setValue("categoryId", options.categories[0]?.categoryId)
+          setValue("distributorId", options.distributors[0]?.distributorId)
+          setValue("publisherId", options.publishers[0]?.publisherId)
+          setValue("genreId", options.genres[0]?.genreId)
+          setValue("storeId", options.stores[0]?.storeId)
+          setValue("publicDay", dayjs(new Date()).format("YYYY-MM-DD"))
+          setValue("status", 1 )
+            return {
+              ...data,
+            };
         })
         .catch((e) => {
           console.log(e);
         });
-
-      return {
-        ...data,
-        categoryId: options.categories[0]?.categoryId,
-        distributorId: options.distributors[0]?.distributorId,
-        publisherId: options.publishers[0]?.publisherId,
-        genreId: options.genres[0]?.genreId,
-        storeId: options.stores[0]?.storeId,
-      };
     } else {
       const result = fetchWrapper.getWithoutCall(
         config.apiUrl + PRODUCT + "/" + params.id
@@ -180,11 +199,11 @@ export default function AddBook() {
         .then((v) => {
           const status = [
             {
-              key: "1",
+              key: 1,
               value: "Còn hàng",
             },
             {
-              key: "2",
+              key: 2,
               value: "Sắp về hàng",
             },
           ];
@@ -196,7 +215,7 @@ export default function AddBook() {
             distributors: v[2].list,
             genres: {
               data: v[3].list,
-              filter: []
+              filter: [],
             },
             stores: v[4].list,
             status,
@@ -254,7 +273,7 @@ export default function AddBook() {
       description: val.description,
       price: val.price,
       urlImage: val.urlImage,
-      status: val.status,
+      status: Number(val.status),
       storeId: user.user.storeId,
     };
     if (!isBookScreen) {
@@ -284,17 +303,23 @@ export default function AddBook() {
 
     process
       .then((val) => {
-        alertService.alert({
-          content: params.id ? "Thay đổi thành công" : "Tạo mới thành công",
-        });
-        navigate(isBookScreen ? ROUTER.book.url : ROUTER.souvenir.url, {
-          replace: true,
-        });
+        if (val.success) {
+          alertService.alert({
+            content: params.id ? "Thay đổi thành công" : "Tạo mới thành công",
+          });
+          navigate(isBookScreen ? ROUTER.book.url : ROUTER.souvenir.url, {
+            replace: true,
+          });
+        } else {
+          alertService.alert({
+            content: val.message,
+          });
+        }
       })
       .catch((e) => {});
   };
   return (
-    <div className="col-10">
+    <div className="col-10 p-2">
       <form
         onSubmit={handleSubmit(savedata)}
         className="grid grid-cols-3 gap-2 jumbotron mt-4"
@@ -302,7 +327,7 @@ export default function AddBook() {
         <div className="row-span-2 flex flex-column items-center gap-2">
           <label
             htmlFor="imageUpload"
-            className="block h-52 w-52 bg-slate-50 bg-contain bg-no-repeat bg-center"
+            className="block h-52 w-52 bg-slate-200 bg-contain bg-no-repeat bg-center"
             style={{ backgroundImage: "url(" + preview + ")" }}
           ></label>
           <input
@@ -314,7 +339,7 @@ export default function AddBook() {
           />
           <label
             htmlFor="imageUpload"
-            className="block border px-2 py-1 bg-slate-50 rounded"
+            className="block border px-2 py-1 bg-slate-200 rounded"
           >
             Chọn hình ảnh
           </label>
@@ -450,7 +475,7 @@ export default function AddBook() {
                   id="pub"
                   type="date"
                   className="form-control"
-                  {...register("publicDay", { valueAsDate: true })}
+                  {...register("publicDay")}
                 />
               </div>
 

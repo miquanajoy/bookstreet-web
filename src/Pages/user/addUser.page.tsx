@@ -146,12 +146,12 @@ export default function AddUser(props) {
     <div className="container">
       <form
         onSubmit={handleSubmit(savedata)}
-        className="grid grid-cols-2 gap-4 jumbotron mt-4"
+        className="grid grid-cols-2 gap-4 jumbotron"
       >
         <div className="flex flex-column items-center gap-2">
           <label
             htmlFor="imageUpload"
-            className="block h-52 w-52 bg-slate-50 bg-contain bg-no-repeat bg-center"
+            className="block h-52 w-52 bg-slate-200 bg-contain bg-no-repeat bg-center"
             style={{ backgroundImage: "url(" + preview + ")" }}
           ></label>
           <input
@@ -163,7 +163,7 @@ export default function AddUser(props) {
           />
           <label
             htmlFor="imageUpload"
-            className="block border px-2 py-1 bg-slate-50 rounded"
+            className="block border px-2 py-1 bg-slate-200 rounded"
           >
             Chọn hình ảnh
           </label>

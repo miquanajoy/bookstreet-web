@@ -32,6 +32,7 @@ import DialogDetailComponent, {
   dialogDetailService,
 } from "./dialog-detail.component";
 import { Dialog, DialogContent } from "@mui/material";
+import axios from "axios";
 
 export default function ShowBook() {
   const user = JSON.parse(localStorage.getItem("userInfo"));
@@ -190,7 +191,7 @@ export default function ShowBook() {
         listImportImg.push("");
       }
     });
-    await fetchWrapper.AxiosAll(listImportImg).then((val) => {
+    await axios.all(listImportImg).then((val) => {
       valueToSubmit = getValues().author.map((v, index) => {
         let urlImage = val[index];
         if (typeof v.UrlImage != "object") {
@@ -330,7 +331,7 @@ export default function ShowBook() {
                   <div className="flex flex-column items-center gap-2">
                     <label
                       htmlFor={"imageUpload" + index}
-                      className="block h-12 w-12 bg-slate-50 bg-contain bg-no-repeat bg-center"
+                      className="block h-12 w-12 bg-slate-200 bg-contain bg-no-repeat bg-center"
                       style={{
                         backgroundImage: "url(" + row?.UrlImage + ")",
                       }}
@@ -466,7 +467,7 @@ export default function ShowBook() {
                   <div className="flex flex-column items-center gap-2">
                     <label
                       htmlFor={"imageUpload" + index}
-                      className="block h-20 w-20 bg-slate-50 bg-contain bg-no-repeat bg-center"
+                      className="block h-20 w-20 bg-slate-200 bg-contain bg-no-repeat bg-center"
                       style={{
                         backgroundImage: "url(" + row?.UrlImage + ")",
                       }}
@@ -539,8 +540,8 @@ export default function ShowBook() {
     }
   }
   return (
-    <div className="">
-      <div className="flex items-center justify-between mb-2 bg-slate-50 pb-3">
+    <div className="m-n2">
+      <div className="flex items-center justify-between mb-2 bg-slate-200 pb-3">
         {user.role == Role.Store ? (
           <div className="d-flex justify-end gap-2 w-full bg-white px-6 py-3">
             <button
