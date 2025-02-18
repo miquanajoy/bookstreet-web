@@ -1,7 +1,7 @@
 export function EditIcon(prop) {
   return (
     <svg
-    fill={prop.fill ?? "white"} 
+    fill={prop.fill && "white"} 
       xmlns="http://www.w3.org/2000/svg"
       height="14"
       width="14"

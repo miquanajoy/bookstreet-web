@@ -20,7 +20,7 @@ import { DemoContainer } from "@mui/x-date-pickers/internals/demo";
 import { LocalizationProvider } from "@mui/x-date-pickers-pro/LocalizationProvider";
 import { AdapterDayjs } from "@mui/x-date-pickers-pro/AdapterDayjs";
 import { DateTimeRangePicker } from "@mui/x-date-pickers-pro/DateTimeRangePicker";
-import { eventTypeDropdown } from "../../models/calender.model";
+import { eventTypeDropdown } from "../../models/event.model";
 export default function HandleCalenderPage() {
   const [value, setValue] = React.useState([null, null]);
   const [locations, setLocation] = React.useState([]);
@@ -216,12 +216,12 @@ export default function HandleCalenderPage() {
               <b>Dạng sự kiện: </b>
             </label>
             <select
-              {...register("locationId")}
+              {...register("eventType")}
               id="evenTpe"
               className="form-control mb-2"
             >
               {eventTypeDropdown.map((v) => (
-                <option key={v.eventStatus} value={v.eventStatus}>
+                <option key={v.eventType} value={v.eventType}>
                   {v.eventName}
                 </option>
               ))}
