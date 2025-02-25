@@ -30,7 +30,6 @@ export const accountService = {
 
 export function login(email, password) {
   loadingService.showLoading();
-  console.log('baseUrl :>> ', baseUrl);
   return fetchWrapper
     .post(`${baseUrl}Login`, { username: email, password: password })
     .then((result) => {
@@ -50,10 +49,7 @@ export function login(email, password) {
 export function logout() {
   localStorage.removeItem("userInfo");
 
-  // fetchWrapper.post(`${baseUrl}/revoke-token`, {});
-  // stopRefreshTokenTimer();
   userSubject.next(null);
-  // history.push('/account/login');
   return true;
 }
 

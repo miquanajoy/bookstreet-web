@@ -1,30 +1,34 @@
 import React, { useEffect, useState } from "react";
-import draftToHtml from "draftjs-to-html";
 import { useForm } from "react-hook-form";
 import { useNavigate, useParams } from "react-router-dom";
 import { alertService } from "../../_services/alert.service";
-import { Editor } from "react-draft-wysiwyg";
 import { fileService } from "../../_services/file.service";
 import { fetchWrapper } from "../../_helpers/fetch-wrapper";
 import config from "../../config";
 import { EVENT, LOCATION, ROUTER } from "../../_helpers/const/const";
-import {
-  EditorState,
-  convertToRaw,
-  ContentState,
-  convertFromHTML,
-} from "draft-js";
-import dayjs from "dayjs";
 
+import dayjs from "dayjs";
 import { DemoContainer } from "@mui/x-date-pickers/internals/demo";
 import { LocalizationProvider } from "@mui/x-date-pickers-pro/LocalizationProvider";
 import { AdapterDayjs } from "@mui/x-date-pickers-pro/AdapterDayjs";
 import { DateTimeRangePicker } from "@mui/x-date-pickers-pro/DateTimeRangePicker";
 import { eventTypeDropdown } from "../../models/event.model";
-export default function HandleCalenderPage() {
-  const [value, setValue] = React.useState([null, null]);
-  const [locations, setLocation] = React.useState([]);
+import ShowMapComponent from "../../Components/map/show-map/showMap.component";
+import { Role } from "../../models/Role";
 
+export default function HandleCalenderPage() {
+  const userValue = JSON.parse(localStorage.getItem("userInfo"));
+
+  const [mapValue, setMapValue] = useState({});
+  const [value, setValueInint] = useState([null, null]);
+  const [locations, setLocation] = useState([]);
+
+  const isDisableLocation = () => {
+    const isDisable = locations.some(
+      (locationDetail) => locationDetail.storeId === userValue.user.id
+    );
+    return isDisable;
+  };
   const [data, setData] = useState<any>({
     locationId: 0,
     title: "",
@@ -32,13 +36,16 @@ export default function HandleCalenderPage() {
     urlImage: "",
     purpose: "",
     hostName: "",
-    eventType: 0
+    eventType: 0,
   });
 
   const {
     register,
     handleSubmit,
     formState: { errors },
+    watch,
+    getValues,
+    setValue,
   } = useForm({
     defaultValues: async () => {
       return await fetAllData();
@@ -51,11 +58,6 @@ export default function HandleCalenderPage() {
   const [selectedFile, setSelectedFile] = useState<any>();
   const [preview, setPreview] = useState();
 
-  const [editorState, setEditorState] = useState(() => {
-    const content = ContentState.createFromText("");
-    return EditorState.createWithContent(content);
-  });
-
   async function fetAllData() {
     const locations = await fetchWrapper.get(config.apiUrl + LOCATION);
     setLocation(locations);
@@ -63,15 +65,47 @@ export default function HandleCalenderPage() {
     const result = await fetchWrapper.get(
       config.apiUrl + EVENT + "/" + params.id
     );
-    setData(result);
+    const locationsFound = locations.find(
+      (locationDetail) => locationDetail.locationId === result.locationId
+    );
+    const xLocation = locationsFound.xLocation;
+    const yLocation = locationsFound.yLocation;
+    setMapValue({
+      xLocation,
+      yLocation,
+      mapImage: locationsFound.locationImage,
+    });
+    setData({
+      ...result,
+      xLocation,
+      yLocation,
+      mapImage: locationsFound.locationImage,
+    });
     setPreview(result.urlImage);
 
-    setValue([
+    setValueInint([
       dayjs(result.starDate).format("YYYY-MM-DD HH:mm"),
       dayjs(result.endDate).format("YYYY-MM-DD HH:mm"),
     ]);
+    if (userValue.user.role == Role.Store) {
+      result.eventType = eventTypeDropdown.at(-1).eventType;
+    }
     return result;
   }
+
+  useEffect(() => {
+    if (!watch("locationId")) return;
+    const locationsFound = locations.find(
+      (locationDetail) => locationDetail.locationId == getValues().locationId
+    );
+    const xLocation = locationsFound.xLocation;
+    const yLocation = locationsFound.yLocation;
+    setMapValue({
+      xLocation,
+      yLocation,
+      mapImage: locationsFound.locationImage,
+    });
+  }, [watch("locationId")]);
   useEffect(() => {
     if (!selectedFile) {
       setPreview(undefined);
@@ -132,7 +166,7 @@ export default function HandleCalenderPage() {
           });
         }
       })
-      .catch((e) => { });
+      .catch((e) => {});
   };
 
   return (
@@ -176,17 +210,21 @@ export default function HandleCalenderPage() {
           <label className="block mb-1" htmlFor="loca">
             <b>Vị trí: </b>
           </label>
-          <select
-            {...register("locationId")}
-            id="loca"
-            className="form-control mb-2"
-          >
-            {locations.map((v) => (
-              <option key={v.locationId} value={v.locationId}>
-                {v.locationName}
-              </option>
-            ))}
-          </select>
+          <div className="flex items-center gap-4 mb-2">
+            <select
+              disabled={isDisableLocation()}
+              {...register("locationId")}
+              id="loca"
+              className="form-control"
+            >
+              {locations.map((v) => (
+                <option key={v.locationId} value={v.locationId}>
+                  {v.locationName}
+                </option>
+              ))}
+            </select>
+            <ShowMapComponent data={mapValue} />
+          </div>
 
           <label className="block mb-1" htmlFor="anm">
             <b>Mục đích: </b>
@@ -207,17 +245,27 @@ export default function HandleCalenderPage() {
             className="form-control"
             {...register("hostName")}
           />
-
-
-        </div>
-        <div>
           <div>
-            <label className="block mb-1" htmlFor="evenTpe">
+            <label className="block mb-1 mt-2" htmlFor="link_vid">
+              <b>Link video: </b>
+            </label>
+            <input
+              id="link_vid"
+              type="text"
+              className="form-control"
+              {...register("urlVideo")}
+            />
+          </div>
+        </div>
+        <div className="relative">
+          <div>
+            <label className="block mb-1" htmlFor="eventTpe">
               <b>Dạng sự kiện: </b>
             </label>
             <select
+              disabled={userValue.user.role == Role.Store}
               {...register("eventType")}
-              id="evenTpe"
+              id="eventTpe"
               className="form-control mb-2"
             >
               {eventTypeDropdown.map((v) => (
@@ -242,7 +290,7 @@ export default function HandleCalenderPage() {
               <DateTimeRangePicker
                 localeText={{ start: "Check-in", end: "Check-out" }}
                 onChange={(newValue) => {
-                  setValue([
+                  setValueInint([
                     dayjs(newValue[0]).format("YYYY-MM-DD HH:mm"),
                     dayjs(newValue[1]).format("YYYY-MM-DD HH:mm"),
                   ]);
@@ -261,19 +309,11 @@ export default function HandleCalenderPage() {
             ></textarea>
           </div>
 
-          <div>
-            <label className="block mb-1 mt-2" htmlFor="link_vid">
-              <b>Link video: </b>
-            </label>
-            <input
-              id="link_vid"
-              type="text"
-              className="form-control"
-              {...register("urlVideo")}
-            />
-          </div>
-          <input type="submit" className="btn btn-dark mt-2" value="Lưu" />
-
+          <input
+            type="submit"
+            className="btn btn-dark absolute bottom-0"
+            value="Lưu"
+          />
         </div>
       </form>
     </div>

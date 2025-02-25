@@ -8,7 +8,7 @@ import { Pagination } from "@mui/material";
 import DialogDetailCalenderComponent from "./dialog-detail.component";
 import { EditIcon } from "../../assets/icon/edit";
 import EventManagerViewmodel from "./event-manager.viewmodel";
-import { eventTypeDropdown } from "../../models/event.model";
+
 export default function EventManagerPage() {
   const { data, handleClickOpenDetail, deleteItem, fetAllData } =
     EventManagerViewmodel();
@@ -25,7 +25,7 @@ export default function EventManagerPage() {
         </div>
       </div>
       <div className="grid grid-cols-4 p-2">
-        <EventFilter className="col-span-1" fetAllData={fetAllData}/>
+        <EventFilter className="col-span-1" fetAllData={fetAllData} />
         <div className="col-span-3">
           <div className="grid grid-cols-3 gap-4 px-6">
             {data.list.map((val, i) => (
@@ -65,21 +65,21 @@ export default function EventManagerPage() {
                   }}
                 >
                   <div className="mt-1 text-dark">
-                    <h6 className="mb-2 line-clamp-2">{val.title}</h6>
+                    <h6 className="mb-2 line-clamp-2 h-10">{val.title}</h6>
                     <div className="mb-2">Tại: {val.locationName}</div>
-                    <div>
+                    <div className="h-5">
                       Bắt đầu: <span className="ml-1"></span>
                       {dayjs(new Date(val.starDate)).format(
                         "HH:mm - YYYY/MM/DD"
                       )}
                     </div>
-                    <div>
-                      Kết thúc:
+                    <div className="mb-2 h-5">
+                      Kết thúc: <span className="ml-[0.5px]"></span>
                       {dayjs(new Date(val.endDate)).format(
                         "HH:mm - YYYY/MM/DD"
                       )}
                     </div>
-                    <div className="mt-2">Trạng thái: </div>
+                    <div className="h-5">Trạng thái: </div>
                   </div>
                 </div>
               </div>
