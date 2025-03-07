@@ -8,30 +8,60 @@ import {
   searchService,
   typeSearch,
 } from "../../_services/search.service";
+import convertDate from "../../_helpers/converts/convertDate";
 
-const EventManagerViewmodel = () => {
+const EventManagerViewmodel = () => {  
+  const [formData, setFormData] = useState<any>();
+  const [eventStatus, setEventStatus] = useState<any>();
+
   const [data, setData] = useState({
     list: [],
     totalPage: 0,
   });
 
-  async function fetAllData(pageNumber = 1, formDataFilter?) {
+  async function fetAllData(pageNumber = 1, eventTp?, eventStatus?) {
+    const currentDate = convertDate(new Date());
+
+    const filters = [
+      {
+        field: "title",
+        value: searchService.$SearchValue.value?.dataSearch,
+        operand: typeSearch,
+      },
+      {
+        field: "eventType",
+        value: eventTp,
+        operand: 0,
+      },
+    ];
+    if (eventStatus) {
+      if (eventStatus > 0) {
+        filters.push({
+          field: "starDate",
+          value: currentDate,
+          operand: 4,
+        }, {
+          field: "endDate",
+          value: currentDate,
+          operand: 2,
+        });
+        // return event.starDate < currentDate && event.endDate > currentDate;
+      } else {
+        filters.push({
+          field: "starDate",
+          value: currentDate,
+          operand: 2,
+        });
+        // return event.starDate > currentDate;
+      }
+    } else {
+      // return event;
+    }
     const result = fetchWrapper.Post2GetByPaginate(
       config.apiUrl + EVENT,
       pageNumber,
       {
-        filters: [
-          {
-            field: "title",
-            value: searchService.$SearchValue.value?.dataSearch,
-            operand: typeSearch,
-          },
-          {
-            field: "eventType",
-            value: formDataFilter,
-            operand: 0,
-          },
-        ],
+        filters
       }
     );
     result.then((res) => {
@@ -70,6 +100,7 @@ const EventManagerViewmodel = () => {
     handleClickOpenDetail,
     deleteItem,
     fetAllData,
+    formData, setFormData, eventStatus, setEventStatus
   };
 };
 export default EventManagerViewmodel;

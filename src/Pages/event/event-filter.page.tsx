@@ -8,18 +8,25 @@ import { Button } from "@mui/material";
 import { useState } from "react";
 import { Role } from "../../models/Role";
 
-export default function EventFilter(prop) {
+export default function EventFilter({fetAllData, formData, setFormData, eventStatus, setEventStatus}) {
   const { user } = JSON.parse(localStorage.getItem("userInfo"));
-  const [formData, setFormData] = useState<any>();
 
   const handleRadioChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const { value } = event.target;
     setFormData(value);
-    prop.fetAllData(1, value);
+    fetAllData(1, value, eventStatus);
+  };
+
+  const handleEventStatus = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const { value } = event.target;
+    setEventStatus(value);
+    fetAllData(1, formData, value);
   };
 
   const handleReset = () => {
-    prop.fetAllData(1);
+    setFormData(undefined);
+    setEventStatus(undefined);
+    fetAllData(1);
   };
 
   const FormFilterByEventType = () => {
@@ -72,9 +79,9 @@ export default function EventFilter(prop) {
           <FormLabel id="demo-radio-buttons-group-label">Trạng thái</FormLabel>
           <RadioGroup
             aria-labelledby="demo-radio-buttons-group-label"
-            name="eventType"
-            value={formData}
-            onChange={handleRadioChange}
+            name="eventStatus"
+            value={eventStatus}
+            onChange={handleEventStatus}
           >
             <FormControlLabel
               value="0"

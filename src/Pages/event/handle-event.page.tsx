@@ -15,6 +15,7 @@ import { DateTimeRangePicker } from "@mui/x-date-pickers-pro/DateTimeRangePicker
 import { eventTypeDropdown } from "../../models/event.model";
 import ShowMapComponent from "../../Components/map/show-map/showMap.component";
 import { Role } from "../../models/Role";
+import convertDate from "../../_helpers/converts/convertDate";
 
 export default function HandleCalenderPage() {
   const userValue = JSON.parse(localStorage.getItem("userInfo"));
@@ -129,8 +130,8 @@ export default function HandleCalenderPage() {
 
   const savedata = async (val) => {
     let dataPost = val;
-    dataPost.starDate = new Date(dayjs(value[0]).format("YYYY-MM-DD HH:mm"));
-    dataPost.endDate = new Date(dayjs(value[1]).format("YYYY-MM-DD HH:mm"));
+    dataPost.starDate = convertDate(new Date(value[0]));
+    dataPost.endDate = convertDate(new Date(value[1]));
 
     const formData = new FormData();
     if (selectedFile) {
