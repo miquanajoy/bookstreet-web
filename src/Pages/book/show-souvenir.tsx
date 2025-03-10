@@ -13,9 +13,12 @@ import {
   ROUTER,
   SAVEBATCH,
 } from "../../_helpers/const/const";
+import { accountService } from "../../_services/account.service";
 import { excelService, TYPE_BOOK } from "../../_services/excel.service";
 import { useFieldArray, useForm } from "react-hook-form";
 
+import Box from "@mui/material/Box";
+import Modal from "@mui/material/Modal";
 import Table from "@mui/material/Table";
 import TableBody from "@mui/material/TableBody";
 import TableCell from "@mui/material/TableCell";
@@ -23,19 +26,20 @@ import TableContainer from "@mui/material/TableContainer";
 import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import Paper from "@mui/material/Paper";
+import { ModelStyle } from "../../_helpers/const/model.const";
 import { Role, Roles } from "../../models/Role";
+import { CATEGORY } from "../../models/category";
 import { fileService } from "../../_services/file.service";
+import axios from "axios";
+import { MenuItem, Select } from "@mui/material";
 import dayjs from "dayjs";
 import { URL_IMG } from "../../_helpers/const/csv.const";
 import { searchService, typeSearch } from "../../_services/search.service";
 import DialogDetailComponent, {
   dialogDetailService,
 } from "./dialog-detail.component";
-import { Dialog, DialogContent } from "@mui/material";
-import axios from "axios";
-import React from "react";
 
-export default function ShowBook() {
+export default function ShowSouvenir() {
   const user = JSON.parse(localStorage.getItem("userInfo"));
   const { pathname } = useLocation();
   const isBookScreen = pathname == ROUTER.book.url;
@@ -93,6 +97,7 @@ export default function ShowBook() {
     });
   }
 
+  // Search area
   useEffect(() => {
     fetAllData();
   }, [pathname]);
@@ -107,6 +112,7 @@ export default function ShowBook() {
     });
     return () => searchSub.unsubscribe();
   }, []);
+  // End Search area
 
   // Model
   const [dataImport, setDataImport] = useState([]);
@@ -120,10 +126,6 @@ export default function ShowBook() {
     name: "author",
     rules: { required: true },
   });
-
-  const handleClickOpenDetail = (v) => {
-    dialogDetailService.showDialog(v);
-  };
 
   const inputFile = useRef(null);
 
@@ -152,25 +154,22 @@ export default function ShowBook() {
           return { ...val, UrlImage };
         });
       inputFile.current.value = "";
-
-      if (convertData.length) {
-        handleOpen();
-        convertData.forEach((val) => {
-          if (isBookScreen) {
-            val.PublicDay =
-              val.PublicDay != "Invalid Date" && val.PublicDay
-                ? dayjs(new Date(val.PublicDay)).format("YYYY-MM-DD")
-                : dayjs(new Date()).format("YYYY-MM-DD");
-          }
-          append(val);
-        });
-        setDataImport(convertData);
-      }
+      handleOpen();
+      convertData.forEach((val) => {
+        if (isBookScreen) {
+          val.PublicDay =
+            val.PublicDay != "Invalid Date" && val.PublicDay
+              ? dayjs(new Date(val.PublicDay)).format("YYYY-MM-DD")
+              : dayjs(new Date()).format("YYYY-MM-DD");
+        }
+        append(val);
+      });
+      setDataImport(convertData);
     } catch (error) {
       inputFile.current.value = "";
-      console.log(error);
+
       alertService.alert({
-        content: error.message,
+        content: "Không thể import",
       });
     }
   }
@@ -206,13 +205,12 @@ export default function ShowBook() {
         }
 
         const book = {
-          isbn: v.ISBN,
           categoryName: v.CategoryName,
           distributorName: v.DistributorName,
           publisherName: v.PublisherName,
           genreName: v.GenreName,
           publicDay: v.PublicDay,
-          authors: v.AuthorName.split(", "),
+          authors: [v.AuthorName],
         };
         const postData = {
           book,
@@ -224,12 +222,12 @@ export default function ShowBook() {
           description: v.Description,
           price: v.Price,
           status: 1,
-          AuthorName: v.AuthorName.split(", "),
+          AuthorName: [v.AuthorName],
           categoryName: v.CategoryName,
           distributorName: v.DistributorName,
           publisherName: v.PublisherName,
           genreName: v.GenreName,
-          authors: v.AuthorName.split(", "),
+          authors: [v.AuthorName],
 
           urlImage,
         };
@@ -275,42 +273,18 @@ export default function ShowBook() {
     inputFile.current.value = "";
   }
 
-  const listImportBook = () => {
+  const listImportSouvenir = () => {
     return (
-      <TableContainer
-        sx={{ minWidth: 1800 }}
-        className="import-book"
-      >
-        <Table stickyHeader aria-label="simple table">
+      <TableContainer sx={{ maxHeight: 440 }} component={Paper}>
+        <Table stickyHeader sx={{ minWidth: 440 }} aria-label="simple table">
           <TableHead>
             <TableRow>
-              <TableCell sx={{ }}>ISBN</TableCell>
-              <TableCell sx={{ }}> Tên sách (*)</TableCell>
-              <TableCell sx={{ width: 100 }} align="left">
-                Hình ảnh
-              </TableCell>
-              <TableCell sx={{ }} align="left">
-                Giá tiền
-              </TableCell>
-              {isBookScreen ? (
-                <TableCell sx={{ }} align="left">
-                  Danh mục
-                </TableCell>
-              ) : (
-                <></>
-              )}
-              <TableCell sx={{ }} align="left">Thể loại</TableCell>
-              <TableCell sx={{ }} align="left">Tác giả</TableCell>
-              <TableCell sx={{ }} align="left">Nhà cung cấp</TableCell>
-              <TableCell sx={{ }} align="left">Nhà xuất bản</TableCell>
-              {isBookScreen ? (
-                <TableCell align="left" sx={{ }}>Ngày xuất bản</TableCell>
-              ) : (
-                <></>
-              )}
+              <TableCell> Tên đồ lưu niệm (*)</TableCell>
+              <TableCell align="left">Hình ảnh</TableCell>
+              <TableCell align="left">Giá tiền</TableCell>
+              <TableCell align="left">Danh mục</TableCell>
 
-              {/* <TableCell align="left">Trạng thái</TableCell> */}
-              <TableCell align="left" sx={{ }}>Mô tả</TableCell>
+              <TableCell align="left">Mô tả</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -321,20 +295,7 @@ export default function ShowBook() {
                   "&:last-child td, &:last-child th": { border: 0 },
                 }}
               >
-                <TableCell align="left">
-                  <input
-                    className={
-                      errors.author && errors.author[index]
-                        ? "form-control is-invalid"
-                        : "form-control"
-                    }
-                    type="text"
-                    {...register(`author.${index}.ISBN`, {
-                      required: true,
-                    })}
-                  />
-                </TableCell>
-                <TableCell align="left">
+                <TableCell align="left" key={index}>
                   <input
                     className={
                       errors.author && errors.author[index]
@@ -347,14 +308,14 @@ export default function ShowBook() {
                     })}
                   />
                   <div className="line-clamp-2 text-danger mt-2">
-                    {dataImport[index]?.Error || dataImport[index]?.message}
+                    {dataImport[index]?.Error}
                   </div>
                 </TableCell>
                 <TableCell align="left">
                   <div className="flex flex-column items-center gap-2">
                     <label
                       htmlFor={"imageUpload" + index}
-                      className="block h-12 w-12 bg-slate-200 bg-contain bg-no-repeat bg-center"
+                      className="block h-20 w-20 bg-slate-200 bg-contain bg-no-repeat bg-center"
                       style={{
                         backgroundImage: "url(" + row?.UrlImage + ")",
                       }}
@@ -373,7 +334,6 @@ export default function ShowBook() {
                     </label>
                   </div>
                 </TableCell>
-
                 <TableCell align="left">
                   <input
                     className="form-control"
@@ -389,55 +349,9 @@ export default function ShowBook() {
                     {...register(`author.${index}.CategoryName`)}
                   />
                 </TableCell>
-                {isBookScreen ? (
-                  <TableCell align="left">
-                    <input
-                      className="form-control"
-                      type="text"
-                      {...register(`author.${index}.GenreName`)}
-                    />
-                  </TableCell>
-                ) : (
-                  <></>
-                )}
-
-                <TableCell align="left">
-                  <input
-                    className="form-control h-12"
-                    type="text"
-                    {...register(`author.${index}.AuthorName`)}
-                  />
-                </TableCell>
-                <TableCell align="left">
-                  <input
-                    className="form-control"
-                    type="text"
-                    {...register(`author.${index}.DistributorName`)}
-                  />
-                </TableCell>
-                <TableCell align="left">
-                  <input
-                    className="form-control"
-                    type="text"
-                    {...register(`author.${index}.PublisherName`)}
-                  />
-                </TableCell>
-                {isBookScreen ? (
-                  <TableCell align="left">
-                    <input
-                      className="form-control"
-                      type="date"
-                      {...register(`author.${index}.PublicDay`)}
-                    />
-                  </TableCell>
-                ) : (
-                  <></>
-                )}
-
                 <TableCell align="left">
                   <textarea
-                    className="form-control"
-                    rows={4}
+                    className="form-control min-h-30 max-h-50"
                     {...register(`author.${index}.Description`)}
                   ></textarea>
                 </TableCell>
@@ -463,9 +377,14 @@ export default function ShowBook() {
     };
     reader.readAsDataURL(e.target.files[0]);
   }
+
   // End Model
 
   // Template role store
+  const handleClickOpenDetail = (v) => {
+    dialogDetailService.showDialog(v);
+  };
+
   function templateRoleStore(link, template) {
     if (user.role == Role.Store) {
       return <Link to={link}>{template}</Link>;
@@ -501,7 +420,7 @@ export default function ShowBook() {
             {templateRoleStore(
               "create",
               <button className="bg-info text-white rounded-lg px-3 py-0.5">
-                Tạo sách
+                Tạo quà lưu niệm
               </button>
             )}
           </div>
@@ -518,7 +437,7 @@ export default function ShowBook() {
             {templateRoleStore(
               "update/" + val.productId,
               <div
-                className="h-60 bg-contain bg-no-repeat bg-center"
+                className="h-60 bg-cover bg-no-repeat bg-center"
                 style={{
                   backgroundImage: `url(${
                     val.urlImage ? val.urlImage : AVATARDEFAULT
@@ -532,13 +451,12 @@ export default function ShowBook() {
               }}
               className={`${listStyle["info-icon"]} position-absolute top-0 left-0 bg-slate-400 rounded p-3 opacity-50 cursor-pointer`}
             ></button>
-
             {user.role == Role.Store ? (
               <div
                 onClick={(_: any) => {
                   deleteItem(val);
                 }}
-                className={`${listStyle["trash-box"]} position-absolute top-0 right-0 bg-slate-400 rounded px-2 py-1`}
+                className={`${listStyle["trash-box"]} position-absolute top-0 right-0 bg-slate-400 rounded px-2 py-1 opacity-50 hover:!opacity-100`}
               >
                 <Trash />
               </div>
@@ -549,14 +467,9 @@ export default function ShowBook() {
               "update/" + val.productId,
               <div className="mt-1 text-dark">
                 <h6 className="mb-0 line-clamp-2">{val.productName}</h6>
-                {val.price ? <div>Giá: {val.price} vnđ</div> : <></>}
                 {isBookScreen ? (
                   <div>
-                    {val?.authors ? (
-                      <div className="box-author">Tác giả: {val?.authors}</div>
-                    ) : (
-                      <></>
-                    )}
+                    <div className="box-author">Tác giả: {val?.authors}</div>
                     {user.role == Roles[0] ? (
                       <div>Được bán tại: {val.storeName}</div>
                     ) : (
@@ -585,18 +498,16 @@ export default function ShowBook() {
           <></>
         )}
       </div>
-      <Dialog
-        maxWidth="xl"
+      <Modal
         open={open}
         onClose={handleClose}
         aria-labelledby="modal-modal-title"
         aria-describedby="modal-modal-description"
       >
-        <div className="mx-[-10px]">
-          <DialogContent>
-            {/* <Box sx={ModelStyle}> */}
-            <div className="max-h-90vh overflow-auto">
-              {listImportBook()}
+        <div className="p-6">
+          <Box sx={{ ...ModelStyle, width: "65vw" }}>
+            <div className="max-h-50vh overflow-auto">
+              { listImportSouvenir()}
             </div>
             <button
               onClick={submitCsv}
@@ -605,11 +516,9 @@ export default function ShowBook() {
             >
               Nhập
             </button>
-          </DialogContent>
-          {/* </Box> */}
+          </Box>
         </div>
-      </Dialog>
-
+      </Modal>
       <DialogDetailComponent />
     </div>
   );
