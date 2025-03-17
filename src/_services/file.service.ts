@@ -58,7 +58,7 @@ class FileService {
 
   authHeader() {
     const user = JSON.parse(localStorage.getItem("userInfo"));
-    return { Authorization: `${user.token}` };
+    return { Authorization: `Bearer ${user.token}` };
   }
 }
 
