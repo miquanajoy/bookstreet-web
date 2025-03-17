@@ -162,6 +162,7 @@ export default function ShowBook() {
                 ? dayjs(new Date(val.PublicDay)).format("YYYY-MM-DD")
                 : dayjs(new Date()).format("YYYY-MM-DD");
           }
+          console.log("val :>> ", val);
           append(val);
         });
         setDataImport(convertData);
@@ -205,32 +206,9 @@ export default function ShowBook() {
           }
         }
 
-        const book = {
-          isbn: v.ISBN,
-          categoryName: v.CategoryName,
-          distributorName: v.DistributorName,
-          publisherName: v.PublisherName,
-          genreName: v.GenreName,
-          publicDay: v.PublicDay,
-          authors: v.AuthorName.split(", "),
-        };
         const postData = {
-          book,
-          categoryId: v.CategoryId,
-          productTypeId: isBookScreen ? 1 : 2,
-          productTypeName: v.ProductTypeName,
-          publicDay: v.PublicDay,
-          productName: v.ProductName,
-          description: v.Description,
-          price: v.Price,
-          status: 1,
+          ...v,
           AuthorName: v.AuthorName.split(", "),
-          categoryName: v.CategoryName,
-          distributorName: v.DistributorName,
-          publisherName: v.PublisherName,
-          genreName: v.GenreName,
-          authors: v.AuthorName.split(", "),
-
           urlImage,
         };
         if (!isBookScreen) {
@@ -254,12 +232,12 @@ export default function ShowBook() {
             alertService.alert({
               content: val.message,
             });
+            closeModelImport();
             return;
           }
         }
-      } else {
-        closeModelImport();
       }
+      closeModelImport();
     }
     if (!resp.success || resp.success == 400) {
       alertService.alert({
@@ -277,40 +255,49 @@ export default function ShowBook() {
 
   const listImportBook = () => {
     return (
-      <TableContainer
-        sx={{ minWidth: 1800 }}
-        className="import-book"
-      >
+      <TableContainer sx={{ minWidth: 1800 }} className="import-book">
         <Table stickyHeader aria-label="simple table">
           <TableHead>
             <TableRow>
-              <TableCell sx={{ }}>ISBN</TableCell>
-              <TableCell sx={{ }}> Tên sách (*)</TableCell>
+              <TableCell sx={{}}>ISBN</TableCell>
+              <TableCell sx={{}}> Tên sách (*)</TableCell>
               <TableCell sx={{ width: 100 }} align="left">
                 Hình ảnh
               </TableCell>
-              <TableCell sx={{ }} align="left">
+              <TableCell sx={{}} align="left">
                 Giá tiền
               </TableCell>
               {isBookScreen ? (
-                <TableCell sx={{ }} align="left">
+                <TableCell sx={{}} align="left">
                   Danh mục
                 </TableCell>
               ) : (
                 <></>
               )}
-              <TableCell sx={{ }} align="left">Thể loại</TableCell>
-              <TableCell sx={{ }} align="left">Tác giả</TableCell>
-              <TableCell sx={{ }} align="left">Nhà cung cấp</TableCell>
-              <TableCell sx={{ }} align="left">Nhà xuất bản</TableCell>
+              <TableCell sx={{}} align="left">
+                Thể loại
+              </TableCell>
+              <TableCell sx={{}} align="left">
+                Tác giả
+              </TableCell>
+              <TableCell sx={{}} align="left">
+                Nhà cung cấp
+              </TableCell>
+              <TableCell sx={{}} align="left">
+                Nhà xuất bản
+              </TableCell>
               {isBookScreen ? (
-                <TableCell align="left" sx={{ }}>Ngày xuất bản</TableCell>
+                <TableCell align="left" sx={{}}>
+                  Ngày xuất bản
+                </TableCell>
               ) : (
                 <></>
               )}
 
               {/* <TableCell align="left">Trạng thái</TableCell> */}
-              <TableCell align="left" sx={{ }}>Mô tả</TableCell>
+              <TableCell align="left" sx={{}}>
+                Mô tả
+              </TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -593,15 +580,13 @@ export default function ShowBook() {
         aria-describedby="modal-modal-description"
       >
         <div className="mx-[-10px]">
-          <DialogContent>
+          <DialogContent className="relative">
             {/* <Box sx={ModelStyle}> */}
-            <div className="max-h-90vh overflow-auto">
-              {listImportBook()}
-            </div>
+            <div className="max-h-90vh overflow-auto">{listImportBook()}</div>
             <button
               onClick={submitCsv}
               type="button"
-              className="mt-4 float-right text-white bg-green-700  rounded-lg text-sm px-5 py-2.5 me-2 mb-2"
+              className="sticky bottom-0 mt-4  text-white bg-green-700  rounded-lg text-sm px-5 py-2.5 me-2 mb-2"
             >
               Nhập
             </button>
