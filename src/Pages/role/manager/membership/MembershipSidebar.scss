@@ -1,0 +1,46 @@
+.membership-sidebar {
+    height: auto;
+    padding: 16px;
+  }
+  
+  .sidebar-link {
+    /* Base styles for the link appearance */
+    display: block;
+    padding: 10px 15px;
+    margin-bottom: 8px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    background-color: #fff;
+    color: #333;
+    text-decoration: none;
+    cursor: pointer;
+    transition: background-color 0.3s, color 0.3s, border-color 0.3s;
+  
+    /* Hover effect for visual feedback */
+    &:hover {
+      background-color: #f0f0f0;
+      color: #007bff; /* Example: Highlight on hover */
+      border-color: #007bff;
+    }
+  
+    /* Active state if you want to indicate which link is currently active */
+    &.active {
+      background-color: #007bff;
+      color: white;
+      border-color: #007bff;
+    }
+  
+    /* Style to give the links the appearance of buttons */
+    text-align: center; /* Center the text inside */
+    font-weight: 500; /* Make the text a little bolder */
+  }
+  
+  /* Optional: Style to enhance the overall look, like spacing or colors */
+  .ml-6 {
+    margin-left: 1.5rem; /* Tailwind's default value for ml-6 */
+  }
+  
+  .my-2 {
+    margin-top: 0.5rem; /* Tailwind's default value for my-2 */
+    margin-bottom: 0.5rem; /* Tailwind's default value for my-2 */
+  }

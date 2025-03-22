@@ -1,0 +1,17 @@
+{
+    "compilerOptions": {
+      "outDir": "./dist/",
+      "noImplicitAny": false,
+      "module": "esnext",
+      "allowSyntheticDefaultImports": true,
+      "target": "es5",
+      "jsx": "react-jsx",
+      "allowJs": true,
+      "moduleResolution": "node",
+    },
+    "lib": [
+      "es2018",
+      "es2020",
+      "dom"
+    ]
+  }

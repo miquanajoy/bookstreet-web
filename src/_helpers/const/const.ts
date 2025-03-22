@@ -16,6 +16,7 @@ import { GenreIcon } from "../../assets/icon/genre";
 import { DistributorIcon } from "../../assets/icon/distributorIcon";
 import { CategoryIcon } from "../../assets/icon/category";
 import { AuthorIcon } from "../../assets/icon/author";
+import UsersIcon from "../../assets/icon/users";
 
 export const AUTH = "Auth";
 export const STORE = "Store";
@@ -108,6 +109,10 @@ export const ROUTER = {
       name: "Quản lý vị trí",
       url: "/location",
     },
+    memberShip: {
+      name: "Tư cách thành viên",
+      url: "/membership",
+    },
   },
   roleGiftStore: {
     gift: {
@@ -197,6 +202,10 @@ export const ROUTERS = [
   {
     logo: Address,
     ...ROUTER.roleAdmin.pointHistory,
+    roles: [Role.Manager],
+  },  {
+    logo: UsersIcon,
+    ...ROUTER.roleManager.memberShip,
     roles: [Role.Manager],
   },
 ];

@@ -1,47 +1,114 @@
-import {
-  Navigate,
-  createBrowserRouter,
-  useLocation,
-  useRoutes,
-} from "react-router-dom";
+import React, { Suspense, lazy } from "react";
+import { Navigate, createBrowserRouter } from "react-router-dom";
 import AuthGuard from "../guards/AuthGuard";
 import AuthenPage from "../Components/authen.component";
 import RoleBasedGuard from "../guards/RoleBaseGuard";
 import HomePage from "../Components/home.component";
-import AddUser from "../Pages/user/addUser.page";
-import HandleCalenderPage from "../Pages/event/handle-event.page";
-import HandlePublisher from "../Pages/publisher/handle-publisher.page";
 import { Role, Roles } from "../models/Role";
-import ShowBook from "../Pages/book/ShowBook";
-import AddBook from "../Pages/book/AddBook";
-import ListStore from "../Pages/store/list-store";
-import HandleStore from "../Pages/store/handle-store";
-import ShowLocation from "../Pages/location/show-location";
-import HandleLocation from "../Pages/location/handle-location";
-import PublisheranagerPage from "../Pages/publisher/publisher-manager.page";
 import { QUAN_LY, ROUTER } from "../_helpers/const/const";
-import HandleAuthorPage from "../Pages/author/handle-author.page";
-import ShowAuthorPage from "../Pages/author/show-author.page";
-import ShowGenrePage from "../Pages/genre/show-genre.page";
-import HandleGenrePage from "../Pages/genre/handle-genre.page";
-import ShowDistributor from "../Pages/distributor/show-distributor.page";
-import HandleDistributorPage from "../Pages/distributor/handle-distributor.page";
-import HandleCategoryPage from "../Pages/category/handle-category.page";
-import ShowCategoryPage from "../Pages/category/show-category.page";
-import HandleStreetPage from "../Pages/street/handle-street.page";
-import ShowStreetPage from "../Pages/street/show-street.page";
-import HandleAreaPage from "../Pages/area/handle-area.page";
-import ShowAreaPage from "../Pages/area/show-area.page";
-import ShowUserPage from "../Pages/user/User-manager.page";
-import ShowGift from "../Pages/role/store/gift/show-gift";
-import HandleGift from "../Pages/role/store/gift/handle-gift";
-import ShowSouvenir from "../Pages/book/show-souvenir";
-import ListKios from "../Pages/role/admin/kios/list-kios";
-import HandleKios from "../Pages/role/admin/kios/handle-kios";
-import PointStore from "../Pages/role/manager/manager-point/point-store";
-import ListBrowseScores from "../Pages/role/store/browse-scores/list-browse-scores";
-import ProrilePage from "../Pages/user/profile.page";
-import EventManagerPage from "../Pages/event/event-manager.page";
+
+// Utility function to create a lazy-loaded route
+const createLazyRoute = (
+  path,
+  Component,
+  accessibleRoles = null,
+  title = null
+) => {
+  const RouteElement = (
+    <AuthGuard>
+      {accessibleRoles ? (
+        <RoleBasedGuard accessibleRoles={accessibleRoles}>
+          <Suspense fallback={<div>Loading...</div>}>
+            {title ? (
+              <HomePage title={title}>
+                <Component />
+              </HomePage>
+            ) : (
+              <Component />
+            )}
+          </Suspense>
+        </RoleBasedGuard>
+      ) : (
+        <Suspense fallback={<div>Loading...</div>}>
+          {title ? (
+            <HomePage title={title}>
+              <Component />
+            </HomePage>
+          ) : (
+            <Component />
+          )}
+        </Suspense>
+      )}
+    </AuthGuard>
+  );
+
+  return {
+    path,
+    element: RouteElement,
+  };
+};
+
+// Lazy load các component
+const AddUser = lazy(() => import("../Pages/user/addUser.page"));
+const HandleCalenderPage = lazy(
+  () => import("../Pages/event/handle-event.page")
+);
+const HandlePublisher = lazy(
+  () => import("../Pages/publisher/handle-publisher.page")
+);
+const ShowBook = lazy(() => import("../Pages/book/ShowBook"));
+const AddBook = lazy(() => import("../Pages/book/AddBook"));
+const ListStore = lazy(() => import("../Pages/store/list-store"));
+const HandleStore = lazy(() => import("../Pages/store/handle-store"));
+const ShowLocation = lazy(() => import("../Pages/location/show-location"));
+const HandleLocation = lazy(() => import("../Pages/location/handle-location"));
+const PublisheranagerPage = lazy(
+  () => import("../Pages/publisher/publisher-manager.page")
+);
+const HandleAuthorPage = lazy(
+  () => import("../Pages/author/handle-author.page")
+);
+const ShowAuthorPage = lazy(() => import("../Pages/author/show-author.page"));
+const ShowGenrePage = lazy(() => import("../Pages/genre/show-genre.page"));
+const HandleGenrePage = lazy(() => import("../Pages/genre/handle-genre.page"));
+const ShowDistributor = lazy(
+  () => import("../Pages/distributor/show-distributor.page")
+);
+const HandleDistributorPage = lazy(
+  () => import("../Pages/distributor/handle-distributor.page")
+);
+const HandleCategoryPage = lazy(
+  () => import("../Pages/category/handle-category.page")
+);
+const ShowCategoryPage = lazy(
+  () => import("../Pages/category/show-category.page")
+);
+const HandleStreetPage = lazy(
+  () => import("../Pages/street/handle-street.page")
+);
+const ShowStreetPage = lazy(() => import("../Pages/street/show-street.page"));
+const HandleAreaPage = lazy(() => import("../Pages/area/handle-area.page"));
+const ShowAreaPage = lazy(() => import("../Pages/area/show-area.page"));
+const ShowUserPage = lazy(() => import("../Pages/user/User-manager.page"));
+const ShowGift = lazy(() => import("../Pages/role/store/gift/show-gift"));
+const HandleGift = lazy(() => import("../Pages/role/store/gift/handle-gift"));
+const ShowSouvenir = lazy(() => import("../Pages/book/show-souvenir"));
+const ListKios = lazy(() => import("../Pages/role/admin/kios/list-kios"));
+
+const Membership = lazy(() => import("../Pages/role/manager/membership/membership"));
+const StoryHistory = lazy(() => import("../Pages/role/manager/membership/store-history/storeHistory"));
+const CustomerHistory = lazy(() => import("../Pages/role/manager/membership/customer-history/customer-history"));
+const HandleKios = lazy(() => import("../Pages/role/admin/kios/handle-kios"));
+const PointStore = lazy(
+  () => import("../Pages/role/manager/manager-point/point-store")
+);
+const ListBrowseScores = lazy(
+  () => import("../Pages/role/store/browse-scores/list-browse-scores")
+);
+const ProrilePage = lazy(() => import("../Pages/user/profile.page"));
+const EventManagerPage = lazy(
+  () => import("../Pages/event/event-manager.page")
+);
 
 const user = JSON.parse(localStorage.getItem("userInfo"));
 const afterLogin = () => {
@@ -67,15 +134,11 @@ const afterLogin = () => {
   }
 };
 
-const router = createBrowserRouter([
+// Define routes as a data structure
+const routesConfig = [
   {
     path: "",
-    children: [
-      {
-        path: "",
-        element: afterLogin(),
-      },
-    ],
+    element: afterLogin(),
   },
   {
     path: "/",
@@ -84,18 +147,7 @@ const router = createBrowserRouter([
         <HomePage title={QUAN_LY + "Hồ sơ"} />
       </AuthGuard>
     ),
-    children: [
-      {
-        path: "profile/:id",
-        element: (
-          <AuthGuard>
-            <RoleBasedGuard accessibleRoles={Roles}>
-              <ProrilePage />
-            </RoleBasedGuard>
-          </AuthGuard>
-        ),
-      },
-    ],
+    children: [createLazyRoute("profile/:id", ProrilePage, Roles)],
   },
   {
     path: ROUTER.book.url,
@@ -105,56 +157,11 @@ const router = createBrowserRouter([
       </AuthGuard>
     ),
     children: [
-      {
-        path: "",
-        element: (
-          <AuthGuard>
-            <RoleBasedGuard accessibleRoles={[Role.Manager, Role.Store]}>
-              <ShowBook />
-            </RoleBasedGuard>
-          </AuthGuard>
-        ),
-      },
-      {
-        path: "detail/:id",
-        element: (
-          <AuthGuard>
-            <RoleBasedGuard accessibleRoles={[Role.Manager, Role.Store]}>
-              <ShowBook />
-            </RoleBasedGuard>
-          </AuthGuard>
-        ),
-      },
-      {
-        path: "list",
-        element: (
-          <AuthGuard>
-            <RoleBasedGuard accessibleRoles={[Role.Manager, Role.Store]}>
-              <ShowBook />
-            </RoleBasedGuard>
-          </AuthGuard>
-        ),
-      },
-      {
-        path: "create",
-        element: (
-          <AuthGuard>
-            <RoleBasedGuard accessibleRoles={[Role.Manager, Role.Store]}>
-              <AddBook />
-            </RoleBasedGuard>
-          </AuthGuard>
-        ),
-      },
-      {
-        path: "update/:id",
-        element: (
-          <AuthGuard>
-            <RoleBasedGuard accessibleRoles={[Role.Manager, Role.Store]}>
-              <AddBook />
-            </RoleBasedGuard>
-          </AuthGuard>
-        ),
-      },
+      createLazyRoute("", ShowBook, [Role.Manager, Role.Store]),
+      createLazyRoute("detail/:id", ShowBook, [Role.Manager, Role.Store]),
+      createLazyRoute("list", ShowBook, [Role.Manager, Role.Store]),
+      createLazyRoute("create", AddBook, [Role.Manager, Role.Store]),
+      createLazyRoute("update/:id", AddBook, [Role.Manager, Role.Store]),
     ],
   },
   {
@@ -165,56 +172,11 @@ const router = createBrowserRouter([
       </AuthGuard>
     ),
     children: [
-      {
-        path: "",
-        element: (
-          <AuthGuard>
-            <RoleBasedGuard accessibleRoles={[Role.Manager, Role.Store]}>
-              <ShowSouvenir />
-            </RoleBasedGuard>
-          </AuthGuard>
-        ),
-      },
-      {
-        path: "detail/:id",
-        element: (
-          <AuthGuard>
-            <RoleBasedGuard accessibleRoles={[Role.Manager, Role.Store]}>
-              <ShowBook />
-            </RoleBasedGuard>
-          </AuthGuard>
-        ),
-      },
-      {
-        path: "list",
-        element: (
-          <AuthGuard>
-            <RoleBasedGuard accessibleRoles={[Role.Manager, Role.Store]}>
-              <ShowBook />
-            </RoleBasedGuard>
-          </AuthGuard>
-        ),
-      },
-      {
-        path: "create",
-        element: (
-          <AuthGuard>
-            <RoleBasedGuard accessibleRoles={[Role.Manager, Role.Store]}>
-              <AddBook />
-            </RoleBasedGuard>
-          </AuthGuard>
-        ),
-      },
-      {
-        path: "update/:id",
-        element: (
-          <AuthGuard>
-            <RoleBasedGuard accessibleRoles={[Role.Manager, Role.Store]}>
-              <AddBook />
-            </RoleBasedGuard>
-          </AuthGuard>
-        ),
-      },
+      createLazyRoute("", ShowSouvenir, [Role.Manager, Role.Store]),
+      createLazyRoute("detail/:id", ShowBook, [Role.Manager, Role.Store]),
+      createLazyRoute("list", ShowBook, [Role.Manager, Role.Store]),
+      createLazyRoute("create", AddBook, [Role.Manager, Role.Store]),
+      createLazyRoute("update/:id", AddBook, [Role.Manager, Role.Store]),
     ],
   },
   {
@@ -225,36 +187,9 @@ const router = createBrowserRouter([
       </AuthGuard>
     ),
     children: [
-      {
-        path: "",
-        element: (
-          <AuthGuard>
-            <RoleBasedGuard accessibleRoles={[Role.Admin]}>
-              <ShowUserPage />
-            </RoleBasedGuard>
-          </AuthGuard>
-        ),
-      },
-      {
-        path: "create",
-        element: (
-          <AuthGuard>
-            <RoleBasedGuard accessibleRoles={[Role.Admin]}>
-              <AddUser />
-            </RoleBasedGuard>
-          </AuthGuard>
-        ),
-      },
-      {
-        path: "update/:id",
-        element: (
-          <AuthGuard>
-            <RoleBasedGuard accessibleRoles={[Role.Admin]}>
-              <AddUser />
-            </RoleBasedGuard>
-          </AuthGuard>
-        ),
-      },
+      createLazyRoute("", ShowUserPage, [Role.Admin]),
+      createLazyRoute("create", AddUser, [Role.Admin]),
+      createLazyRoute("update/:id", AddUser, [Role.Admin]),
     ],
   },
   {
@@ -265,36 +200,9 @@ const router = createBrowserRouter([
       </AuthGuard>
     ),
     children: [
-      {
-        path: "",
-        element: (
-          <AuthGuard>
-            <RoleBasedGuard accessibleRoles={[Role.Manager]}>
-              <PublisheranagerPage />
-            </RoleBasedGuard>
-          </AuthGuard>
-        ),
-      },
-      {
-        path: "create",
-        element: (
-          <AuthGuard>
-            <RoleBasedGuard accessibleRoles={[Role.Manager]}>
-              <HandlePublisher />
-            </RoleBasedGuard>
-          </AuthGuard>
-        ),
-      },
-      {
-        path: "update/:id",
-        element: (
-          <AuthGuard>
-            <RoleBasedGuard accessibleRoles={[Role.Manager]}>
-              <HandlePublisher />
-            </RoleBasedGuard>
-          </AuthGuard>
-        ),
-      },
+      createLazyRoute("", PublisheranagerPage, [Role.Manager]),
+      createLazyRoute("create", HandlePublisher, [Role.Manager]),
+      createLazyRoute("update/:id", HandlePublisher, [Role.Manager]),
     ],
   },
   {
@@ -305,36 +213,12 @@ const router = createBrowserRouter([
       </AuthGuard>
     ),
     children: [
-      {
-        path: "",
-        element: (
-          <AuthGuard>
-            <RoleBasedGuard accessibleRoles={[Role.Manager, Role.Store]}>
-              <EventManagerPage />
-            </RoleBasedGuard>
-          </AuthGuard>
-        ),
-      },
-      {
-        path: "create",
-        element: (
-          <AuthGuard>
-            <RoleBasedGuard accessibleRoles={[Role.Manager, Role.Store]}>
-              <HandleCalenderPage />
-            </RoleBasedGuard>
-          </AuthGuard>
-        ),
-      },
-      {
-        path: "update/:id",
-        element: (
-          <AuthGuard>
-            <RoleBasedGuard accessibleRoles={[Role.Manager, Role.Store]}>
-              <HandleCalenderPage />
-            </RoleBasedGuard>
-          </AuthGuard>
-        ),
-      },
+      createLazyRoute("", EventManagerPage, [Role.Manager, Role.Store]),
+      createLazyRoute("create", HandleCalenderPage, [Role.Manager, Role.Store]),
+      createLazyRoute("update/:id", HandleCalenderPage, [
+        Role.Manager,
+        Role.Store,
+      ]),
     ],
   },
   // Store
@@ -346,36 +230,9 @@ const router = createBrowserRouter([
       </AuthGuard>
     ),
     children: [
-      {
-        path: "",
-        element: (
-          <AuthGuard>
-            <RoleBasedGuard accessibleRoles={[Role.Manager]}>
-              <ListStore />
-            </RoleBasedGuard>
-          </AuthGuard>
-        ),
-      },
-      {
-        path: "create",
-        element: (
-          <AuthGuard>
-            <RoleBasedGuard accessibleRoles={[Role.Manager]}>
-              <HandleStore />
-            </RoleBasedGuard>
-          </AuthGuard>
-        ),
-      },
-      {
-        path: "update/:id",
-        element: (
-          <AuthGuard>
-            <RoleBasedGuard accessibleRoles={[Role.Manager]}>
-              <HandleStore />
-            </RoleBasedGuard>
-          </AuthGuard>
-        ),
-      },
+      createLazyRoute("", ListStore, [Role.Manager]),
+      createLazyRoute("create", HandleStore, [Role.Manager]),
+      createLazyRoute("update/:id", HandleStore, [Role.Manager]),
     ],
   },
   // Area
@@ -383,42 +240,13 @@ const router = createBrowserRouter([
     path: "/area",
     element: (
       <AuthGuard>
-        <HomePage
-          title={ ROUTER.roleManager.area.name}
-        />
+        <HomePage title={ROUTER.roleManager.area.name} />
       </AuthGuard>
     ),
     children: [
-      {
-        path: "",
-        element: (
-          <AuthGuard>
-            <RoleBasedGuard accessibleRoles={[Role.Manager]}>
-              <ShowAreaPage />
-            </RoleBasedGuard>
-          </AuthGuard>
-        ),
-      },
-      {
-        path: "create",
-        element: (
-          <AuthGuard>
-            <RoleBasedGuard accessibleRoles={[Role.Manager]}>
-              <HandleAreaPage />
-            </RoleBasedGuard>
-          </AuthGuard>
-        ),
-      },
-      {
-        path: "update/:id",
-        element: (
-          <AuthGuard>
-            <RoleBasedGuard accessibleRoles={[Role.Manager]}>
-              <HandleAreaPage />
-            </RoleBasedGuard>
-          </AuthGuard>
-        ),
-      },
+      createLazyRoute("", ShowAreaPage, [Role.Manager]),
+      createLazyRoute("create", HandleAreaPage, [Role.Manager]),
+      createLazyRoute("update/:id", HandleAreaPage, [Role.Manager]),
     ],
   },
   // Location
@@ -426,42 +254,13 @@ const router = createBrowserRouter([
     path: "/location",
     element: (
       <AuthGuard>
-        <HomePage
-          title={ ROUTER.roleManager.location.name}
-        />
+        <HomePage title={ROUTER.roleManager.location.name} />
       </AuthGuard>
     ),
     children: [
-      {
-        path: "",
-        element: (
-          <AuthGuard>
-            <RoleBasedGuard accessibleRoles={[Role.Manager]}>
-              <ShowLocation />
-            </RoleBasedGuard>
-          </AuthGuard>
-        ),
-      },
-      {
-        path: "create",
-        element: (
-          <AuthGuard>
-            <RoleBasedGuard accessibleRoles={[Role.Manager]}>
-              <HandleLocation />
-            </RoleBasedGuard>
-          </AuthGuard>
-        ),
-      },
-      {
-        path: "update/:id",
-        element: (
-          <AuthGuard>
-            <RoleBasedGuard accessibleRoles={[Role.Manager]}>
-              <HandleLocation />
-            </RoleBasedGuard>
-          </AuthGuard>
-        ),
-      },
+      createLazyRoute("", ShowLocation, [Role.Manager]),
+      createLazyRoute("create", HandleLocation, [Role.Manager]),
+      createLazyRoute("update/:id", HandleLocation, [Role.Manager]),
     ],
   },
   // Author
@@ -473,36 +272,9 @@ const router = createBrowserRouter([
       </AuthGuard>
     ),
     children: [
-      {
-        path: "",
-        element: (
-          <AuthGuard>
-            <RoleBasedGuard accessibleRoles={[Role.Manager]}>
-              <ShowAuthorPage />
-            </RoleBasedGuard>
-          </AuthGuard>
-        ),
-      },
-      {
-        path: "create",
-        element: (
-          <AuthGuard>
-            <RoleBasedGuard accessibleRoles={[Role.Manager]}>
-              <HandleAuthorPage />
-            </RoleBasedGuard>
-          </AuthGuard>
-        ),
-      },
-      {
-        path: "update/:id",
-        element: (
-          <AuthGuard>
-            <RoleBasedGuard accessibleRoles={[Role.Manager]}>
-              <HandleAuthorPage />
-            </RoleBasedGuard>
-          </AuthGuard>
-        ),
-      },
+      createLazyRoute("", ShowAuthorPage, [Role.Manager]),
+      createLazyRoute("create", HandleAuthorPage, [Role.Manager]),
+      createLazyRoute("update/:id", HandleAuthorPage, [Role.Manager]),
     ],
   },
   // Genre
@@ -514,36 +286,9 @@ const router = createBrowserRouter([
       </AuthGuard>
     ),
     children: [
-      {
-        path: "",
-        element: (
-          <AuthGuard>
-            <RoleBasedGuard accessibleRoles={[Role.Manager]}>
-              <ShowGenrePage />
-            </RoleBasedGuard>
-          </AuthGuard>
-        ),
-      },
-      {
-        path: "create",
-        element: (
-          <AuthGuard>
-            <RoleBasedGuard accessibleRoles={[Role.Manager]}>
-              <HandleGenrePage />
-            </RoleBasedGuard>
-          </AuthGuard>
-        ),
-      },
-      {
-        path: "update/:id",
-        element: (
-          <AuthGuard>
-            <RoleBasedGuard accessibleRoles={[Role.Manager]}>
-              <HandleGenrePage />
-            </RoleBasedGuard>
-          </AuthGuard>
-        ),
-      },
+      createLazyRoute("", ShowGenrePage, [Role.Manager]),
+      createLazyRoute("create", HandleGenrePage, [Role.Manager]),
+      createLazyRoute("update/:id", HandleGenrePage, [Role.Manager]),
     ],
   },
   // Distributor
@@ -557,36 +302,9 @@ const router = createBrowserRouter([
       </AuthGuard>
     ),
     children: [
-      {
-        path: "",
-        element: (
-          <AuthGuard>
-            <RoleBasedGuard accessibleRoles={[Role.Manager]}>
-              <ShowDistributor />
-            </RoleBasedGuard>
-          </AuthGuard>
-        ),
-      },
-      {
-        path: "create",
-        element: (
-          <AuthGuard>
-            <RoleBasedGuard accessibleRoles={[Role.Manager]}>
-              <HandleDistributorPage />
-            </RoleBasedGuard>
-          </AuthGuard>
-        ),
-      },
-      {
-        path: "update/:id",
-        element: (
-          <AuthGuard>
-            <RoleBasedGuard accessibleRoles={[Role.Manager]}>
-              <HandleDistributorPage />
-            </RoleBasedGuard>
-          </AuthGuard>
-        ),
-      },
+      createLazyRoute("", ShowDistributor, [Role.Manager]),
+      createLazyRoute("create", HandleDistributorPage, [Role.Manager]),
+      createLazyRoute("update/:id", HandleDistributorPage, [Role.Manager]),
     ],
   },
   // Category
@@ -598,36 +316,9 @@ const router = createBrowserRouter([
       </AuthGuard>
     ),
     children: [
-      {
-        path: "",
-        element: (
-          <AuthGuard>
-            <RoleBasedGuard accessibleRoles={[Role.Manager]}>
-              <ShowCategoryPage />
-            </RoleBasedGuard>
-          </AuthGuard>
-        ),
-      },
-      {
-        path: "create",
-        element: (
-          <AuthGuard>
-            <RoleBasedGuard accessibleRoles={[Role.Manager]}>
-              <HandleCategoryPage />
-            </RoleBasedGuard>
-          </AuthGuard>
-        ),
-      },
-      {
-        path: "update/:id",
-        element: (
-          <AuthGuard>
-            <RoleBasedGuard accessibleRoles={[Role.Manager]}>
-              <HandleCategoryPage />
-            </RoleBasedGuard>
-          </AuthGuard>
-        ),
-      },
+      createLazyRoute("", ShowCategoryPage, [Role.Manager]),
+      createLazyRoute("create", HandleCategoryPage, [Role.Manager]),
+      createLazyRoute("update/:id", HandleCategoryPage, [Role.Manager]),
     ],
   },
   // Street
@@ -639,36 +330,9 @@ const router = createBrowserRouter([
       </AuthGuard>
     ),
     children: [
-      {
-        path: "",
-        element: (
-          <AuthGuard>
-            <RoleBasedGuard accessibleRoles={[Role.Manager]}>
-              <ShowStreetPage />
-            </RoleBasedGuard>
-          </AuthGuard>
-        ),
-      },
-      {
-        path: "create",
-        element: (
-          <AuthGuard>
-            <RoleBasedGuard accessibleRoles={[Role.Manager]}>
-              <HandleStreetPage />
-            </RoleBasedGuard>
-          </AuthGuard>
-        ),
-      },
-      {
-        path: "update/:id",
-        element: (
-          <AuthGuard>
-            <RoleBasedGuard accessibleRoles={[Role.Manager]}>
-              <HandleStreetPage />
-            </RoleBasedGuard>
-          </AuthGuard>
-        ),
-      },
+      createLazyRoute("", ShowStreetPage, [Role.Manager]),
+      createLazyRoute("create", HandleStreetPage, [Role.Manager]),
+      createLazyRoute("update/:id", HandleStreetPage, [Role.Manager]),
     ],
   },
   // Customer point
@@ -683,18 +347,7 @@ const router = createBrowserRouter([
         />
       </AuthGuard>
     ),
-    children: [
-      {
-        path: "",
-        element: (
-          <AuthGuard>
-            <RoleBasedGuard accessibleRoles={[Role.Store]}>
-              <ListBrowseScores />
-            </RoleBasedGuard>
-          </AuthGuard>
-        ),
-      },
-    ],
+    children: [createLazyRoute("", ListBrowseScores, [Role.Store])],
   },
   // Gift
   {
@@ -707,36 +360,9 @@ const router = createBrowserRouter([
       </AuthGuard>
     ),
     children: [
-      {
-        path: "",
-        element: (
-          <AuthGuard>
-            <RoleBasedGuard accessibleRoles={[Role.GiftStore]}>
-              <ShowGift />
-            </RoleBasedGuard>
-          </AuthGuard>
-        ),
-      },
-      {
-        path: "create",
-        element: (
-          <AuthGuard>
-            <RoleBasedGuard accessibleRoles={[Role.GiftStore]}>
-              <HandleGift />
-            </RoleBasedGuard>
-          </AuthGuard>
-        ),
-      },
-      {
-        path: "update/:id",
-        element: (
-          <AuthGuard>
-            <RoleBasedGuard accessibleRoles={[Role.GiftStore]}>
-              <HandleGift />
-            </RoleBasedGuard>
-          </AuthGuard>
-        ),
-      },
+      createLazyRoute("", ShowGift, [Role.GiftStore]),
+      createLazyRoute("create", HandleGift, [Role.GiftStore]),
+      createLazyRoute("update/:id", HandleGift, [Role.GiftStore]),
     ],
   },
   // Kios
@@ -748,36 +374,9 @@ const router = createBrowserRouter([
       </AuthGuard>
     ),
     children: [
-      {
-        path: "",
-        element: (
-          <AuthGuard>
-            <RoleBasedGuard accessibleRoles={[Role.Manager]}>
-              <ListKios />
-            </RoleBasedGuard>
-          </AuthGuard>
-        ),
-      },
-      {
-        path: "create",
-        element: (
-          <AuthGuard>
-            <RoleBasedGuard accessibleRoles={[Role.Manager]}>
-              <HandleKios />
-            </RoleBasedGuard>
-          </AuthGuard>
-        ),
-      },
-      {
-        path: "update/:id",
-        element: (
-          <AuthGuard>
-            <RoleBasedGuard accessibleRoles={[Role.Manager]}>
-              <HandleKios />
-            </RoleBasedGuard>
-          </AuthGuard>
-        ),
-      },
+      createLazyRoute("", ListKios, [Role.Manager]),
+      createLazyRoute("create", HandleKios, [Role.Manager]),
+      createLazyRoute("update/:id", HandleKios, [Role.Manager]),
     ],
   },
   // Gift history
@@ -785,27 +384,46 @@ const router = createBrowserRouter([
     path: ROUTER.roleAdmin.pointHistory.url,
     element: (
       <AuthGuard>
-        <HomePage
-          title={
-             ROUTER.roleAdmin.pointHistory.name
-          }
-        />
+        <HomePage title={ROUTER.roleAdmin.pointHistory.name} />
+      </AuthGuard>
+    ),
+    children: [createLazyRoute("", PointStore, [Role.Manager])],
+  },
+  // Membership
+  {
+    path: ROUTER.roleManager.memberShip.url,
+    element: (
+      <AuthGuard>
+        <HomePage title={QUAN_LY + ROUTER.roleManager.memberShip.name.toLocaleLowerCase()} />
       </AuthGuard>
     ),
     children: [
       {
         path: "",
         element: (
-          <AuthGuard>
-            <RoleBasedGuard accessibleRoles={[Role.Manager]}>
-              <PointStore />
-            </RoleBasedGuard>
-          </AuthGuard>
+            <Membership />
         ),
+        children: [
+          createLazyRoute("", StoryHistory, [Role.Manager]),
+          createLazyRoute("store-history", StoryHistory, [Role.Manager]),
+          createLazyRoute("customer-history", CustomerHistory, [Role.Manager]),
+        ],
       },
     ],
   },
-  { path: "*", element: <>Not found the page</> },
-]);
+  {
+    path: "*",
+    element: (
+      <AuthGuard>
+        <Suspense fallback={<div>Loading...</div>}>
+          {" "}
+          <>Not found the page</>
+        </Suspense>
+      </AuthGuard>
+    ),
+  },
+];
+
+const router = createBrowserRouter(routesConfig);
 
 export default router;
