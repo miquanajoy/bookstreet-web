@@ -95,9 +95,16 @@ const HandleGift = lazy(() => import("../Pages/role/store/gift/handle-gift"));
 const ShowSouvenir = lazy(() => import("../Pages/book/show-souvenir"));
 const ListKios = lazy(() => import("../Pages/role/admin/kios/list-kios"));
 
-const Membership = lazy(() => import("../Pages/role/manager/membership/membership"));
-const StoryHistory = lazy(() => import("../Pages/role/manager/membership/store-history/storeHistory"));
-const CustomerHistory = lazy(() => import("../Pages/role/manager/membership/customer-history/customer-history"));
+const Membership = lazy(
+  () => import("../Pages/role/manager/membership/membership")
+);
+const StoryHistory = lazy(
+  () => import("../Pages/role/manager/membership/store-history/storeHistory")
+);
+const CustomerHistory = lazy(
+  () =>
+    import("../Pages/role/manager/membership/customer-history/customer-history")
+);
 const HandleKios = lazy(() => import("../Pages/role/admin/kios/handle-kios"));
 const PointStore = lazy(
   () => import("../Pages/role/manager/manager-point/point-store")
@@ -394,14 +401,22 @@ const routesConfig = [
     path: ROUTER.roleManager.memberShip.url,
     element: (
       <AuthGuard>
-        <HomePage title={QUAN_LY + ROUTER.roleManager.memberShip.name.toLocaleLowerCase()} />
+        <HomePage
+          title={
+            QUAN_LY + ROUTER.roleManager.memberShip.name.toLocaleLowerCase()
+          }
+        />
       </AuthGuard>
     ),
     children: [
       {
         path: "",
         element: (
+          <RoleBasedGuard accessibleRoles={[Role.Manager]}>
+            <Suspense fallback={<div>Loading...</div>}>
             <Membership />
+            </Suspense>
+          </RoleBasedGuard>
         ),
         children: [
           createLazyRoute("", StoryHistory, [Role.Manager]),

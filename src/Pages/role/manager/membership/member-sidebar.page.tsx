@@ -16,7 +16,6 @@ export default function MemberShipSidebar() {
   return (
     <div className="membership-sidebar">
       <div className="flex gap-4">
-        
         <div className="sidebar-link" onClick={handleStoreHistoryClick}>
           Lịch sử giao dịch của khách hàng
         </div>

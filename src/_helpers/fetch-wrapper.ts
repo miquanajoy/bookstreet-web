@@ -19,7 +19,7 @@ export const fetchWrapper = {
   postUpgrade,
   AxiosAll,
   Post2GetByPaginateWithoutCall,
-  getWithoutCall
+  getWithoutCall,
 };
 
 function get(url) {
@@ -43,9 +43,12 @@ function Post2GetByPaginate(
   url,
   pageNumber = 1,
   filter?,
-  limit = PAGINATOR.LIMIT
+  limit = PAGINATOR.LIMIT,
+  isNotLoading?
 ) {
-  loadingService.showLoading();
+  if (!isNotLoading) {
+    loadingService.showLoading();
+  }
   const requestOptions = {
     ...authHeader(url),
   };
@@ -84,7 +87,6 @@ function Post2GetByPaginateWithoutCall(
     headers: requestOptions,
   });
 }
-
 
 function getByValue(url, value) {
   loadingService.showLoading();
@@ -176,15 +178,15 @@ async function AxiosAll(promies) {
   loadingService.showLoading();
   let data: any = await axios.all(promies);
   return new Promise((resolve, reject) => {
-  loadingService.hiddenLoading();
+    loadingService.hiddenLoading();
     if (data.length) {
-      data = data.map(val =>  {
-        if(val.data?.data?.list) {
-          return val.data.data
+      data = data.map((val) => {
+        if (val.data?.data?.list) {
+          return val.data.data;
         } else {
-          return val.data
+          return val.data;
         }
-      })
+      });
       resolve(data);
     }
   });
