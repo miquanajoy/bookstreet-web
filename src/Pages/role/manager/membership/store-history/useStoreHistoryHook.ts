@@ -5,6 +5,7 @@ import config from "../../../../../config";
 import {
   AREA,
   LOCATION,
+  POINT_HISTORY,
   STORE,
   STREET,
 } from "../../../../../_helpers/const/const";
@@ -16,9 +17,10 @@ import { useForm } from "react-hook-form";
 
 export const useStoreHistoryHook = () => {
   const { pathname } = useLocation();
+  const [historyList, setHistoryList] = useState([]);
+  const [openPointHistory, setOpenPointHistory] = useState(false);
 
   const [street, setStreet] = useState([]);
-  const [areas, setAreas] = useState([]);
   const [locations, setLocations] = useState([]);
   const [bookStores, setStores] = useState([]);
   const [defaultStressId, setDefaultStressId] = useState("1");
@@ -34,28 +36,8 @@ export const useStoreHistoryHook = () => {
       getLocations(res.list[0]?.streetId);
     });
   }
-  // async function getAreas(streetId = defaultStressId) {
-  //   const areas = await fetchWrapper.Post2GetByPaginate(
-  //     config.apiUrl + AREA,
-  //     0,
-  //     {
-  //       filters: [
-  //         {
-  //           field: "streetId",
-  //           value: streetId + "",
-  //           operand: 0,
-  //         },
-  //       ],
-  //     },
-  //     0
-  //   );
-  //   setAreas(areas.list);
-  //   getLocations(areas.list);
-  // }
 
   async function getLocations(streetId) {
-    console.log("streetId :>> ", streetId);
-
     const locations = await fetchWrapper.get(
       config.apiUrl + LOCATION + "/" + STREET + "/" + streetId
     );
@@ -63,28 +45,13 @@ export const useStoreHistoryHook = () => {
     getStores(locations);
   }
   async function getStores(locations) {
-    const result = fetchWrapper.Post2GetByPaginate(
-      config.apiUrl + STORE,
-      0,
-      {
-        filters: locations.map((v) => ({
-          field: "locationId",
-          value: v.locationId + "",
-          operand: 0,
-        })),
-      },
-      0
-    );
+    const licatioinIds = locations.map((v) => v.locationId);
+    const result = fetchWrapper.get(config.apiUrl + STORE);
     result.then((res: any) => {
-      console.log('res.list :>> ', res.list);
-      setStores(res.list);
+      const filter = res.filter((v) => licatioinIds.includes(v.locationId));
+      setStores(filter);
     });
   }
-
-  useEffect(() => {
-    console.log("getValues() :>> ", locations);
-    // const dataFilter = getStores()
-  }, [defaultStressId]);
 
   const handleChange = (event) => {
     setDefaultStressId(event.target.value);
@@ -95,10 +62,34 @@ export const useStoreHistoryHook = () => {
     getStreet();
   }, [pathname]);
 
+  const openDialogCreasePointHistory = (storeId) => {
+    setOpenPointHistory(true);
+    fetchWrapper
+      .post(config.apiUrl + STORE + "/history", {
+        page: 0,
+        limit: 0,
+        filters: [
+          {
+            field: "storeId",
+            value: storeId.toString(),
+            operand: 0,
+          },
+        ],
+      })
+      .then((res) => {
+        console.log("res.list :>> ", res.data.list);
+        setHistoryList(res.data.list);
+      });
+  };
+
   return {
     defaultStressId,
     handleChange,
     street,
     bookStores,
+    openDialogCreasePointHistory,
+    historyList,
+    openPointHistory,
+    setOpenPointHistory,
   };
 };

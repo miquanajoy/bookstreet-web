@@ -1,4 +1,5 @@
 import {
+  Box,
   FormControl,
   FormControlLabel,
   IconButton,
@@ -6,16 +7,30 @@ import {
   ImageListItem,
   ImageListItemBar,
   ListSubheader,
+  Modal,
   Radio,
   RadioGroup,
 } from "@mui/material";
 import InfoIcon from "@mui/icons-material/Info";
 import { useStoreHistoryHook } from "./useStoreHistoryHook";
+import { AVATARDEFAULT } from "../../../../../_helpers/const/const";
+import { ModelStyle } from "../../../../../_helpers/const/model.const";
+import CustomTabPanel from "../../../../../Components/customTabPanel";
+import HistoryStore from "./dialog-history-point/dialog-history-point";
 
 const StoryHistory = () => {
-  const { defaultStressId, street, bookStores, handleChange } =
-    useStoreHistoryHook();
-
+  const {
+    defaultStressId,
+    street,
+    bookStores,
+    handleChange,
+    openDialogCreasePointHistory,
+    historyList,
+    openPointHistory, setOpenPointHistory
+  } = useStoreHistoryHook();
+  const handleClose = (value: string) => {
+    setOpenPointHistory(false);
+  };
   return (
     <div className="bg-white rounded-md ">
       <div className="grid grid-cols-4 p-2">
@@ -46,10 +61,16 @@ const StoryHistory = () => {
           {bookStores.length ? (
             <ImageList cols={4} sx={{ width: "100%" }} gap={12}>
               {bookStores.map((item) => (
-                <ImageListItem key={item.id} className="m-0">
+                <ImageListItem
+                  key={item.id}
+                  className="m-0 pointer"
+                  onClick={(_) => {
+                    openDialogCreasePointHistory(item.storeId);
+                  }}
+                >
                   <img
-                    srcSet={`${item.urlImage}`}
-                    src={`${item.urlImage}`}
+                    srcSet={`${item.urlImage || AVATARDEFAULT}`}
+                    src={`${item.urlImage || AVATARDEFAULT}`}
                     alt={item.storeName}
                     loading="lazy"
                   />
@@ -65,6 +86,22 @@ const StoryHistory = () => {
           )}
         </div>
       </div>
+      <Modal
+        open={openPointHistory}
+        onClose={handleClose}
+        aria-labelledby="modal-modal-title"
+        aria-describedby="modal-modal-description"
+      >
+        <Box sx={{ ...ModelStyle, width: "65vw" }}>
+          <Box sx={{ width: "100%" }} className="scoll-auto">
+              {historyList.length ? (
+                <HistoryStore data={historyList} />
+              ) : (
+                <div className="mt-2 ">Chưa có giao dịch nào</div>
+              )}
+          </Box>
+        </Box>
+      </Modal>
     </div>
   );
 };
