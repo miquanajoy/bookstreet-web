@@ -199,11 +199,12 @@ export const ROUTERS = [
     ...ROUTER.roleStore.customerPoint,
     roles: [Role.Store],
   },
-  {
-    logo: Address,
-    ...ROUTER.roleAdmin.pointHistory,
-    roles: [Role.Manager],
-  },  {
+  // {
+  //   logo: Address,
+  //   ...ROUTER.roleAdmin.pointHistory,
+  //   roles: [Role.Manager],
+  // },
+    {
     logo: UsersIcon,
     ...ROUTER.roleManager.memberShip,
     roles: [Role.Manager],
