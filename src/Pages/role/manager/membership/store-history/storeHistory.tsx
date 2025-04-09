@@ -25,12 +25,11 @@ const StoryHistory = () => {
     bookStores,
     handleChange,
     openDialogCreasePointHistory,
-    historyList,
     openPointHistory,
     setOpenPointHistory,
   } = useStoreHistoryHook();
   const handleClose = (value: string) => {
-    setOpenPointHistory(false);
+    setOpenPointHistory(null);
   };
   return (
     <div className="bg-white rounded-md ">
@@ -96,7 +95,7 @@ const StoryHistory = () => {
         >
           <Box sx={{ ...ModelStyle, width: "65vw" }}>
             <Box sx={{ width: "100%" }} className="scoll-auto">
-              <HistoryStore data={openPointHistory} />
+              <HistoryStore prop={{openPointHistory, handleClose}} />
             </Box>
           </Box>
         </Modal>

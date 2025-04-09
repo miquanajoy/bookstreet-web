@@ -125,26 +125,6 @@ export default function CreateBillForm(props) {
   function FormBill() {
     return (
       <form onSubmit={handleSubmit(openFormBill)} className="">
-        {/* <div className="flex flex-column items-center gap-2">
-          <label
-            htmlFor="imageUpload"
-            className="block h-52 w-52 bg-slate-200 bg-contain bg-no-repeat bg-center"
-            style={{ backgroundImage: "url(" + preview + ")" }}
-          ></label>
-          <input
-            type="file"
-            accept="image/png, image/jpeg"
-            onChange={onSelectFile}
-            id="imageUpload"
-            className="hidden"
-          />
-          <label
-            htmlFor="imageUpload"
-            className="block border px-2 py-1 bg-slate-200 rounded"
-          >
-            Chọn hình ảnh
-          </label>
-        </div> */}
         <div className="d-flex flex-column gap-2">
           <label className="" htmlFor="mhd">
             <div className="text-xs">Mã hoá đơn: </div>
@@ -203,22 +183,6 @@ export default function CreateBillForm(props) {
               ))}
             </select>
           </label>
-          <label className="" htmlFor="anm">
-            <div className="text-xs">Số điện thoại: </div>
-            <input
-              id="anm"
-              type="number"
-              min={0}
-              className="form-control"
-              placeholder="000"
-              {...register("customerPhone", {
-                required: {
-                  message: "required",
-                  value: true,
-                },
-              })}
-            />
-          </label>
           <label className="" htmlFor="nm">
             {/* <div className="text-xs">Tên khách hàng: </div> */}
             <Controller
@@ -233,7 +197,7 @@ export default function CreateBillForm(props) {
                   onChange={(event, newValue) => {
                     if (newValue) {
                       field.onChange(newValue.customerId); // Cập nhật customerId
-                      setValue("customerPhone", newValue.phone || ""); // Cập nhật customerPhone
+                      setValue("customerPhone", newValue.customerName || ""); // Cập nhật customerPhone
                     } else {
                       field.onChange(null); // Reset customerId
                       setValue("customerPhone", ""); // Reset customerPhone
@@ -255,10 +219,10 @@ export default function CreateBillForm(props) {
               )}
             />
           </label>
-          <div className="col-start-2 col-span-2">
+          <div className="col-start-2 col-span-1">
             <input
               type="submit"
-              className="btn btn-success mt-12"
+              className="btn btn-success mt-2"
               value="Tạo đơn"
             />
           </div>
@@ -271,7 +235,7 @@ export default function CreateBillForm(props) {
     const sdt = getValues().customerPhone;
     return (
       <>
-        Xác nhận cộng {getValues().pointAmount} điểm cho nguời dùng {sdt}?
+        Xác nhận hoá đơn cho khách hàng {sdt}?
       </>
     );
   }

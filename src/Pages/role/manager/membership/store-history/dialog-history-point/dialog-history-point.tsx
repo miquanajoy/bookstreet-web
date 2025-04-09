@@ -13,27 +13,17 @@ import { useLocation } from "react-router-dom";
 import dayjs from "dayjs";
 import { AVATARDEFAULT, ROUTER } from "../../../../../../_helpers/const/const";
 
-export default function HistoryStore(prop) {
+export default function HistoryStore({ prop }) {
   const [open, setOpen] = useState(false);
   const { pathname } = useLocation();
-  const isBookScreen = pathname == ROUTER.book.url;
 
-  const handleClickOpen = () => {
-    setOpen(true);
-  };
-
-  const handleClose = () => {
-    setOpen(false);
-  };
-
-  const detail = prop.data;
-  console.log("detail :>> ", detail);
+  const detail = prop.openPointHistory;
   return (
     <React.Fragment>
       <Dialog
         maxWidth="md"
-        open={open}
-        onClose={handleClose}
+        open={detail.storeId}
+        onClose={prop.handleClose}
         aria-labelledby="alert-dialog-title"
         aria-describedby="alert-dialog-description"
       >
@@ -53,29 +43,31 @@ export default function HistoryStore(prop) {
               <div className="mt-1 text-dark">
                 <h4>{detail.productName}</h4>
 
-                {detail?.price ? (
-                  <div className="text-danger mb-2">
-                    Giá: {detail?.price} vnđ
-                  </div>
-                ) : (
-                  <></>
-                )}
+                <div className="text-danger mb-2">
+                  Địa chỉ: {detail?.locationName}
+                </div>
 
                 <div className="d-flex d-flex border-b pb-2 mb-3 box-author">
-                  <div className="col-3">Tác giả:</div>
+                  <div className="col-3">Cửa hàng:</div>
                   <div className="col-9">{detail?.storeName}</div>
                 </div>
 
-                {detail?.book?.publicDay ? (
-                  <div className="d-flex d-flex border-b pb-2 mb-3 box-author">
-                    <div className="col-3">Ngày xuất bản:</div>
-                    <div className="col-9">
-                      {dayjs(detail?.book?.publicDay).format("YYYY-MM-DD")}
-                    </div>
+                <div className="d-flex d-flex border-b pb-2 mb-3 box-author">
+                  <div className="col-3">Chủ cửa hàng:</div>
+                  <div className="col-9">{detail?.userFullName}</div>
+                </div>
+                <div className="d-flex d-flex border-b pb-2 mb-3 box-author">
+                  <div className="col-3">Giờ mở cửa:</div>
+                  <div className="col-9">
+                    {detail?.openingHours}
                   </div>
-                ) : (
-                  <></>
-                )}
+                </div>
+                <div className="d-flex d-flex border-b pb-2 mb-3 box-author">
+                  <div className="col-3">Giờ đóng cửa:</div>
+                  <div className="col-9">
+                    {detail?.closingHours}
+                  </div>
+                </div>
                 {detail?.book?.storeName ? (
                   <div className="d-flex border-b pb-2 mb-3">
                     <div className="col-3">Được bán tại:</div>
@@ -152,7 +144,7 @@ export default function HistoryStore(prop) {
           </div>
         </DialogContent>
         <DialogActions>
-          <Button onClick={handleClose}>Đóng</Button>
+          <Button onClick={prop.handleClose}>Đóng</Button>
         </DialogActions>
       </Dialog>
     </React.Fragment>

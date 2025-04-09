@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { Link, useLocation, useParams } from "react-router-dom";
-import { useFieldArray, useForm } from "react-hook-form";
+import { Controller, useFieldArray, useForm } from "react-hook-form";
 
 import Box from "@mui/material/Box";
 import Modal from "@mui/material/Modal";
@@ -45,10 +45,12 @@ import {
   searchService,
   typeSearch,
 } from "../../../../_services/search.service";
+import { SearchIcon } from "../../../../assets/icon/search";
+import { ClearIcon } from "@mui/x-date-pickers";
 
 export default function ShowGift() {
-  const user = JSON.parse(localStorage.getItem("userInfo"));
   const { pathname } = useLocation();
+  const user = JSON.parse(localStorage.getItem("userInfo"));
   const noteInput = useRef(null);
   const quantityRef = useRef(null);
 
@@ -58,7 +60,9 @@ export default function ShowGift() {
     handleSubmit,
     getValues,
     formState: { errors },
+    setValue,
   } = useForm();
+  const searchInputRef = useRef<HTMLInputElement>(null);
 
   const [data, setData] = useState({
     list: [],
@@ -135,22 +139,6 @@ export default function ShowGift() {
   // End Search area
 
   // Model
-  const handleOnSearch = (e, results) => {
-    if (!results) return;
-    setcustomerId(results);
-    setcustomerPhoneDetail(
-      customerPhone.find((v) => v.customerId == results.customerId)
-    );
-    changeCustomer(results.customerId);
-  };
-  const handleOnSearchPhone = (e, results) => {
-    if (!results) return;
-    setcustomerId(
-      customer.find((v) => v.customerId == results.customerId).customerName
-    );
-    setcustomerPhoneDetail(results);
-    changeCustomer(results.customerId);
-  };
 
   const [dataImport, setDataImport] = useState([]);
 
@@ -185,15 +173,42 @@ export default function ShowGift() {
   const [customerId, setcustomerId] = useState("");
   const [customerPhoneDetail, setcustomerPhoneDetail] = useState("");
 
-  function changeCustomer(id) {
-    const customerDetail = customer.find((cus) => cus.customerId == id);
-    if (!customerDetail) return;
-    setCustomerChoose(customerDetail);
-    if (customerDetail.point > dataDetail.point) {
-      setRedeemGift(false);
+  async function changeCustomer() {
+    
+    const transaction = await fetchWrapper.post(
+      config.apiUrl + CUSTOMER + "/transactions",
+      {
+        page: 0,
+        limit: 0,
+        filters: [
+          {
+            field: "email",
+            value: searchInputRef.current?.value,
+            operand: 0,
+          },
+        ],
+      }
+    );
+    if (transaction.success) {
+      const dc = transaction.data.list.map((val, i) => ({
+        id: i,
+        ...val,
+      
+      }));
+      if (transaction.data.totalGroupColumns.Points >= dataDetail.point) {
+        setRedeemGift(false);
+      } else {
+        setRedeemGift(true);
+      }
+      // setTransactions(dc);
+      // setTotalGroupColumns(response.data.totalGroupColumns);
     } else {
-      setRedeemGift(true);
+      alertService.alert({
+        content: transaction.message,
+      });
     }
+    console.log("transaction :>> ", transaction);
+   
   }
   const [openPoint, setOpenPoint] = useState(false);
 
@@ -271,7 +286,7 @@ export default function ShowGift() {
             urlImage = v.UrlImage;
           }
         }
-       
+
         return {
           giftName: v.GiftName,
           description: v.Description,
@@ -468,28 +483,22 @@ export default function ShowGift() {
           // onSubmit={handleSubmit()}
           className="d-flex flex-column gap-2 col-6 mx-auto"
         >
-          <div>
-            <b>Số điện thoại: </b>
-            <FormControl fullWidth>
-              <Autocomplete
-                disablePortal
-                options={customerPhone}
-                defaultValue={customerPhoneDetail}
-                sx={{ width: 310 }}
-                onChange={handleOnSearchPhone}
-                renderInput={(params) => (
-                  <TextField {...params} label="Số điện thoại" />
-                )}
-              />
-            </FormControl>
+          <div className="relative flex-grow">
+            <input
+              type="text"
+              placeholder="thanhhoang@gmail.com"
+              className="w-full rounded-full py-2 px-8 pl-10 pr-10 border border-gray-400 focus:outline-none focus:border-blue-500"
+              defaultValue="thanhhoang@gmail.com"
+              ref={searchInputRef}
+            />
           </div>
-          <b>Khách hàng: </b>
-          <input
-            defaultValue={customerId}
-            disabled
-            className="form-control"
-            type="text"
-          />
+          <button
+          onClick={changeCustomer}
+            type="submit"
+            className="bg-gray-800 hover:bg-gray-900 text-white font-bold py-2 px-4 rounded"
+          >
+            Tìm kiếm
+          </button>
           {redeemGift && customerChoose?.customerId ? (
             <div className="text-danger mt-2">
               Số điểm của Tài khoản này không đủ
