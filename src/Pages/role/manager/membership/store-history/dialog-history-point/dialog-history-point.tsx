@@ -1,51 +1,160 @@
+import { BehaviorSubject, ReplaySubject, Subject } from "rxjs";
+import { useEffect, useState } from "react";
+import React from "react";
 import {
-  Box,
-  Modal,
-  Paper,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
+  Button,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogContentText,
+  DialogTitle,
 } from "@mui/material";
+import { useLocation } from "react-router-dom";
 import dayjs from "dayjs";
+import { AVATARDEFAULT, ROUTER } from "../../../../../../_helpers/const/const";
 
-export default function HistoryStore(props) {
-  function HistoryStoreTable() {
-    return (
-      <TableContainer component={Paper}>
-        <Table stickyHeader aria-label="simple table">
-          <TableHead>
-            <TableRow>
-              <TableCell align="left">Tên cửa hàng</TableCell>
-              <TableCell align="left">Số điểm</TableCell>
-              <TableCell align="left">Ngày cộng điểm</TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {props.data.map((detail: any, index) => (
-              <TableRow
-                key={"n" + index}
-                sx={{
-                  "&:last-child td, &:last-child th": { border: 0 },
+export default function HistoryStore(prop) {
+  const [open, setOpen] = useState(false);
+  const { pathname } = useLocation();
+  const isBookScreen = pathname == ROUTER.book.url;
+
+  const handleClickOpen = () => {
+    setOpen(true);
+  };
+
+  const handleClose = () => {
+    setOpen(false);
+  };
+
+  const detail = prop.data;
+  console.log("detail :>> ", detail);
+  return (
+    <React.Fragment>
+      <Dialog
+        maxWidth="md"
+        open={open}
+        onClose={handleClose}
+        aria-labelledby="alert-dialog-title"
+        aria-describedby="alert-dialog-description"
+      >
+        <DialogContent sx={{ width: "60vw", p: 2 }}>
+          <div className="row w-full">
+            <div className="col-5">
+              <div
+                className="block h-full w-full bg-slate-200 bg-contain bg-no-repeat bg-center"
+                style={{
+                  backgroundImage: `url(${
+                    detail.urlImage ? detail.urlImage : AVATARDEFAULT
+                  })`,
                 }}
-              >
-                <TableCell>
-                  <div>{detail?.storeName}</div>
-                </TableCell>
-                <TableCell>
-                  <div>{detail?.point}</div>
-                </TableCell>
-                <TableCell>
-                  <div>{dayjs(new Date(detail?.createDate)).format("YYYY-MM-DD")}</div>
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </TableContainer>
-    );
-  }
-  return <HistoryStoreTable />;
+              ></div>
+            </div>
+            <div className="col-7">
+              <div className="mt-1 text-dark">
+                <h4>{detail.productName}</h4>
+
+                {detail?.price ? (
+                  <div className="text-danger mb-2">
+                    Giá: {detail?.price} vnđ
+                  </div>
+                ) : (
+                  <></>
+                )}
+
+                <div className="d-flex d-flex border-b pb-2 mb-3 box-author">
+                  <div className="col-3">Tác giả:</div>
+                  <div className="col-9">{detail?.storeName}</div>
+                </div>
+
+                {detail?.book?.publicDay ? (
+                  <div className="d-flex d-flex border-b pb-2 mb-3 box-author">
+                    <div className="col-3">Ngày xuất bản:</div>
+                    <div className="col-9">
+                      {dayjs(detail?.book?.publicDay).format("YYYY-MM-DD")}
+                    </div>
+                  </div>
+                ) : (
+                  <></>
+                )}
+                {detail?.book?.storeName ? (
+                  <div className="d-flex border-b pb-2 mb-3">
+                    <div className="col-3">Được bán tại:</div>
+                    <div className="col-9">{detail?.book?.storeName}</div>
+                  </div>
+                ) : (
+                  <></>
+                )}
+                {detail?.status ? (
+                  <div className="d-flex border-b pb-2 mb-3">
+                    <div className="col-3">Tình trạng:</div>
+                    <div className="col-9">
+                      {detail?.status == 1 ? "Còn hàng" : "Sắp về hàng"}
+                    </div>
+                  </div>
+                ) : (
+                  <></>
+                )}
+
+                {detail?.book?.editionNumber ? (
+                  <div className="d-flex border-b pb-2 mb-3">
+                    <div className="col-3">Tái bản lần thứ:</div>
+                    <div className="col-9">{detail?.book?.editionNumber}</div>
+                  </div>
+                ) : (
+                  <></>
+                )}
+
+                {detail?.book?.editionYear ? (
+                  <div className="d-flex border-b pb-2 mb-3">
+                    <div className="col-3">Năm tái bản:</div>
+                    <div className="col-9">{detail?.book?.editionYear}</div>
+                  </div>
+                ) : (
+                  <></>
+                )}
+                {detail?.book?.categoryName ? (
+                  <div className="d-flex border-b pb-2 mb-3">
+                    <div className="col-3">Danh mục: </div>
+                    <div className="col-9">{detail?.book?.categoryName}</div>
+                  </div>
+                ) : (
+                  <></>
+                )}
+                {detail?.book?.genreName ? (
+                  <div className="d-flex border-b pb-2 mb-3">
+                    <div className="col-3">Thể loại: </div>
+                    <div className="col-9">{detail?.book?.genreName}</div>
+                  </div>
+                ) : (
+                  <></>
+                )}
+                {detail?.book?.publisherName ? (
+                  <div className="d-flex border-b pb-2 mb-3">
+                    <div className="col-3">Nhà xuất bản: </div>
+                    <div className="col-9">{detail?.book?.publisherName}</div>
+                  </div>
+                ) : (
+                  <></>
+                )}
+
+                {detail?.book?.distributorName ? (
+                  <div className="d-flex border-b pb-2 mb-3">
+                    <div className="col-3">Nhà phân phối:</div>
+                    <div className="col-9">{detail?.book?.distributorName}</div>
+                  </div>
+                ) : (
+                  <></>
+                )}
+              </div>
+              <div>Mô tả:</div>
+              <div className="max-h-20 overflow-auto">{detail.description}</div>
+            </div>
+          </div>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleClose}>Đóng</Button>
+        </DialogActions>
+      </Dialog>
+    </React.Fragment>
+  );
 }

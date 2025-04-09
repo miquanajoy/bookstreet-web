@@ -9,16 +9,12 @@ import {
   STORE,
   STREET,
 } from "../../../../../_helpers/const/const";
-import {
-  searchService,
-  typeSearch,
-} from "../../../../../_services/search.service";
 import { useForm } from "react-hook-form";
 
 export const useStoreHistoryHook = () => {
   const { pathname } = useLocation();
   const [historyList, setHistoryList] = useState([]);
-  const [openPointHistory, setOpenPointHistory] = useState(false);
+  const [openPointHistory, setOpenPointHistory] = useState(null);
 
   const [street, setStreet] = useState([]);
   const [locations, setLocations] = useState([]);
@@ -63,22 +59,26 @@ export const useStoreHistoryHook = () => {
   }, [pathname]);
 
   const openDialogCreasePointHistory = (storeId) => {
-    setOpenPointHistory(true);
+    const findStoreDetail = bookStores.find(val => val.storeId === storeId)
+    setOpenPointHistory(findStoreDetail);
     fetchWrapper
-      .post(config.apiUrl + STORE + "/history", {
-        page: 0,
-        limit: 0,
-        filters: [
-          {
-            field: "storeId",
-            value: storeId.toString(),
-            operand: 0,
-          },
-        ],
-      })
+      .Post2GetByPaginate(
+        config.apiUrl + "/PointHistory",
+        0,
+        {
+          filters: [
+            {
+              field: "storeId",
+              value: storeId.toString(),
+              operand: 0,
+            },
+          ],
+        },
+        0
+      )
       .then((res) => {
-        console.log("res.list :>> ", res.data.list);
-        setHistoryList(res.data.list);
+        console.log("res.list :>> ", res.list);
+        setHistoryList(res.list);
       });
   };
 

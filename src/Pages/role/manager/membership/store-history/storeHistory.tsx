@@ -26,7 +26,8 @@ const StoryHistory = () => {
     handleChange,
     openDialogCreasePointHistory,
     historyList,
-    openPointHistory, setOpenPointHistory
+    openPointHistory,
+    setOpenPointHistory,
   } = useStoreHistoryHook();
   const handleClose = (value: string) => {
     setOpenPointHistory(false);
@@ -86,22 +87,22 @@ const StoryHistory = () => {
           )}
         </div>
       </div>
-      <Modal
-        open={openPointHistory}
-        onClose={handleClose}
-        aria-labelledby="modal-modal-title"
-        aria-describedby="modal-modal-description"
-      >
-        <Box sx={{ ...ModelStyle, width: "65vw" }}>
-          <Box sx={{ width: "100%" }} className="scoll-auto">
-              {historyList.length ? (
-                <HistoryStore data={historyList} />
-              ) : (
-                <div className="mt-2 ">Chưa có giao dịch nào</div>
-              )}
+      {openPointHistory?.storeId ? (
+        <Modal
+          open={openPointHistory.storeId}
+          onClose={handleClose}
+          aria-labelledby="modal-modal-title"
+          aria-describedby="modal-modal-description"
+        >
+          <Box sx={{ ...ModelStyle, width: "65vw" }}>
+            <Box sx={{ width: "100%" }} className="scoll-auto">
+              <HistoryStore data={openPointHistory} />
+            </Box>
           </Box>
-        </Box>
-      </Modal>
+        </Modal>
+      ) : (
+        <></>
+      )}
     </div>
   );
 };
