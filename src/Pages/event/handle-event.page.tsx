@@ -19,7 +19,6 @@ import convertDate from "../../_helpers/converts/convertDate";
 
 export default function HandleCalenderPage() {
   const userValue = JSON.parse(localStorage.getItem("userInfo"));
-
   const [mapValue, setMapValue] = useState({});
   const [value, setValueInint] = useState([null, null]);
   const [locations, setLocation] = useState([]);
@@ -30,6 +29,7 @@ export default function HandleCalenderPage() {
     );
     return isDisable;
   };
+
   const [data, setData] = useState<any>({
     locationId: 0,
     title: "",
@@ -69,8 +69,8 @@ export default function HandleCalenderPage() {
     const locationsFound = locations.find(
       (locationDetail) => locationDetail.locationId === result.locationId
     );
-    const xLocation = locationsFound.xLocation;
-    const yLocation = locationsFound.yLocation;
+    const xLocation = locationsFound?.xLocation;
+    const yLocation = locationsFound?.yLocation;
     setMapValue({
       xLocation,
       yLocation,
@@ -99,12 +99,12 @@ export default function HandleCalenderPage() {
     const locationsFound = locations.find(
       (locationDetail) => locationDetail.locationId == getValues().locationId
     );
-    const xLocation = locationsFound.xLocation;
-    const yLocation = locationsFound.yLocation;
+    const xLocation = locationsFound?.xLocation;
+    const yLocation = locationsFound?.yLocation;
     setMapValue({
       xLocation,
       yLocation,
-      mapImage: locationsFound.locationImage,
+      mapImage: locationsFound?.locationImage,
     });
   }, [watch("locationId")]);
   useEffect(() => {
@@ -129,10 +129,16 @@ export default function HandleCalenderPage() {
   };
 
   const savedata = async (val) => {
+    if (!value[0] || !value[1]) {
+      alertService.alert({
+        content: "Vui lòng chọn thời gian bắt đầu và kết thúc",
+      });
+      return;
+    }
+    
     let dataPost = val;
     dataPost.starDate = convertDate(new Date(value[0]));
     dataPost.endDate = convertDate(new Date(value[1]));
-
     const formData = new FormData();
     if (selectedFile) {
       formData.append(
@@ -189,6 +195,9 @@ export default function HandleCalenderPage() {
             id="imageUpload"
             className="hidden"
           />
+          {errors.urlImage && (
+            <span className="text-red-500">Vui lòng chọn hình ảnh</span>
+          )}
           <label
             htmlFor="imageUpload"
             className="block border px-2 py-1 bg-slate-200 rounded"
@@ -205,8 +214,11 @@ export default function HandleCalenderPage() {
             id="nm"
             type="text"
             className="form-control mb-2"
-            {...register("title")}
+            {...register("title", { required: "Tên sự kiện là bắt buộc" })}
           />
+          {errors.title && (
+            <span className="text-red-500">{errors.title.message as string}</span>
+          )}
 
           <label className="block mb-1" htmlFor="loca">
             <b>Vị trí: </b>
@@ -214,10 +226,14 @@ export default function HandleCalenderPage() {
           <div className="flex items-center gap-4 mb-2">
             <select
               disabled={isDisableLocation()}
-              {...register("locationId")}
+              {...register("locationId", { 
+                required: "Vị trí là bắt buộc",
+                min: { value: 1, message: "Vui lòng chọn một vị trí" }
+              })}
               id="loca"
               className="form-control"
             >
+              <option value="0">Chọn vị trí</option>
               {locations.map((v) => (
                 <option key={v.locationId} value={v.locationId}>
                   {v.locationName}
@@ -226,6 +242,9 @@ export default function HandleCalenderPage() {
             </select>
             <ShowMapComponent data={mapValue} />
           </div>
+          {errors.locationId && (
+            <span className="text-red-500">{errors.locationId.message as string}</span>
+          )}
 
           <label className="block mb-1" htmlFor="anm">
             <b>Mục đích: </b>
@@ -234,8 +253,11 @@ export default function HandleCalenderPage() {
             id="anm"
             type="text"
             className="form-control mb-2"
-            {...register("purpose")}
+            {...register("purpose", { required: "Mục đích là bắt buộc" })}
           />
+          {errors.purpose && (
+            <span className="text-red-500">{errors.purpose.message as string}</span>
+          )}
 
           <label className="block mb-1" htmlFor="avb">
             <b>Ban Tổ Chức: </b>
@@ -244,8 +266,12 @@ export default function HandleCalenderPage() {
             id="avb"
             type="text"
             className="form-control"
-            {...register("hostName")}
+            {...register("hostName", { required: "Ban tổ chức là bắt buộc" })}
           />
+          {errors.hostName && (
+            <span className="text-red-500">{errors.hostName.message as string}</span>
+          )}
+          
           <div>
             <label className="block mb-1 mt-2" htmlFor="link_vid">
               <b>Link video: </b>
@@ -265,17 +291,25 @@ export default function HandleCalenderPage() {
             </label>
             <select
               disabled={userValue.user.role == Role.Store}
-              {...register("eventType")}
+              {...register("eventType", { 
+                required: "Loại sự kiện là bắt buộc",
+                min: { value: 0, message: "Vui lòng chọn loại sự kiện" }
+              })}
               id="eventTpe"
               className="form-control mb-2"
             >
+              <option value="-1">Chọn loại sự kiện</option>
               {eventTypeDropdown.map((v) => (
                 <option key={v.eventType} value={v.eventType}>
                   {v.eventName}
                 </option>
               ))}
             </select>
+            {errors.eventType && (
+              <span className="text-red-500">{errors.eventType.message as string}</span>
+            )}
           </div>
+          
           <div className="row">
             <div className="col-6">
               <b>Ngày bắt đầu:</b>
