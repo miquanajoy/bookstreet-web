@@ -1,5 +1,5 @@
 export const EVENT_TYPE = {
-    None: 0,            // Không xác định   
+    None: 0,            // Sự kiện khác   
     Entertainment: 1,       // Sự kiện vui chơi giải trí
     BookLaunch: 2,          // Sự kiện ra mắt sách, ký tặng sách
     SpeakerMeetup: 3,       // Sự kiện giao lưu với diễn giả, tác giả
@@ -10,7 +10,7 @@ export const EVENT_TYPE = {
 export const eventTypeDropdown = [
     {
         eventType: EVENT_TYPE.None,
-        eventName: "Không xác định"
+        eventName: "Sự kiện khác"
     },
     {
         eventType: EVENT_TYPE.Entertainment,
