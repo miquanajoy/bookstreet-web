@@ -16,6 +16,7 @@ import { eventTypeDropdown } from "../../models/event.model";
 import ShowMapComponent from "../../Components/map/show-map/showMap.component";
 import { Role } from "../../models/Role";
 import convertDate from "../../_helpers/converts/convertDate";
+import HandleEventViewmodel from "./handle-event.viewmodel";
 
 export default function HandleCalenderPage() {
   const userValue = JSON.parse(localStorage.getItem("userInfo"));
@@ -23,9 +24,10 @@ export default function HandleCalenderPage() {
   const [value, setValueInint] = useState([null, null]);
   const [locations, setLocation] = useState([]);
 
+  const { getLocation } = HandleEventViewmodel();
   const isDisableLocation = () => {
     const isDisable = locations.some(
-      (locationDetail) => locationDetail.storeId === userValue.user.id
+      (locationDetail) => locationDetail.storeId === userValue.user.storeId
     );
     return isDisable;
   };
@@ -60,9 +62,17 @@ export default function HandleCalenderPage() {
   const [preview, setPreview] = useState();
 
   async function fetAllData() {
-    const locations = await fetchWrapper.get(config.apiUrl + LOCATION);
+    const locations = await getLocation();
+
     setLocation(locations);
-    if (!params.id) return data;
+    const locationOfStore =
+      userValue.role === Role.Store
+        ? locations.find(
+            (location) => location.storeId === userValue.user.storeId
+          ).locationId
+        : undefined;
+    const eventType = userValue.role === Role.Store ? 4 : undefined;
+    if (!params.id) return { ...data, locationId: locationOfStore, eventType };
     const result = await fetchWrapper.get(
       config.apiUrl + EVENT + "/" + params.id
     );
@@ -76,11 +86,14 @@ export default function HandleCalenderPage() {
       yLocation,
       mapImage: locationsFound.locationImage,
     });
+
     setData({
       ...result,
       xLocation,
       yLocation,
       mapImage: locationsFound.locationImage,
+      locationId: locationOfStore,
+      eventType,
     });
     setPreview(result.urlImage);
 
@@ -135,7 +148,7 @@ export default function HandleCalenderPage() {
       });
       return;
     }
-    
+
     let dataPost = val;
     dataPost.starDate = convertDate(new Date(value[0]));
     dataPost.endDate = convertDate(new Date(value[1]));
@@ -217,7 +230,9 @@ export default function HandleCalenderPage() {
             {...register("title", { required: "Tên sự kiện là bắt buộc" })}
           />
           {errors.title && (
-            <span className="text-red-500">{errors.title.message as string}</span>
+            <span className="text-red-500">
+              {errors.title.message as string}
+            </span>
           )}
 
           <label className="block mb-1" htmlFor="loca">
@@ -226,9 +241,9 @@ export default function HandleCalenderPage() {
           <div className="flex items-center gap-4 mb-2">
             <select
               disabled={isDisableLocation()}
-              {...register("locationId", { 
+              {...register("locationId", {
                 required: "Vị trí là bắt buộc",
-                min: { value: 1, message: "Vui lòng chọn một vị trí" }
+                min: { value: 1, message: "Vui lòng chọn một vị trí" },
               })}
               id="loca"
               className="form-control"
@@ -243,7 +258,9 @@ export default function HandleCalenderPage() {
             <ShowMapComponent data={mapValue} />
           </div>
           {errors.locationId && (
-            <span className="text-red-500">{errors.locationId.message as string}</span>
+            <span className="text-red-500">
+              {errors.locationId.message as string}
+            </span>
           )}
 
           <label className="block mb-1" htmlFor="anm">
@@ -256,7 +273,9 @@ export default function HandleCalenderPage() {
             {...register("purpose", { required: "Mục đích là bắt buộc" })}
           />
           {errors.purpose && (
-            <span className="text-red-500">{errors.purpose.message as string}</span>
+            <span className="text-red-500">
+              {errors.purpose.message as string}
+            </span>
           )}
 
           <label className="block mb-1" htmlFor="avb">
@@ -269,9 +288,11 @@ export default function HandleCalenderPage() {
             {...register("hostName", { required: "Ban tổ chức là bắt buộc" })}
           />
           {errors.hostName && (
-            <span className="text-red-500">{errors.hostName.message as string}</span>
+            <span className="text-red-500">
+              {errors.hostName.message as string}
+            </span>
           )}
-          
+
           <div>
             <label className="block mb-1 mt-2" htmlFor="link_vid">
               <b>Link video: </b>
@@ -291,9 +312,9 @@ export default function HandleCalenderPage() {
             </label>
             <select
               disabled={userValue.user.role == Role.Store}
-              {...register("eventType", { 
+              {...register("eventType", {
                 required: "Loại sự kiện là bắt buộc",
-                min: { value: 0, message: "Vui lòng chọn loại sự kiện" }
+                min: { value: 0, message: "Vui lòng chọn loại sự kiện" },
               })}
               id="eventTpe"
               className="form-control mb-2"
@@ -306,10 +327,12 @@ export default function HandleCalenderPage() {
               ))}
             </select>
             {errors.eventType && (
-              <span className="text-red-500">{errors.eventType.message as string}</span>
+              <span className="text-red-500">
+                {errors.eventType.message as string}
+              </span>
             )}
           </div>
-          
+
           <div className="row">
             <div className="col-6">
               <b>Ngày bắt đầu:</b>

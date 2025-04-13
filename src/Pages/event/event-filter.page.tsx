@@ -5,10 +5,16 @@ import FormControlLabel from "@mui/material/FormControlLabel";
 import FormControl from "@mui/material/FormControl";
 import FormLabel from "@mui/material/FormLabel";
 import { Button } from "@mui/material";
-import { useState } from "react";
 import { Role } from "../../models/Role";
+import { useEffect } from "react";
 
-export default function EventFilter({fetAllData, formData, setFormData, eventStatus, setEventStatus}) {
+export default function EventFilter({
+  fetAllData,
+  formData,
+  setFormData,
+  eventStatus,
+  setEventStatus,
+}) {
   const { user } = JSON.parse(localStorage.getItem("userInfo"));
 
   const handleRadioChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -41,10 +47,15 @@ export default function EventFilter({fetAllData, formData, setFormData, eventSta
           value={formData}
           onChange={handleRadioChange}
         >
+           <FormControlLabel
+            value="5"
+            control={<Radio />}
+            label="Tất cả"
+          />
           <FormControlLabel
             value="0"
             control={<Radio />}
-            label="Không xác định"
+            label="Sự kiện khác"
           />
           <FormControlLabel
             value="1"
@@ -92,6 +103,11 @@ export default function EventFilter({fetAllData, formData, setFormData, eventSta
               value="1"
               control={<Radio />}
               label="Đang diễn ra"
+            />
+            <FormControlLabel
+              value="2"
+              control={<Radio />}
+              label="Đã kết thúc"
             />
           </RadioGroup>
         </FormControl>

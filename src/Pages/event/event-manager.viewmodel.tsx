@@ -10,9 +10,11 @@ import {
 } from "../../_services/search.service";
 import convertDate from "../../_helpers/converts/convertDate";
 
-const EventManagerViewmodel = () => {  
+const EventManagerViewmodel = () => {
+  const user = JSON.parse(localStorage.getItem("userInfo"));
+
   const [formData, setFormData] = useState<any>();
-  const [eventStatus, setEventStatus] = useState<any>();
+  const [eventStatus, setEventStatus] = useState<any>(1);
 
   const [data, setData] = useState({
     list: [],
@@ -30,41 +32,64 @@ const EventManagerViewmodel = () => {
       },
       {
         field: "eventType",
-        value: eventTp,
+        value: eventTp === "5" ? undefined : eventTp,
         operand: 0,
       },
+      // {
+      //   field: "eventType",
+      //   value: eventTp,
+      //   operand: 0,
+      // },
     ];
-    if (eventStatus) {
-      if (eventStatus > 0) {
+    switch (eventStatus) {
+      case "0": // Assuming eventStatus < 1 means 0
+        filters.push(
+          {
+            field: "starDate",
+            value: currentDate,
+            operand: 2,
+          },
+          {
+            field: "endDate",
+            value: currentDate,
+            operand: 2,
+          }
+        );
+        break;
+      case "1":
+        filters.push(
+          {
+            field: "starDate",
+            value: currentDate,
+            operand: 5,
+          },
+          {
+            field: "endDate",
+            value: currentDate,
+            operand: 3
+          }
+        );
+        break;
+      case "2":
         filters.push({
-          field: "starDate",
-          value: currentDate,
-          operand: 4,
-        }, {
           field: "endDate",
           value: currentDate,
-          operand: 2,
+          operand: 4,
         });
-        // return event.starDate < currentDate && event.endDate > currentDate;
-      } else {
-        filters.push({
-          field: "starDate",
-          value: currentDate,
-          operand: 2,
-        });
-        // return event.starDate > currentDate;
-      }
-    } else {
-      // return event;
+        break;
+      default:
+        // Handle any other cases if needed
+        break;
     }
     const result = fetchWrapper.Post2GetByPaginate(
       config.apiUrl + EVENT,
       pageNumber,
       {
-        filters
+        filters,
       }
     );
     result.then((res) => {
+      console.log('res :>> ', res);
       setData({
         list: res.list,
         totalPage: res.totalPage,
@@ -74,8 +99,7 @@ const EventManagerViewmodel = () => {
   }
 
   useEffect(() => {
-    fetAllData();
-
+    fetAllData(1, undefined, "1");
     const searchSub = searchService.$SearchValue.subscribe({
       next: (v: SearchModel) => {
         if (v?.isClickSearch) {
@@ -100,7 +124,10 @@ const EventManagerViewmodel = () => {
     handleClickOpenDetail,
     deleteItem,
     fetAllData,
-    formData, setFormData, eventStatus, setEventStatus
+    formData,
+    setFormData,
+    eventStatus,
+    setEventStatus,
   };
 };
 export default EventManagerViewmodel;

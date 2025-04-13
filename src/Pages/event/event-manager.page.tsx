@@ -10,8 +10,16 @@ import { EditIcon } from "../../assets/icon/edit";
 import EventManagerViewmodel from "./event-manager.viewmodel";
 
 export default function EventManagerPage() {
-  const { data, handleClickOpenDetail, deleteItem, fetAllData,formData, setFormData, eventStatus, setEventStatus } =
-    EventManagerViewmodel();
+  const {
+    data,
+    handleClickOpenDetail,
+    deleteItem,
+    fetAllData,
+    formData,
+    setFormData,
+    eventStatus,
+    setEventStatus,
+  } = EventManagerViewmodel();
 
   return (
     <>
@@ -26,7 +34,13 @@ export default function EventManagerPage() {
       </div>
       <div className="grid grid-cols-4 p-2">
         <div className="col-span-1">
-          <EventFilter fetAllData={fetAllData} formData={formData} setFormData={setFormData} eventStatus={eventStatus} setEventStatus={setEventStatus} />
+          <EventFilter
+            fetAllData={fetAllData}
+            formData={formData}
+            setFormData={setFormData}
+            eventStatus={eventStatus}
+            setEventStatus={setEventStatus}
+          />
         </div>
         <div className="col-span-3">
           <div className="grid grid-cols-3 gap-4 px-6">
