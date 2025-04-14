@@ -5,6 +5,7 @@ import { MDBTable, MDBTableHead, MDBTableBody } from "mdb-react-ui-kit";
 import { EditIcon } from "../assets/icon/edit";
 import Pagination from "@mui/material/Pagination";
 import { searchService } from "../_services/search.service";
+import { AVATARDEFAULT } from "../_helpers/const/const";
 
 export default function ListComponent(props) {
   const navigate = useNavigate();
@@ -60,7 +61,7 @@ export default function ListComponent(props) {
                     style={{
                       backgroundImage: `url('${
                         td.image ??
-                        "https://mdbootstrap.com/img/new/avatars/8.jpg"
+                        AVATARDEFAULT
                       }')`,
                     }}
                   ></div>
