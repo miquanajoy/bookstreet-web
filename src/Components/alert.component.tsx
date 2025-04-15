@@ -17,7 +17,7 @@ export default function AlertComponent(prop) {
           </svg>
           {/* <span className="sr-only">Info</span> */}
           <div>
-            <span className="font-medium">Thông báo!</span>
+            <span className="font-medium">Thông báo! </span>
             {prop.onAlert.content}
           </div>
         </div>

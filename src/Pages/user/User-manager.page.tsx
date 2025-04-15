@@ -12,6 +12,7 @@ import {
   typeSearch,
 } from "../../_services/search.service";
 import {
+  Pagination,
   Table,
   TableBody,
   TableCell,
@@ -110,60 +111,81 @@ export default function ShowUserPage() {
 
   return (
     <>
-      <TableContainer>
-        <Table sx={{ minWidth: 650 }} aria-label="simple table">
-          <TableHead>
-            <TableRow>
-              {headers.map((row) => (
-                <TableCell align="left" key={row.key}>
-                  {row.name}
-                </TableCell>
-              ))}
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {data.list.map((row) => (
-              <TableRow
-                key={row.username}
-                sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
-              >
-                <TableCell>
-                  <div
-                    className="mx-auto w-20 h-20 bg-contain bg-no-repeat bg-center"
-                    style={{
-                      backgroundImage: `url('${row.avatar ?? AVATARDEFAULT}')`,
-                    }}
-                  ></div>
-                </TableCell>
-                <TableCell component="th" scope="row">
-                  {row.username}
-                </TableCell>
-                <TableCell component="th" scope="row">
-                  {row.fullName}
-                </TableCell>
-                <TableCell align="left">{row.email}</TableCell>
-                <TableCell align="left">{row.phone}</TableCell>
-                <TableCell align="left">{row.address}</TableCell>
-                <TableCell align="left">{row.role}</TableCell>
-                <TableCell>
-                  {row.role !== Role.Admin ? (
-                    <button
-                      className="fw-bold"
-                      onClick={() => {
-                        navigate("update/" + row.id, { replace: true });
-                      }}
-                    >
-                      <EditIcon />
-                    </button>
-                  ) : (
-                    <></>
-                  )}
-                </TableCell>
+      <div className="flex items-center justify-between mb-2 bg-slate-200 pb-3">
+        <div className="d-flex justify-end gap-2 w-full bg-white px-6 py-3">
+          <Link to="create">
+            <button className="bg-info text-white rounded-lg px-3 py-0.5">
+              Tạo mới tài khoản
+            </button>
+          </Link>
+        </div>
+      </div>
+      <div className="p-2">
+        <TableContainer>
+          <Table sx={{ minWidth: 650 }} aria-label="simple table">
+            <TableHead>
+              <TableRow>
+                {headers.map((row) => (
+                  <TableCell align="left" key={row.key}>
+                    {row.name}
+                  </TableCell>
+                ))}
               </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </TableContainer>
+            </TableHead>
+            <TableBody>
+              {data.list.map((row) => (
+                <TableRow
+                  key={row.username}
+                  sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
+                >
+                  <TableCell>
+                    <div
+                      className="mx-auto w-20 h-20 bg-contain bg-no-repeat bg-center"
+                      style={{
+                        backgroundImage: `url('${
+                          row.avatar ?? AVATARDEFAULT
+                        }')`,
+                      }}
+                    ></div>
+                  </TableCell>
+                  <TableCell component="th" scope="row">
+                    {row.username}
+                  </TableCell>
+                  <TableCell component="th" scope="row">
+                    {row.fullName}
+                  </TableCell>
+                  <TableCell align="left">{row.email}</TableCell>
+                  <TableCell align="left">{row.phone}</TableCell>
+                  <TableCell align="left">{row.address}</TableCell>
+                  <TableCell align="left">{row.role}</TableCell>
+                  <TableCell>
+                    {row.role !== Role.Admin ? (
+                      <button
+                        className="fw-bold"
+                        onClick={() => {
+                          navigate("update/" + row.id, { replace: true });
+                        }}
+                      >
+                        <EditIcon />
+                      </button>
+                    ) : (
+                      <></>
+                    )}
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </TableContainer>
+        <div className="mt-2 p-2">
+          <div className="flex justify-center">
+            <Pagination
+              count={data.totalPage}
+              onChange={(_, pageNumber) => fetAllData(pageNumber)}
+            />
+          </div>
+        </div>
+      </div>
     </>
   );
 }

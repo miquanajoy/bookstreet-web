@@ -1,20 +1,15 @@
-import dayjs from "dayjs";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { useNavigate, useParams } from "react-router-dom";
 import {
   EditorState,
-  convertToRaw,
   ContentState,
-  convertFromHTML,
 } from "draft-js";
-import { Editor } from "react-draft-wysiwyg";
 
 import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css";
 import { fetchWrapper } from "../../_helpers/fetch-wrapper";
 import config from "../../config";
 import { GENRE, ROUTER } from "../../_helpers/const/const";
-import { fileService } from "../../_services/file.service";
 import { alertService } from "../../_services";
 import { CATEGORY } from "../../models/category";
 
@@ -40,11 +35,6 @@ export default function HandleGenrePage() {
   const [preview, setPreview] = useState();
   const [options, setOption] = useState({
     categories: [],
-  });
-
-  const [editorState, setEditorState] = useState(() => {
-    const content = ContentState.createFromText("");
-    return EditorState.createWithContent(content);
   });
 
   async function fetAllData() {
@@ -76,13 +66,20 @@ export default function HandleGenrePage() {
     }
 
     process
-      .then((_) => {
-        alertService.alert({
-          content: params.id ?  "Thay đổi thành công" : "Tạo mới thành công",
-        });
-        navigate(ROUTER.genre.url, {
-          replace: true,
-        });
+      .then((res) => {
+        if(res.success) {
+          alertService.alert({
+            content: params.id ?  "Thay đổi thành công" : "Tạo mới thành công",
+          });
+          navigate(ROUTER.genre.url, {
+            replace: true,
+          });
+        } else {
+          if(res.message === "Duplicate data maybe in GenreName;")
+          alertService.alert({
+            content: "Genre đã tồn tại"
+          });
+        }
       })
       .catch((e) => {});
   };
