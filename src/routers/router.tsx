@@ -117,6 +117,10 @@ const EventManagerPage = lazy(
   () => import("../Pages/event/event-manager.page")
 );
 
+const ListOrderPage = lazy(
+  () => import("../Pages/role/store/process-order/list-order/list-order")
+);
+
 const user = JSON.parse(localStorage.getItem("userInfo"));
 const afterLogin = () => {
   switch (user?.user?.role) {
@@ -423,6 +427,36 @@ const routesConfig = [
           createLazyRoute("store-history", StoryHistory, [Role.Manager]),
           createLazyRoute("customer-history", CustomerHistory, [Role.Manager]),
         ],
+      },
+    ],
+  },
+  // ListOrderPage
+  {
+    path: ROUTER.roleStore.listOrder.url,
+    element: (
+      <AuthGuard>
+        <HomePage
+          title={
+            QUAN_LY + ROUTER.roleManager.memberShip.name.toLocaleLowerCase()
+          }
+        />
+      </AuthGuard>
+    ),
+    children: [
+      {
+        path: "",
+        element: (
+          <RoleBasedGuard accessibleRoles={[Role.Store, Role.Manager]}>
+            <Suspense fallback={<div>Loading...</div>}>
+            <ListOrderPage />
+            </Suspense>
+          </RoleBasedGuard>
+        ),
+        // children: [
+        //   createLazyRoute("", StoryHistory, [Role.Manager]),
+        //   createLazyRoute("store-history", StoryHistory, [Role.Manager]),
+        //   createLazyRoute("customer-history", CustomerHistory, [Role.Manager]),
+        // ],
       },
     ],
   },

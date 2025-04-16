@@ -92,6 +92,10 @@ export const ROUTER = {
     customerPoint: {
       name: "Duyệt điểm",
       url: "/browse-scores",
+    }, 
+    listOrder: {
+      name: "list-order",
+      url: "/list-order",
     },
   },
   roleAdmin: {
@@ -204,10 +208,14 @@ export const ROUTERS = [
   //   ...ROUTER.roleAdmin.pointHistory,
   //   roles: [Role.Manager],
   // },
-    {
+  {
     logo: UsersIcon,
     ...ROUTER.roleManager.memberShip,
     roles: [Role.Manager],
+  },{
+    logo: UsersIcon,
+    ...ROUTER.roleStore.listOrder,
+    roles: [Role.Store],
   },
 ];
 
