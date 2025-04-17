@@ -94,7 +94,7 @@ export const ROUTER = {
       url: "/browse-scores",
     }, 
     listOrder: {
-      name: "list-order",
+      name: "Xử lý đơn hàng",
       url: "/list-order",
     },
   },

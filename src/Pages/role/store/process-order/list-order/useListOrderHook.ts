@@ -36,6 +36,14 @@ const useListOrderHook = (initialEmail: string = "") => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  // Dialog
+  const [openDialog, setOpenDialog] = useState(false);
+  const handleCloseCheckBill = () => {
+    setOpenDialog(false);
+  };
+  const openCheckBill = () => {
+    setOpenDialog(true);
+  };
   const fetchTransactions = async (filter: TransactionFilter) => {
     setLoading(true);
     setError(null);
@@ -151,6 +159,9 @@ const useListOrderHook = (initialEmail: string = "") => {
     fetchTransactions,
     totalGroupColumns,
     getTransactionTypeLabel,
+    openDialog,
+    handleCloseCheckBill,
+    openCheckBill
   };
 };
 
