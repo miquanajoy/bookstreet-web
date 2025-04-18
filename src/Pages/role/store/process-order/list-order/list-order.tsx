@@ -113,17 +113,18 @@ const ListOrder = () => {
                 <TableBody>
                   {transactions.map((row) => (
                     <TableRow
-                      key={row.id}
+                      key={row.storeOrderId}
                       sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
                     >
-                      <TableCell>{row.amount}</TableCell>
+                      <TableCell>{row.storeOrderId}</TableCell>
                       <TableCell>
-                        {dayjs(row.transactionDate).format("YYYY-MM-DD HH:mm")}
+                        {row.customerName}
+                        {/* {dayjs(row.transactionDate).format("YYYY-MM-DD HH:mm")} */}
                       </TableCell>
                       <TableCell>
-                        {getTransactionTypeLabel(row.transactionType)}
+                        {getTransactionTypeLabel(row.status)}
                       </TableCell>
-                      <TableCell>{row.storeName}</TableCell>
+                      <TableCell>{row.subTotal}</TableCell>
                       <TableCell>
                         <button
                           type="submit"
@@ -149,7 +150,7 @@ const ListOrder = () => {
                     type="radio"
                     className="form-radio h-5 w-5 text-blue-500"
                     name="transactionType"
-                    value="deposit"
+                    value="5"
                     onChange={() =>
                       fetchTransactions({
                         email: searchInputRef.current?.value || "",
@@ -191,7 +192,7 @@ const ListOrder = () => {
                     Đã thanh toán tại Kiosk
                   </span>
                 </label>
-                <label className="inline-flex items-center">
+                {/* <label className="inline-flex items-center">
                   <input
                     type="radio"
                     className="form-radio h-5 w-5 text-blue-500"
@@ -205,7 +206,7 @@ const ListOrder = () => {
                     }
                   />
                   <span className="ml-2 text-gray-700">Tất cả</span>
-                </label>
+                </label> */}
               </div>
               <button
                 onClick={handleResetFilter}

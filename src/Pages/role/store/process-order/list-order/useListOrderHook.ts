@@ -5,17 +5,24 @@ import { alertService } from "../../../../../_services";
 import { KIOS, STORE } from "../../../../../_helpers/const/const";
 
 enum EnumTransactionType {
-  Deposit = 1,
-  Withdraw = 2,
-  Payment = 3,
+  pending = 0,
+  payByKiosk = 1,
+  cancel = 2,
+  payment = 3,
+  refunded = 4
 }
 
 interface Transaction {
-  id: number;
-  amount: string;
-  transactionType: string;
-  transactionDate: string;
+  customerEmail: string;
+  customerId: number;
+  customerName: string;
+  customerPhone: any;
+  orderId: number;
+  status: number;
+  storeId: number;
   storeName: string;
+  storeOrderId: number;
+  subTotal: number;
 }
 
 interface TotalGroupColumns {
@@ -54,7 +61,7 @@ const useListOrderHook = (initialEmail: string = "") => {
       operand: number;
     }[] = [
       {
-        field: "email",
+        field: "customer.email",
         value: filter.email,
         operand: 0,
       },
@@ -63,21 +70,27 @@ const useListOrderHook = (initialEmail: string = "") => {
     if (filter.type) {
       let transactionType: number | undefined;
       switch (filter.type) {
-        case "Nạp tiền":
-          transactionType = EnumTransactionType.Deposit;
+        case "chưa thanh toán":
+          transactionType = EnumTransactionType.pending;
           break;
-        case "Rút tiền":
-          transactionType = EnumTransactionType.Withdraw;
+        case "Đã thanh toán tại Kiosk":
+          transactionType = EnumTransactionType.payByKiosk;
           break;
-        case "Mua hàng":
-          transactionType = EnumTransactionType.Payment;
+        case "Hủy hóa đơn":
+          transactionType = EnumTransactionType.cancel;
+          break;
+        case "Đã xử lý đơn hàng":
+          transactionType = EnumTransactionType.payment;
+          break;
+        case "Đã hoàn tiền":
+          transactionType = EnumTransactionType.refunded;
           break;
         default:
           transactionType = undefined;
       }
       if (transactionType) {
         filters.push({
-          field: "transactionType",
+          field: "status",
           value: transactionType.toString(),
           operand: 0,
         });
@@ -85,10 +98,8 @@ const useListOrderHook = (initialEmail: string = "") => {
     }
 
     try {
-      const stores: any = await fetchWrapper.get(config.apiUrl + STORE);
-      const kiosk: any = await fetchWrapper.get(config.apiUrl + KIOS);
       const response = await fetchWrapper.post(
-        config.apiUrl + "Customer/transactions",
+        config.apiUrl + STORE + "/customer-transactions",
         {
           page: 0,
           limit: 0,
@@ -96,18 +107,7 @@ const useListOrderHook = (initialEmail: string = "") => {
         }
       );
       if (response.success) {
-        const dc = response.data.list.map((val, i) => ({
-          id: i,
-          ...val,
-          storeName: convertAddress(
-            val.storeId,
-            val.transactionType,
-            stores,
-            kiosk
-          ),
-        }));
-        setTransactions(dc);
-        setTotalGroupColumns(response.data.totalGroupColumns);
+        setTransactions(response.data.list);
       } else {
         alertService.alert({
           content: response.message,
@@ -125,14 +125,18 @@ const useListOrderHook = (initialEmail: string = "") => {
     fetchTransactions({ email });
   }, []);
 
-  const getTransactionTypeLabel = (type: string) => {
-    switch (parseInt(type)) {
+  const getTransactionTypeLabel = (type: number) => {
+    switch (type) {
+      case 0:
+        return "chưa thanh toán";
       case 1:
-        return "Nạp tiền";
+        return "Đã thanh toán tại Kiosk";
       case 2:
-        return "Rút tiền";
+        return "Hủy hóa đơn";
       case 3:
-        return "Mua hàng";
+        return "Thanh toán cho store";
+      case 4:
+        return "Đã hoàn tiền";
       default:
         return "Không xác định";
     }
@@ -141,11 +145,15 @@ const useListOrderHook = (initialEmail: string = "") => {
   const convertAddress = (storeId, transactionType, kiosk, stores) => {
     if (transactionType == 3) {
       return (
-        stores.find((storeDt) => storeDt.storeId === storeId)?.storeName || "Thanh toán tại cửa hàng"
+        stores.find((storeDt) => storeDt.storeId === storeId)?.storeName ||
+        "Thanh toán tại cửa hàng"
       );
     }
     if (transactionType == 1) {
-      return kiosk.find((v) => v.id === storeId)?.kiosName || "Nạp tiền tại máy kiosk";
+      return (
+        kiosk.find((v) => v.id === storeId)?.kiosName ||
+        "Nạp tiền tại máy kiosk"
+      );
     }
     return "";
   };
@@ -161,7 +169,7 @@ const useListOrderHook = (initialEmail: string = "") => {
     getTransactionTypeLabel,
     openDialog,
     handleCloseCheckBill,
-    openCheckBill
+    openCheckBill,
   };
 };
 
