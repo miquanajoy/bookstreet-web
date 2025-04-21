@@ -2,6 +2,8 @@ import React, { useRef } from "react";
 import SearchIcon from "@mui/icons-material/Search";
 import ClearIcon from "@mui/icons-material/Clear";
 import {
+  Dialog,
+  DialogContent,
   Table,
   TableBody,
   TableCell,
@@ -11,21 +13,26 @@ import {
 import dayjs from "dayjs";
 import useListOrderHook from "./useListOrderHook";
 import CheckBillDialog from "../check-bill/check-bill";
+import OrderInfo from "../order-info/order-info";
+import OrderDetail from "../order-info/order-info";
 
 const ListOrder = () => {
   const {
     transactions,
     loading,
     error,
-    email,
     setEmail,
     fetchTransactions,
     totalGroupColumns,
     getTransactionTypeLabel,
     openDialog,
     handleCloseCheckBill,
-    openCheckBill
-  } = useListOrderHook("thanhhoang@gmail.com");
+    openCheckBill,
+    register,
+    openOrderDetailDialog,
+    handleCloseOrderDetail,
+    openOrderDetail,
+  } = useListOrderHook("");
 
   const searchInputRef = useRef<HTMLInputElement>(null);
 
@@ -33,7 +40,7 @@ const ListOrder = () => {
     e.preventDefault();
     const inputEmail = searchInputRef.current?.value || "";
     setEmail(inputEmail);
-    fetchTransactions({ email: inputEmail });
+    fetchTransactions({ email: inputEmail, type: "default" });
   };
 
   const handleClear = () => {
@@ -42,11 +49,6 @@ const ListOrder = () => {
       setEmail("");
       fetchTransactions({ email: "" });
     }
-  };
-
-  const handleResetFilter = () => {
-    const currentEmail = searchInputRef.current?.value || "";
-    fetchTransactions({ email: currentEmail });
   };
 
   return (
@@ -61,9 +63,9 @@ const ListOrder = () => {
             <div className="relative flex-grow">
               <input
                 type="text"
-                placeholder="thanhhoang@gmail.com"
+                placeholder=""
                 className="w-full rounded-full py-2 px-8 pl-10 pr-10 border border-gray-400 focus:outline-none focus:border-blue-500"
-                defaultValue="thanhhoang@gmail.com"
+                defaultValue=""
                 ref={searchInputRef}
               />
               <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -90,9 +92,22 @@ const ListOrder = () => {
             >
               Kiểm tra thanh toán
             </button>
-            <CheckBillDialog
-            open={openDialog}
-            handleClose={handleCloseCheckBill} />
+            <Dialog
+              open={openDialog}
+              maxWidth={"sm"}
+              fullWidth={true}
+              onClose={handleCloseCheckBill}
+              aria-labelledby="alert-dialog-title"
+              aria-describedby="alert-dialog-description"
+            >
+              <DialogContent className="flex flex-col items-center">
+                <CheckBillDialog
+                  onClose={handleCloseCheckBill}
+                  emailFilter={searchInputRef.current?.value}
+                  fetchTransactions={fetchTransactions}
+                />
+              </DialogContent>
+            </Dialog>
           </div>
         </div>
         <div className="grid grid-cols-10 gap-4">
@@ -128,9 +143,10 @@ const ListOrder = () => {
                       <TableCell>
                         <button
                           type="submit"
-                          className="bg-gray-800 hover:bg-gray-900 text-white font-bold py-2 px-4 rounded"
+                          className="bg-gray-800 hover:bg-gray-900 text-white font-bold py-2 px-4 rounded w-32"
+                          onClick={() => {openOrderDetail(row)}}
                         >
-                          Xử lý đơn
+                          {row.statusTxt}
                         </button>
                       </TableCell>
                     </TableRow>
@@ -150,7 +166,8 @@ const ListOrder = () => {
                     type="radio"
                     className="form-radio h-5 w-5 text-blue-500"
                     name="transactionType"
-                    value="5"
+                    value="all"
+                    {...register("transactionType")}
                     onChange={() =>
                       fetchTransactions({
                         email: searchInputRef.current?.value || "",
@@ -192,30 +209,26 @@ const ListOrder = () => {
                     Đã thanh toán tại Kiosk
                   </span>
                 </label>
-                {/* <label className="inline-flex items-center">
-                  <input
-                    type="radio"
-                    className="form-radio h-5 w-5 text-blue-500"
-                    name="transactionType"
-                    value="all"
-                    defaultChecked
-                    onChange={() =>
-                      fetchTransactions({
-                        email: searchInputRef.current?.value || "",
-                      })
-                    }
-                  />
-                  <span className="ml-2 text-gray-700">Tất cả</span>
-                </label> */}
               </div>
-              <button
-                onClick={handleResetFilter}
-                className="bg-gray-800 hover:bg-gray-900 text-white font-bold py-1 px-2 rounded mt-2 text-sm"
-              >
-                Reset
-              </button>
             </div>
           </div>
+          {/* Order detail */}
+          <Dialog
+            open={openOrderDetailDialog}
+            maxWidth={"sm"}
+            fullWidth={true}
+            onClose={handleCloseOrderDetail}
+            aria-labelledby="alert-dialog-title"
+            aria-describedby="alert-dialog-description"
+          >
+            <DialogContent className="flex flex-col items-center">
+              <OrderDetail
+                orderDetail={openOrderDetailDialog}
+                handleClose={handleCloseOrderDetail}
+                fetchTransactions={fetchTransactions}
+              />
+            </DialogContent>
+          </Dialog>
         </div>
       </div>
     </div>

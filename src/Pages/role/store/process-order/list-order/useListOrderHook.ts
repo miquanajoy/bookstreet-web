@@ -3,13 +3,14 @@ import config from "../../../../../config";
 import { fetchWrapper } from "../../../../../_helpers/fetch-wrapper";
 import { alertService } from "../../../../../_services";
 import { KIOS, STORE } from "../../../../../_helpers/const/const";
+import { useForm } from "react-hook-form";
 
 enum EnumTransactionType {
   pending = 0,
   payByKiosk = 1,
   cancel = 2,
   payment = 3,
-  refunded = 4
+  refunded = 4,
 }
 
 interface Transaction {
@@ -23,6 +24,7 @@ interface Transaction {
   storeName: string;
   storeOrderId: number;
   subTotal: number;
+  statusTxt: string;
 }
 
 interface TotalGroupColumns {
@@ -42,7 +44,11 @@ const useListOrderHook = (initialEmail: string = "") => {
     useState<TotalGroupColumns | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-
+  const { register } = useForm({
+    defaultValues: {
+      transactionType: "all",
+    },
+  });
   // Dialog
   const [openDialog, setOpenDialog] = useState(false);
   const handleCloseCheckBill = () => {
@@ -50,6 +56,14 @@ const useListOrderHook = (initialEmail: string = "") => {
   };
   const openCheckBill = () => {
     setOpenDialog(true);
+  };
+
+  const [openOrderDetailDialog, setOpenDetailDialog] = useState(false);
+  const handleCloseOrderDetail = () => {
+    setOpenDetailDialog(false);
+  };
+  const openOrderDetail = (orderDetail) => {
+    setOpenDetailDialog(orderDetail);
   };
   const fetchTransactions = async (filter: TransactionFilter) => {
     setLoading(true);
@@ -59,6 +73,7 @@ const useListOrderHook = (initialEmail: string = "") => {
       field: string;
       value: string | number;
       operand: number;
+      isList?: boolean;
     }[] = [
       {
         field: "customer.email",
@@ -67,47 +82,56 @@ const useListOrderHook = (initialEmail: string = "") => {
       },
     ];
 
-    if (filter.type) {
-      let transactionType: number | undefined;
-      switch (filter.type) {
-        case "chưa thanh toán":
-          transactionType = EnumTransactionType.pending;
-          break;
-        case "Đã thanh toán tại Kiosk":
-          transactionType = EnumTransactionType.payByKiosk;
-          break;
-        case "Hủy hóa đơn":
-          transactionType = EnumTransactionType.cancel;
-          break;
-        case "Đã xử lý đơn hàng":
-          transactionType = EnumTransactionType.payment;
-          break;
-        case "Đã hoàn tiền":
-          transactionType = EnumTransactionType.refunded;
-          break;
-        default:
-          transactionType = undefined;
-      }
-      if (transactionType) {
-        filters.push({
-          field: "status",
-          value: transactionType.toString(),
-          operand: 0,
-        });
-      }
+    let transactionType: any;
+    switch (filter.type) {
+      case "chưa thanh toán":
+        transactionType = EnumTransactionType.pending;
+        break;
+      case "Đã thanh toán tại Kiosk":
+        transactionType = EnumTransactionType.payByKiosk;
+        break;
+      case "Hủy hóa đơn":
+        transactionType = EnumTransactionType.cancel;
+        break;
+      case "Đã xử lý đơn hàng":
+        transactionType = EnumTransactionType.payment;
+        break;
+      case "Đã hoàn tiền":
+        transactionType = EnumTransactionType.refunded;
+        break;
+      default:
+        transactionType = "1,3";
+    }
+    if (transactionType) {
+      filters.push({
+        field: "status",
+        value: transactionType.toString(),
+        operand: 0,
+        isList: true,
+      });
     }
 
     try {
       const response = await fetchWrapper.post(
         config.apiUrl + STORE + "/customer-transactions",
         {
-          page: 0,
-          limit: 0,
+          page: -1,
+          limit: -1,
           filters,
         }
       );
       if (response.success) {
-        setTransactions(response.data.list);
+        const dataConvert = response.data.list.map((val) => ({
+          ...val,
+          statusTxt: (() => {
+            if (val.status == EnumTransactionType.payByKiosk) {
+              return "Xử lí đơn";
+            } else if (val.status == EnumTransactionType.payment) {
+              return "Đã hoàn tất";
+            }
+          })(),
+        }));
+        setTransactions(dataConvert);
       } else {
         alertService.alert({
           content: response.message,
@@ -122,7 +146,7 @@ const useListOrderHook = (initialEmail: string = "") => {
   };
 
   useEffect(() => {
-    fetchTransactions({ email });
+    fetchTransactions({ email, type: "all" });
   }, []);
 
   const getTransactionTypeLabel = (type: number) => {
@@ -170,6 +194,10 @@ const useListOrderHook = (initialEmail: string = "") => {
     openDialog,
     handleCloseCheckBill,
     openCheckBill,
+    register,
+    openOrderDetailDialog,
+    handleCloseOrderDetail,
+    openOrderDetail,
   };
 };
 
