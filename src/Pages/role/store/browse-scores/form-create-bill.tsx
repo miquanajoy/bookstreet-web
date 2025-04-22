@@ -1,29 +1,13 @@
+import { useEffect, useState } from "react";
 import {
   Autocomplete,
   Box,
   Button,
   Dialog,
   DialogActions,
-  DialogContent,
-  DialogContentText,
   DialogTitle,
-  Modal,
-  Paper,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
   TextField,
 } from "@mui/material";
-import dayjs from "dayjs";
-import { Role } from "../../../../models/Role";
-import {
-  HISTORY_BROWSE_SCORE,
-  REJECT_BROWSE_SCORE,
-} from "../../store/browse-scores/list-browse-scores";
-import { ModelStyle } from "../../../../_helpers/const/model.const";
 import { Controller, useForm } from "react-hook-form";
 import {
   CUSTOMER,
@@ -32,8 +16,6 @@ import {
 } from "../../../../_helpers/const/const";
 import { fetchWrapper } from "../../../../_helpers/fetch-wrapper";
 import config from "../../../../config";
-import { useEffect, useState } from "react";
-import { fileService } from "../../../../_services/file.service";
 import { alertService } from "../../../../_services";
 import { billFormService } from "../../../../_services/bill-form.service";
 export default function CreateBillForm(props) {
@@ -46,8 +28,6 @@ export default function CreateBillForm(props) {
       },
     });
   const [openConfirm, setopenComfirm] = useState(false);
-
-  const [preview, setPreview] = useState();
 
   const [customers, setCustomers] = useState<any>();
   const [stores, setStores] = useState<any>([]);

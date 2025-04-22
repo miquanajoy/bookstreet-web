@@ -1,7 +1,7 @@
 export default function AlertComponent(prop) {
   if (prop.onAlert.content) {
     return (
-      <div className="fixed right-5 top-5 z-10" role="alert">
+      <div className="fixed right-5 top-5 z-9999" role="alert">
         <div
           className="flex items-center p-4 mb-4 text-sm text-green-800 rounded-lg bg-green-50 dark:bg-gray-800 dark:text-green-400"
           role="alert"

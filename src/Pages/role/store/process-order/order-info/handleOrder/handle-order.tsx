@@ -73,7 +73,7 @@ export default function ConfirmOrder({
         onChange={handleInputChange}
         placeholder="Nhập mã OTP tại đây"
         className="w-64 mx-auto d-block px-4 py-2 border border-gray-400 rounded-md mb-3 text-center text-gray-800 focus:outline-none focus:ring-2 focus:ring-gray-400 focus:border-transparent"
-        aria-label="Mã khách hàng"
+        aria-label="Mã OTP"
       />
 
       <div className="w-full d-flex justify-center gap-4">

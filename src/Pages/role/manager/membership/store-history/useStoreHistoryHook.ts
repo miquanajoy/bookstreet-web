@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { fetchWrapper } from "../../../../../_helpers/fetch-wrapper";
 import config from "../../../../../config";
 import {
@@ -12,7 +12,9 @@ import {
 import { useForm } from "react-hook-form";
 
 export const useStoreHistoryHook = () => {
+  const navigate = useNavigate();
   const { pathname } = useLocation();
+
   const [historyList, setHistoryList] = useState([]);
   const [openPointHistory, setOpenPointHistory] = useState(null);
 
@@ -59,27 +61,7 @@ export const useStoreHistoryHook = () => {
   }, [pathname]);
 
   const openDialogCreasePointHistory = (storeId) => {
-    const findStoreDetail = bookStores.find(val => val.storeId === storeId)
-    setOpenPointHistory(findStoreDetail);
-    fetchWrapper
-      .Post2GetByPaginate(
-        config.apiUrl + "/PointHistory",
-        0,
-        {
-          filters: [
-            {
-              field: "storeId",
-              value: storeId.toString(),
-              operand: 0,
-            },
-          ],
-        },
-        0
-      )
-      .then((res) => {
-        console.log("res.list :>> ", res.list);
-        setHistoryList(res.list);
-      });
+    navigate("/membership/store-history/" + storeId, { replace: true });
   };
 
   return {

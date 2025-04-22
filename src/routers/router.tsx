@@ -101,6 +101,10 @@ const Membership = lazy(
 const StoryHistory = lazy(
   () => import("../Pages/role/manager/membership/store-history/storeHistory")
 );
+const StoreHistoryDetail = lazy(
+  () => import("../Pages/role/manager/membership/store-history/store-history-detail/store-history-detail")
+);
+
 const CustomerHistory = lazy(
   () =>
     import("../Pages/role/manager/membership/customer-history/customer-history")
@@ -424,7 +428,9 @@ const routesConfig = [
         ),
         children: [
           createLazyRoute("", StoryHistory, [Role.Manager]),
+          createLazyRoute("order-list", ListOrderPage, [Role.Manager]),
           createLazyRoute("store-history", StoryHistory, [Role.Manager]),
+          createLazyRoute("store-history/:id", StoreHistoryDetail, [Role.Manager]),
           createLazyRoute("customer-history", CustomerHistory, [Role.Manager]),
         ],
       },

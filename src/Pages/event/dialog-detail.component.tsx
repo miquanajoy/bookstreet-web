@@ -31,8 +31,6 @@ export class CalenderDetailService {
 export const calenderDetailService = new CalenderDetailService();
 
 export default function DialogDetailCalenderComponent(prop) {
-  const user = JSON.parse(localStorage.getItem("userInfo"));
-
   const [open, setOpen] = useState(false);
   const { pathname } = useLocation();
   const isBookScreen = pathname == ROUTER.book.url;

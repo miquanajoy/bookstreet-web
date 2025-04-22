@@ -63,14 +63,14 @@ export default function ShowGift() {
     setValue,
   } = useForm();
   const searchInputRef = useRef<HTMLInputElement>(null);
-
+  const [selectedCustomer, setSelectedCustomer] = useState(null); 
   const [data, setData] = useState({
     list: [],
     totalPage: 0,
   });
   const [dataDetail, setDataDetail] = useState<any>();
   const [customer, setCustomer] = useState<any>([]);
-  const [customerPhone, setCustomerPhone] = useState<any>([]);
+  const [isFormOtp, setisFormOtp] = useState<any>(false);
   const [quantityRefValue, setQuantityRefValue] = useState<any>(1);
 
   async function deleteItem(val) {
@@ -92,13 +92,6 @@ export default function ShowGift() {
       }))
     );
 
-    setCustomerPhone(
-      customers.list.map((v) => ({
-        ...v,
-        label: v.phone,
-        id: v.customerId,
-      }))
-    );
     const result = fetchWrapper.Post2GetByPaginate(
       config.apiUrl + GIFT,
       pageNumber,
@@ -125,7 +118,7 @@ export default function ShowGift() {
     fetAllData();
   }, [pathname]);
 
-  // Search area
+ 
   useEffect(() => {
     const searchSub = searchService.$SearchValue.subscribe({
       next: (v: SearchModel) => {
@@ -136,22 +129,12 @@ export default function ShowGift() {
     });
     return () => searchSub.unsubscribe();
   }, []);
-  // End Search area
-
-  // Model
 
   const [dataImport, setDataImport] = useState([]);
 
   const handleOpen = () => setOpenImport(true);
   function checkAmount() {
-    if (quantityRef.current.value) {
-      setQuantityRefValue(quantityRef.current.value);
-      if (quantityRef.current.value > dataDetail.quantity) {
-        setredeemGiftCheckQuantity(false);
-      } else {
-        setredeemGiftCheckQuantity(true);
-      }
-    }
+   
   }
   const { fields, append, remove } = useFieldArray({
     control,
@@ -165,51 +148,8 @@ export default function ShowGift() {
     excelService.getCsv(4);
   }
 
-  // Dialog Point
-  const [redeemGift, setRedeemGift] = useState<boolean>(true);
-  const [redeemGiftCheckQuantity, setredeemGiftCheckQuantity] =
-    useState<boolean>(true);
-  const [customerChoose, setCustomerChoose] = useState<any>();
-  const [customerId, setcustomerId] = useState("");
-  const [customerPhoneDetail, setcustomerPhoneDetail] = useState("");
+  const [exchangeGift, setExchangeGift] = useState<any>();
 
-  async function changeCustomer() {
-    
-    const transaction = await fetchWrapper.post(
-      config.apiUrl + CUSTOMER + "/transactions",
-      {
-        page: 0,
-        limit: 0,
-        filters: [
-          {
-            field: "email",
-            value: searchInputRef.current?.value,
-            operand: 0,
-          },
-        ],
-      }
-    );
-    if (transaction.success) {
-      const dc = transaction.data.list.map((val, i) => ({
-        id: i,
-        ...val,
-      
-      }));
-      if (transaction.data.totalGroupColumns.Points >= dataDetail.point) {
-        setRedeemGift(false);
-      } else {
-        setRedeemGift(true);
-      }
-      // setTransactions(dc);
-      // setTotalGroupColumns(response.data.totalGroupColumns);
-    } else {
-      alertService.alert({
-        content: transaction.message,
-      });
-    }
-    console.log("transaction :>> ", transaction);
-   
-  }
   const [openPoint, setOpenPoint] = useState(false);
 
   const handleClickOpenDIalogPoint = (val) => {
@@ -232,7 +172,7 @@ export default function ShowGift() {
       );
 
       const convertData = responseImport
-        // .filter((val) => val.Success)
+       
         .map((val) => {
           return {
             ...val,
@@ -318,10 +258,7 @@ export default function ShowGift() {
     setOpenImport(false);
     setOpenPoint(false);
     setSelectedValue(value);
-    setRedeemGift(true);
-    setCustomerChoose({});
-    setcustomerId("");
-    setcustomerPhoneDetail("");
+    setisFormOtp(false)
   };
   function onSelectFile(e, index) {
     if (!e.target.files || e.target.files.length === 0) {
@@ -338,22 +275,27 @@ export default function ShowGift() {
     reader.readAsDataURL(e.target.files[0]);
   }
 
-  // End Model
   const savedata = () => {
     let dataPost = {
       giftId: dataDetail.id,
-      note: noteInput.current.value,
-      customerId: customerChoose?.customerId,
+     
+      emailOrUsername: selectedCustomer.email,
       quantity: Number(getValues().quantity),
     };
-    const process = fetchWrapper.post(config.apiUrl + POINT_HISTORY, dataPost);
+    const process = fetchWrapper.post(
+      config.apiUrl + "Store/exchange-gift",
+      dataPost
+    );
 
     process
       .then((val) => {
         if (val.success) {
           alertService.alert({
-            content: `Đổi thành công món quà ${val.data.gift.giftName} cho khách hàng ${val.data.customer.customerName}`,
+            content: val.message,
           });
+          setisFormOtp(true)
+          setExchangeGift(val.data)
+
           fetAllData();
         } else {
           alertService.alert({
@@ -364,7 +306,6 @@ export default function ShowGift() {
       .catch((e) => {
         console.log(e);
       });
-    handleClose(undefined);
   };
   const [openImportDIalog, setOpenImport] = useState(false);
 
@@ -478,34 +419,33 @@ export default function ShowGift() {
   function DialogUptoPoint(props: any) {
     return (
       <div className="p-6">
-        <h2 className="mb-4">Đổi quà</h2>
+        <h2 className="mb-4 text-center">Đổi quà</h2>
         <div
-          // onSubmit={handleSubmit()}
+         
           className="d-flex flex-column gap-2 col-6 mx-auto"
         >
           <div className="relative flex-grow">
-            <input
-              type="text"
-              placeholder="thanhhoang@gmail.com"
-              className="w-full rounded-full py-2 px-8 pl-10 pr-10 border border-gray-400 focus:outline-none focus:border-blue-500"
-              defaultValue="thanhhoang@gmail.com"
-              ref={searchInputRef}
+            <Autocomplete
+              options={customer}
+              getOptionLabel={(option) => option.email || ""}
+              value={selectedCustomer}
+              onChange={(event, newValue) => {
+                setSelectedCustomer(newValue);
+              }}
+              isOptionEqualToValue={(option, value) =>
+                option.customerId === value.customerId
+              }
+              renderInput={(params) => (
+                <TextField
+                  {...params}
+                  label="Tìm kiếm khách hàng (theo email)"
+                  variant="outlined"
+                  fullWidth 
+                />
+              )}
             />
           </div>
-          <button
-          onClick={changeCustomer}
-            type="submit"
-            className="bg-gray-800 hover:bg-gray-900 text-white font-bold py-2 px-4 rounded"
-          >
-            Tìm kiếm
-          </button>
-          {redeemGift && customerChoose?.customerId ? (
-            <div className="text-danger mt-2">
-              Số điểm của Tài khoản này không đủ
-            </div>
-          ) : (
-            <></>
-          )}
+          
 
           <div>
             <label htmlFor="vd">
@@ -522,36 +462,89 @@ export default function ShowGift() {
               ref={quantityRef}
               {...register("quantity")}
             />
-            {/* {!redeemGiftCheckQuantity && quantityRef?.current?.value > 0 ? (
-              <div className="text-danger mt-2">
-                Số lượng không phù hợp, số lượng còn lại của món quà này:
-                {dataDetail?.quantity}
-              </div>
-            ) : (
-              <></>
-            )} */}
           </div>
 
           <div className="col-start-2 col-span-2">
-            <label htmlFor="note">
-              <b>Note: </b>
-            </label>
-            <textarea
-              defaultValue=""
-              id="note"
-              ref={noteInput}
-              className="form-control min-h-30 max-h-50"
-            ></textarea>
-            <button
-              onClick={savedata}
-              disabled={redeemGift}
-              className="btn btn-success mt-12"
-            >
+            <button onClick={savedata} className="btn btn-success mt-12 w-full">
               Đổi quà
             </button>
           </div>
         </div>
       </div>
+    );
+  }
+  
+  const [customerCode, setCustomerCode] = useState();
+
+  const handleInputChange = (event) => {
+    setCustomerCode(event.target.value);
+  };
+
+  const handleConfirm = async () => {
+    const response = await fetchWrapper.post(
+      config.apiUrl + "Store/exchange-gift/verify-otp",
+      
+      {
+        ...exchangeGift,
+        "otp": customerCode,
+      }
+    );
+    if (response.success) {
+      handleClose(undefined);
+      alertService.alert({
+        content: "Đã hoàn tất đơn hàng",
+      });
+      fetAllData()
+    } else {
+      alertService.alert({
+        content: response.message,
+      });
+    }
+  };
+  function FormOTP(props: any) {
+    return (
+      <div>
+      <button
+        onClick={() =>{handleClose(undefined)}}
+        className="absolute top-3 right-3 text-gray-500 hover:text-gray-800 text-2xl font-semibold"
+        aria-label="Đóng"
+      >
+        ×
+      </button>
+
+      <h2 className="text-center text-xl font-light text-gray-700 mb-4 tracking-wider">
+        Nhập OTP đơn hàng
+      </h2>
+
+      <input
+        type="text"
+        value={customerCode}
+        onChange={handleInputChange}
+        placeholder="Nhập mã OTP tại đây"
+        className="w-64 mx-auto d-block px-4 py-2 border border-gray-400 rounded-md mb-3 text-center text-gray-800 focus:outline-none focus:ring-2 focus:ring-gray-400 focus:border-transparent"
+      />
+
+      <div className="w-full d-flex justify-center gap-4">
+        <button
+          disabled={!customerCode}
+          onClick={handleConfirm}
+          className={`
+          w-64 block mx-auto px-8 py-2
+          rounded-md border
+          focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-opacity-50
+          transition duration-150 ease-in-out
+          cursor-pointer
+          ${
+            !customerCode
+              ? "bg-gray-300 border-gray-400 text-gray-500 cursor-not-allowed"
+              : "bg-gray-500 border-gray-600 text-white hover:bg-gray-600"
+          }
+        `}
+        >
+          Xác nhận hoàn thành
+        </button>
+      </div>
+    </div>
     );
   }
   return (
@@ -653,13 +646,14 @@ export default function ShowGift() {
         onClose={handleClose}
         aria-labelledby="modal-modal-title"
         aria-describedby="modal-modal-description"
+        className="z-1"
       >
         <Box sx={{ ...ModelStyle, width: "50%" }}>
-          <DialogUptoPoint
+          {isFormOtp ? <FormOTP /> :  <DialogUptoPoint
             selectedValue={selectedValue}
             open={openPoint}
             onClose={handleClose}
-          />
+          />}
         </Box>
       </Modal>
 

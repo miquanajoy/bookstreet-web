@@ -4,6 +4,7 @@ import { fetchWrapper } from "../../../../../_helpers/fetch-wrapper";
 import { alertService } from "../../../../../_services";
 import { KIOS, STORE } from "../../../../../_helpers/const/const";
 import { useForm } from "react-hook-form";
+import { Role } from "../../../../../models/Role";
 
 enum EnumTransactionType {
   pending = 0,
@@ -25,6 +26,7 @@ interface Transaction {
   storeOrderId: number;
   subTotal: number;
   statusTxt: string;
+  createDate: string;
 }
 
 interface TotalGroupColumns {
@@ -37,8 +39,8 @@ interface TransactionFilter {
   type?: string;
 }
 
-const useListOrderHook = (initialEmail: string = "") => {
-  const [email, setEmail] = useState(initialEmail);
+const useListOrderHook = (userRole: string = "", status?) => {
+  const [email, setEmail] = useState("");
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [totalGroupColumns, setTotalGroupColumns] =
     useState<TotalGroupColumns | null>(null);
@@ -102,6 +104,12 @@ const useListOrderHook = (initialEmail: string = "") => {
       default:
         transactionType = "1,3";
     }
+    if (userRole === Role.Manager) {
+      transactionType = "3";
+    }
+    if (status) {
+      transactionType = status;
+    }
     if (transactionType) {
       filters.push({
         field: "status",
@@ -127,6 +135,12 @@ const useListOrderHook = (initialEmail: string = "") => {
             if (val.status == EnumTransactionType.payByKiosk) {
               return "Xử lí đơn";
             } else if (val.status == EnumTransactionType.payment) {
+              if (
+                val.status == EnumTransactionType.payment &&
+                userRole === Role.Manager
+              ) {
+                return "Chi tiết";
+              }
               return "Đã hoàn tất";
             }
           })(),
