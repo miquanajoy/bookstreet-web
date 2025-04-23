@@ -51,7 +51,9 @@ export default function HandleStoreViewmodel(props) {
   const idStore = props.storeId ?? params.id;
 
   const [selectedFile, setSelectedFile] = useState<any>();
+  const [selectedFileQr, setSelectedFileQr] = useState<any>();
   const [preview, setPreview] = useState();
+  const [qrPreview, setQrPreview] = useState();
   const [areas, setAreas] = useState<any>([]);
   const [streets, setStreets] = useState<any>([]);
   const [locations, setLocations] = useState<any>([]);
@@ -74,6 +76,22 @@ export default function HandleStoreViewmodel(props) {
     setSelectedFile(e.target.files[0]);
   };
 
+  const onSelectQrFile = (e) => {
+    if (!e.target.files || e.target.files.length === 0) {
+      setSelectedFileQr(undefined);
+      return;
+    }
+
+    let reader = new FileReader();
+    let base64String;
+
+    reader.onload = function () {
+      base64String = reader.result;
+      setQrPreview(base64String);
+    };
+    reader.readAsDataURL(e.target.files[0]);
+    setSelectedFileQr(e.target.files[0]);
+  };
   useEffect(() => {
     if (!selectedFile) {
       setPreview(undefined);
@@ -86,6 +104,17 @@ export default function HandleStoreViewmodel(props) {
     return () => URL.revokeObjectURL(objectUrl);
   }, [selectedFile]);
 
+  useEffect(() => {
+    if (!selectedFileQr) {
+      setQrPreview(undefined);
+      return;
+    }
+
+    const objectUrl: any = URL.createObjectURL(selectedFileQr);
+    setQrPreview(objectUrl);
+
+    return () => URL.revokeObjectURL(objectUrl);
+  }, [selectedFileQr]);
   useEffect(() => {
     if (!locations.length || !getValues().locationId) return;
     const locationPin = locations.find(
@@ -151,6 +180,7 @@ export default function HandleStoreViewmodel(props) {
 
     setData(result);
     setPreview(result.urlImage);
+    setQrPreview(result.bankQrImage);
 
     return result;
   }
@@ -183,7 +213,18 @@ export default function HandleStoreViewmodel(props) {
     } else {
       val.urlImage = preview ?? "";
     }
-
+    const formDataQr = new FormData();
+    console.log('selectedFileQr :>> ', selectedFileQr);
+    if (selectedFileQr) {
+      formDataQr.append(
+        "files",
+        new Blob([selectedFileQr], { type: "image/png" }),
+        selectedFileQr.name
+      );
+      val.bankQrImage = await fileService.postFile(formDataQr);
+    } else {
+      val.bankQrImage = qrPreview ?? "";
+    }
     if (val.closingHours.split(":").length < 3) {
       val.closingHours = val.closingHours + ":00";
     }
@@ -320,6 +361,9 @@ export default function HandleStoreViewmodel(props) {
     open,
     handleClose,
     imageCanvas,
-    locations
+    locations,
+    selectedFileQr,
+    qrPreview,
+    onSelectQrFile,
   };
 }

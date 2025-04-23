@@ -107,7 +107,7 @@ const StoreHistoryDetail = lazy(
 
 const CustomerHistory = lazy(
   () =>
-    import("../Pages/role/manager/membership/customer-history/customer-history")
+    import("../Pages/role/manager/membership/pay-history/pay-history")
 );
 const HandleKios = lazy(() => import("../Pages/role/admin/kios/handle-kios"));
 const PointStore = lazy(

@@ -39,7 +39,7 @@ interface TransactionFilter {
   type?: string;
 }
 
-const useListOrderHook = (userRole: string = "", status?) => {
+const useListOrderHook = (userRole: string = "", prop?) => {
   const [email, setEmail] = useState("");
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [totalGroupColumns, setTotalGroupColumns] =
@@ -107,13 +107,19 @@ const useListOrderHook = (userRole: string = "", status?) => {
     if (userRole === Role.Manager) {
       transactionType = "3";
     }
-    if (status) {
-      transactionType = status;
-    }
+    transactionType = prop.status ? prop.status : transactionType;
     if (transactionType) {
       filters.push({
         field: "status",
         value: transactionType.toString(),
+        operand: 0,
+        isList: true,
+      });
+    }
+    if (prop.storeId) {
+      filters.push({
+        field: "storeId",
+        value: prop.storeId.toString(),
         operand: 0,
         isList: true,
       });
@@ -145,6 +151,9 @@ const useListOrderHook = (userRole: string = "", status?) => {
             }
           })(),
         }));
+        if(prop?.setOrder) {
+          prop?.setOrder(dataConvert)
+        }
         setTransactions(dataConvert);
       } else {
         alertService.alert({

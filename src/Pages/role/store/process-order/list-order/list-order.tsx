@@ -16,7 +16,7 @@ import CheckBillDialog from "../check-bill/check-bill";
 import OrderDetail from "../order-info/order-info";
 import { Role } from "../../../../../models/Role";
 
-const ListOrder = (status?) => {
+const ListOrder = (prop?) => {
   const user = JSON.parse(localStorage.getItem("userInfo"));
 
   const {
@@ -34,7 +34,7 @@ const ListOrder = (status?) => {
     openOrderDetailDialog,
     handleCloseOrderDetail,
     openOrderDetail,
-  } = useListOrderHook(user.user.role, status);
+  } = useListOrderHook(user.user.role, prop);
 
   const searchInputRef = useRef<HTMLInputElement>(null);
 
@@ -56,6 +56,12 @@ const ListOrder = (status?) => {
   return (
     <div className="bg-gray-100 min-h-screen">
       <div className=" mx-auto p-4 bg-white rounded-md ">
+        {prop.storeId && (
+          <div className="text-sm text-gray-700">
+            Số đơn hàng chưa thanh toán: <span className="font-medium">{transactions.length }</span>
+          </div>
+        )}
+
         {/* Search Bar */}
         {user.user.role !== Role.Manager ? (
           <div className="d-flex justify-between mb-4">
@@ -119,7 +125,11 @@ const ListOrder = (status?) => {
 
         <div className="grid grid-cols-10 gap-4">
           {/* Table */}
-          <div className={`${user.user.role !== Role.Manager ? "col-span-8" : "col-span-10"} border border-gray-400 rounded'`}>
+          <div
+            className={`${
+              user.user.role !== Role.Manager ? "col-span-8" : "col-span-10"
+            } border border-gray-400 rounded'`}
+          >
             {!loading && !error && (
               <Table sx={{ minWidth: 650 }} aria-label="simple table">
                 <TableHead>

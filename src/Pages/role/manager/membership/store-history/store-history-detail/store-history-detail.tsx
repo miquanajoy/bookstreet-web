@@ -4,16 +4,30 @@ import { useEffect, useState } from "react";
 import { fetchWrapper } from "../../../../../../_helpers/fetch-wrapper";
 import config from "../../../../../../config";
 import { STORE } from "../../../../../../_helpers/const/const";
+import { Dialog, DialogContent } from "@mui/material";
+import Pay2Store from "./pay-to-store/pay-to-store";
 
 export default function StoreHistoryDetail() {
   const navigate = useNavigate();
   const params = useParams();
 
   const [store, setStore] = useState(null);
+  const [orders, setOrders] = useState([]);
 
+  function setOrder(val) {
+    setOrders(val);
+  }
   const [isLoading, setIsLoading] = useState(true);
 
   const [error, setError] = useState(null);
+
+  const [opnStoreDetailDialog, setOpenDialog] = useState(null);
+  const openDetailStore = () => {
+    setOpenDialog(store);
+  };
+  const handleCloseStoreDetail = () => {
+    setOpenDialog(false);
+  };
 
   useEffect(() => {
     const fetchStoreData = async () => {
@@ -92,18 +106,36 @@ export default function StoreHistoryDetail() {
           <div className="w-20 invisible"></div>
         </div>
 
-        <div className="flex justify-between items-center flex-wrap gap-4 mb-6">
-          <div className="text-sm text-gray-700">
-            Số đơn hàng chưa thanh toán: <span className="font-medium">1</span>
-          </div>
+        <div className="ml-6 mb-2">
+          {orders.length ? (
+            <button
+              className="py-1.5 px-4 bg-gray-200 hover:bg-gray-300 text-gray-700 text-sm font-medium rounded border border-gray-400 transition duration-150 ease-in-out"
+              onClick={openDetailStore}
+            >
+              Thanh toán cho cửa hàng
+            </button>
+          ) : <></>}
 
-          <button className="py-1.5 px-4 bg-gray-200 hover:bg-gray-300 text-gray-700 text-sm font-medium rounded border border-gray-400 transition duration-150 ease-in-out">
-            Thanh toán cho cửa hàng
-          </button>
+          <Dialog
+            open={opnStoreDetailDialog}
+            maxWidth={"sm"}
+            fullWidth={true}
+            onClose={handleCloseStoreDetail}
+            aria-labelledby="alert-dialog-title"
+            aria-describedby="alert-dialog-description"
+          >
+            <DialogContent className="flex flex-col items-center">
+              <Pay2Store
+                storeDetail={opnStoreDetailDialog}
+                handleClose={handleCloseStoreDetail}
+                orders={orders}
+              />
+            </DialogContent>
+          </Dialog>
         </div>
 
         <div>
-          <ListOrder status="1" storeId={params.id} />
+          <ListOrder status="3" storeId={params.id} setOrder={setOrder} />
         </div>
       </div>
     </>
