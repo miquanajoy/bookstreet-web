@@ -95,7 +95,6 @@ export default function EventManagerPage() {
                         "HH:mm - YYYY/MM/DD"
                       )}
                     </div>
-                    <div className="h-5">Trạng thái: </div>
                   </div>
                 </div>
               </div>

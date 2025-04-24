@@ -265,6 +265,9 @@ export default function ShowBook() {
                 Hình ảnh
               </TableCell>
               <TableCell sx={{}} align="left">
+                Số lượng
+              </TableCell>
+              <TableCell sx={{}} align="left">
                 Giá tiền
               </TableCell>
               {isBookScreen ? (
@@ -360,7 +363,14 @@ export default function ShowBook() {
                     </label>
                   </div>
                 </TableCell>
-
+                <TableCell align="left">
+                  <input
+                    className="form-control"
+                    type="number"
+                    min={0}
+                    {...register(`author.${index}.Quantity`)}
+                  />
+                </TableCell>
                 <TableCell align="left">
                   <input
                     className="form-control"

@@ -94,7 +94,6 @@ export default function DialogDetailCalenderComponent(prop) {
                     {dayjs(new Date(detail.starDate)).format("HH:mm - YYYY/MM/DD")}
                   </div>
                   <div>Kết thúc: {dayjs(new Date(detail.endDate)).format("HH:mm - YYYY/MM/DD")}</div>
-                  <div className="mt-2">Trạng thái: </div>
 
                 </div>
                 <div>Mô tả:</div>

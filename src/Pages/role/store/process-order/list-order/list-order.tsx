@@ -83,7 +83,7 @@ const ListOrder = (prop?) => {
             <div className="flex justify-between mb-4">
               <form
                 onSubmit={handleSearch}
-                className="w-3/4 flex items-center justify-between gap-4"
+                className="flex items-center justify-between gap-4"
               >
                 <div className="flex-grow flex items-center gap-4">
                   <div className="relative flex-grow">

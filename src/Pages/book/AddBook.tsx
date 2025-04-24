@@ -267,6 +267,7 @@ export default function AddBook() {
     }
 
     let dataPost = {
+      ...val,
       book,
       productId: params.id,
       categoryId: categoryId,
@@ -445,6 +446,17 @@ export default function AddBook() {
               type="number"
               className="form-control"
               {...register("price")}
+            />
+          </div>
+          <div>
+            <label htmlFor="quanti">
+              <b>Số lượng: </b>
+            </label>
+            <input
+              id="quanti"
+              type="number"
+              className="form-control"
+              {...register("quantity")}
             />
           </div>
           {isBookScreen ? (

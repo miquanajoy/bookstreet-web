@@ -210,6 +210,7 @@ export default function ShowSouvenir() {
           authors: [v.AuthorName],
         };
         const postData = {
+          ...v,
           book,
           categoryId: v.CategoryId,
           productTypeId: isBookScreen ? 1 : 2,
@@ -279,6 +280,7 @@ export default function ShowSouvenir() {
               <TableCell> Tên đồ lưu niệm (*)</TableCell>
               <TableCell align="left">Hình ảnh</TableCell>
               <TableCell align="left">Giá tiền</TableCell>
+              <TableCell align="left">Số lượng</TableCell>
               <TableCell align="left">Danh mục</TableCell>
 
               <TableCell align="left">Mô tả</TableCell>
@@ -330,6 +332,14 @@ export default function ShowSouvenir() {
                       />
                     </label>
                   </div>
+                </TableCell>
+                <TableCell align="left">
+                  <input
+                    className="form-control"
+                    type="number"
+                    min={0}
+                    {...register(`author.${index}.Quantity`)}
+                  />
                 </TableCell>
                 <TableCell align="left">
                   <input
