@@ -17,7 +17,7 @@ export default function Pay2Store({ storeDetail, handleClose, orders }) {
       config.apiUrl + "Store/pay/" + storeDetail.storeId,
       undefined
     );
-    if (response.status) {
+    if (response.success) {
       alertService.alert({
         content: "Thanh toán thành công",
       });

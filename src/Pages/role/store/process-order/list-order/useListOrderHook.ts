@@ -5,6 +5,7 @@ import { alertService } from "../../../../../_services";
 import { KIOS, STORE } from "../../../../../_helpers/const/const";
 import { useForm } from "react-hook-form";
 import { Role } from "../../../../../models/Role";
+import dayjs, { Dayjs } from "dayjs";
 
 enum EnumTransactionType {
   pending = 0,
@@ -37,10 +38,14 @@ interface TotalGroupColumns {
 interface TransactionFilter {
   email: string;
   type?: string;
+  fromDate?: string;
+  toDate?: string;
 }
 
 const useListOrderHook = (userRole: string = "", prop?) => {
   const [email, setEmail] = useState("");
+  const [fromDate, setFromDate] = useState<Dayjs | null>(null);
+  const [toDate, setToDate] = useState<Dayjs | null>(null);
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [totalGroupColumns, setTotalGroupColumns] =
     useState<TotalGroupColumns | null>(null);
@@ -51,6 +56,7 @@ const useListOrderHook = (userRole: string = "", prop?) => {
       transactionType: "all",
     },
   });
+
   // Dialog
   const [openDialog, setOpenDialog] = useState(false);
   const handleCloseCheckBill = () => {
@@ -67,6 +73,7 @@ const useListOrderHook = (userRole: string = "", prop?) => {
   const openOrderDetail = (orderDetail) => {
     setOpenDetailDialog(orderDetail);
   };
+
   const fetchTransactions = async (filter: TransactionFilter) => {
     setLoading(true);
     setError(null);
@@ -124,6 +131,20 @@ const useListOrderHook = (userRole: string = "", prop?) => {
         isList: true,
       });
     }
+    if (filter.fromDate) {
+      filters.push({
+        field: "createDate",
+        value: filter.fromDate,
+        operand: 2, // Greater than or equal
+      });
+    }
+    if (filter.toDate) {
+      filters.push({
+        field: "createDate",
+        value: filter.toDate,
+        operand: 4, // Less than or equal
+      });
+    }
 
     try {
       const response = await fetchWrapper.post(
@@ -151,8 +172,8 @@ const useListOrderHook = (userRole: string = "", prop?) => {
             }
           })(),
         }));
-        if(prop?.setOrder) {
-          prop?.setOrder(dataConvert)
+        if (prop?.setOrder) {
+          prop?.setOrder(dataConvert);
         }
         setTransactions(dataConvert);
       } else {
@@ -189,21 +210,6 @@ const useListOrderHook = (userRole: string = "", prop?) => {
     }
   };
 
-  const convertAddress = (storeId, transactionType, kiosk, stores) => {
-    if (transactionType == 3) {
-      return (
-        stores.find((storeDt) => storeDt.storeId === storeId)?.storeName ||
-        "Thanh toán tại cửa hàng"
-      );
-    }
-    if (transactionType == 1) {
-      return (
-        kiosk.find((v) => v.id === storeId)?.kiosName ||
-        "Nạp tiền tại máy kiosk"
-      );
-    }
-    return "";
-  };
 
   return {
     transactions,
@@ -211,6 +217,10 @@ const useListOrderHook = (userRole: string = "", prop?) => {
     error,
     email,
     setEmail,
+    fromDate,
+    setFromDate,
+    toDate,
+    setToDate,
     fetchTransactions,
     totalGroupColumns,
     getTransactionTypeLabel,
