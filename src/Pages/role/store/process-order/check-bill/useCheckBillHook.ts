@@ -53,17 +53,18 @@ const useCheckBillHook = (emailFilter: string = "") => {
       const response = await fetchWrapper.post(
         config.apiUrl + STORE + "/customer-transactions",
         {
-          page: 0,
-          limit: 0,
+          page: -1,
+          limit: -1,
           filters,
         }
       );
       if (response.success) {
-        const res = response.data.list.filter((val) => val.status <= 1);
+        const res = response.data.list;
         setOrders(res);
-        const payment = res.filter((val) => val.status == 1);
+        console.log('res :>> ', res);
+        const payment = res.filter((val) => val.status == 3);
         setOrdersFilter(payment);
-        const notYetpayment = res.filter((val) => val.status == 0);
+        const notYetpayment = res.filter((val) => val.status == 4);
         const total = res
           .map((val) => val.subTotal)
           .reduce((pre, next) => {
