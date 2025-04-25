@@ -19,7 +19,7 @@ const useCheckBillHook = (emailFilter: string = "") => {
 
   const { register, handleSubmit, watch } = useForm({
     defaultValues: {
-      transactionType: "1",
+      transactionType: "3",
     },
   });
 
@@ -61,7 +61,6 @@ const useCheckBillHook = (emailFilter: string = "") => {
       if (response.success) {
         const res = response.data.list;
         setOrders(res);
-        console.log('res :>> ', res);
         const payment = res.filter((val) => val.status == 3);
         setOrdersFilter(payment);
         const notYetpayment = res.filter((val) => val.status == 4);

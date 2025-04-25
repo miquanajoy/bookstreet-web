@@ -129,10 +129,10 @@ export default function CheckBillDialog({ emailFilter, onClose, fetchTransaction
       {/* Footer Section */}
       <div className="p-4 border-t border-gray-200 mt-4">
         <div className="text-xs text-gray-600">
-          Liên hệ 
+          Liên hệ
           <a
             href="mailto:manager@gmail.com"
-            className="text-blue-600 hover:underline"
+            className="text-blue-600 hover:underline ml-1"
           >
             manager@gmail.com
           </a>
