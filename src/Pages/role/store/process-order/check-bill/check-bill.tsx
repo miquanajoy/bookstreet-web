@@ -66,7 +66,7 @@ export default function CheckBillDialog({ emailFilter, onClose, fetchTransaction
             <input
               type="radio"
               className="h-5 w-5 text-blue-500 focus:ring-blue-500"
-              value="1"
+              value="3"
               {...register("transactionType")}
               onChange={onchangeFilter}
             />
@@ -77,7 +77,7 @@ export default function CheckBillDialog({ emailFilter, onClose, fetchTransaction
             <input
               type="radio"
               className="h-5 w-5 text-blue-500 focus:ring-blue-500"
-              value="0"
+              value="4"
               {...register("transactionType")}
               onChange={onchangeFilter}
             />
@@ -114,7 +114,7 @@ export default function CheckBillDialog({ emailFilter, onClose, fetchTransaction
                           openOrderInfo(order);
                         }}
                       >
-                        Xử lý đơn
+                        Chi tiết
                       </button>
                     </TableCell>
                   </TableRow>

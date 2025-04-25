@@ -36,15 +36,16 @@ const useCheckBillHook = (emailFilter: string = "") => {
   };
 
   const fetchTransactions = async (transactionType = 1) => {
-    const filters: {
-      field: string;
-      value: string | number;
-      operand: number;
-    }[] = [
+    const filters = [
       {
         field: "customer.email",
         value: emailFilter,
         operand: 0,
+      },{
+        field: "status",
+        value: "3,4",
+        operand: 0,
+        isList: true
       },
     ];
 
