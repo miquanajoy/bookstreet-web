@@ -141,7 +141,14 @@ function put(url, body) {
     headers: { "Content-Type": "application/json", ...authHeader(url) },
     body: JSON.stringify(body),
   };
-  return fetch(url, requestOptions).then(handleResponse);
+  return fetch(url, requestOptions).then(handleResponse).then(val => {
+    if(!val.success) {
+      alertService.alert({
+        content: val.message,
+      });
+    }
+    return val
+  });
 }
 
 function _delete(url, reloadData) {
@@ -216,7 +223,7 @@ function handleResponse(response) {
 
       const error = (data && data.message) || response.statusText;
       return Promise.resolve(error);
-    }
+    } 
     return data;
   });
 }

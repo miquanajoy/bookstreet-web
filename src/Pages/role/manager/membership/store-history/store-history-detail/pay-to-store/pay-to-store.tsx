@@ -22,7 +22,7 @@ export default function Pay2Store({ storeDetail, handleClose, orders }) {
         content: "Thanh toán thành công",
       });
       setTimeout(() => {
-        navigate("membership/store-history", { replace: true });
+        navigate("/membership/store-history", { replace: true });
       }, 1000);
     } else {
       alertService.alert({

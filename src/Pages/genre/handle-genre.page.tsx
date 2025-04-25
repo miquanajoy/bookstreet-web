@@ -52,7 +52,7 @@ export default function HandleGenrePage() {
   }
 
   const savedata = async (val) => {
-    let dataPost = val;
+    let dataPost = {...val, genreName: val.genreName.trim()};
 
     let process;
     if (params.id) {

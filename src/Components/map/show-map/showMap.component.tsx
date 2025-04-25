@@ -3,7 +3,6 @@ import ShowMapViewModel from "./showMap.viewmodel";
 import { ModelStyle } from "../../../_helpers/const/model.const";
 
 export default function ShowMapComponent(prop) {
-  console.log('6, prop :>> ', 6, prop);
   const {
     open,
     imageCanvas,

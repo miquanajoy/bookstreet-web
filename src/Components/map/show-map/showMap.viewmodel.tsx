@@ -6,14 +6,13 @@ import { alertService } from "../../../_services/alert.service";
 export default function ShowMapViewModel(props) {
   console.log("prop :>> ", props);
 
-  const { mapImage, xLocation, yLocation } = props.data;
+  const { mapImage, locationImg, xLocation, yLocation, text } = props.data;
   // Model choose location in map
   const [open, setOpen] = useState(false);
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
 
   const imageCanvas = useRef(null);
-  const [locationPin, setLocationPin] = useState([]);
 
   function showLocation() {
     handleOpen();
@@ -49,7 +48,6 @@ export default function ShowMapViewModel(props) {
 
   function drawLocation() {
     const x = xLocation * imageCanvas.current.width;
-    console.log('x :>> ', x);
     const y = yLocation * imageCanvas.current.height;
     const ctx = imageCanvas.current.getContext("2d");
 
@@ -63,8 +61,16 @@ export default function ShowMapViewModel(props) {
       ctx.clip();
       ctx.drawImage(img, x - 50, y - 50, 100, 100);
       ctx.restore();
+
+      if(text) {
+        ctx.font = "16px Arial";
+        ctx.fillStyle = "#000000"; // Màu chữ đen
+        ctx.textAlign = "center";
+        ctx.textBaseline = "top";
+      }
+      ctx.fillText(text, x, y + 60); // Văn bản bên dưới hình tròn
     };
-    img.src = mapImage;
+    img.src = locationImg ?? mapImage;
   }
 
   function completeChoosePoint() {

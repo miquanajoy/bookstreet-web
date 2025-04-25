@@ -189,6 +189,14 @@ export default function HandleCalenderPage() {
       .catch((e) => {});
   };
 
+  const locationName = () => {
+    const selectedLocationId = getValues("locationId");
+    const selectedLocation = locations.find(
+      (location) => location.locationId == selectedLocationId
+    );
+    return selectedLocation ? selectedLocation.locationName : "Chưa chọn vị trí";
+  };
+
   return (
     <div className="container">
       <form
@@ -255,7 +263,9 @@ export default function HandleCalenderPage() {
                 </option>
               ))}
             </select>
-            <ShowMapComponent data={mapValue} />
+            <ShowMapComponent
+              data={{ ...mapValue, locationImg: preview, text: locationName() }}
+            />
           </div>
           {errors.locationId && (
             <span className="text-red-500">
