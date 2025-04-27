@@ -7,6 +7,10 @@ import FormLabel from "@mui/material/FormLabel";
 import { Button } from "@mui/material";
 import { Role } from "../../models/Role";
 import { useEffect } from "react";
+import { DatePicker } from "@mui/x-date-pickers/DatePicker";
+import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import { Dayjs } from "dayjs";
 
 export default function EventFilter({
   fetAllData,
@@ -14,25 +18,33 @@ export default function EventFilter({
   setFormData,
   eventStatus,
   setEventStatus,
+  fromDate,
+  setFromDate,
+  toDate,
+  setToDate,
+  filterType,
+  setFilterType,
 }) {
   const { user } = JSON.parse(localStorage.getItem("userInfo"));
 
   const handleRadioChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const { value } = event.target;
     setFormData(value);
-    fetAllData(1, value, eventStatus);
+    setFilterType("status");
   };
 
   const handleEventStatus = (event: React.ChangeEvent<HTMLInputElement>) => {
     const { value } = event.target;
     setEventStatus(value);
-    fetAllData(1, formData, value);
+    setFilterType("status");
   };
 
   const handleReset = () => {
     setFormData(undefined);
     setEventStatus(undefined);
-    fetAllData(1);
+    setFromDate(null);
+    setToDate(null);
+    setFilterType("status");
   };
 
   const FormFilterByEventType = () => {
@@ -47,11 +59,7 @@ export default function EventFilter({
           value={formData}
           onChange={handleRadioChange}
         >
-           <FormControlLabel
-            value="5"
-            control={<Radio />}
-            label="Tất cả"
-          />
+          <FormControlLabel value="5" control={<Radio />} label="Tất cả" />
           <FormControlLabel
             value="0"
             control={<Radio />}
@@ -83,7 +91,7 @@ export default function EventFilter({
   };
 
   return (
-    <div className="border-r ">
+    <div className="border-r">
       <h4 className="pl-4">Bộ tìm kiếm</h4>
       <div className="flex flex-column pl-6">
         <FormControl>
@@ -112,6 +120,31 @@ export default function EventFilter({
           </RadioGroup>
         </FormControl>
         <FormFilterByEventType />
+        <LocalizationProvider dateAdapter={AdapterDayjs}>
+          <FormLabel className="mt-2">Thời gian</FormLabel>
+          <div className="space-y-2">
+            <DatePicker
+              label="Từ ngày"
+              value={fromDate}
+              onChange={(newValue: Dayjs | null) => {
+                setFromDate(newValue);
+                setFilterType("date");
+              }}
+              format="DD/MM/YYYY"
+              slotProps={{ textField: { size: "small" } }}
+            />
+            <DatePicker
+              label="Đến ngày"
+              value={toDate}
+              onChange={(newValue: Dayjs | null) => {
+                setToDate(newValue);
+                setFilterType("date");
+              }}
+              format="DD/MM/YYYY"
+              slotProps={{ textField: { size: "small" } }}
+            />
+          </div>
+        </LocalizationProvider>
       </div>
       <div className="ml-6 my-2">
         <Button variant="outlined" onClick={handleReset}>

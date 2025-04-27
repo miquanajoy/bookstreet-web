@@ -19,6 +19,12 @@ export default function EventManagerPage() {
     setFormData,
     eventStatus,
     setEventStatus,
+    fromDate,
+    setFromDate,
+    toDate,
+    setToDate,
+    filterType,
+    setFilterType,
   } = EventManagerViewmodel();
 
   return (
@@ -40,6 +46,12 @@ export default function EventManagerPage() {
             setFormData={setFormData}
             eventStatus={eventStatus}
             setEventStatus={setEventStatus}
+            fromDate={fromDate}
+            setFromDate={setFromDate}
+            toDate={toDate}
+            setToDate={setToDate}
+            filterType={filterType}
+            setFilterType={setFilterType}
           />
         </div>
         <div className="col-span-3">
@@ -106,7 +118,16 @@ export default function EventManagerPage() {
                 <span>
                   <Pagination
                     count={data.totalPage}
-                    onChange={(_, pageNumber) => fetAllData(pageNumber)}
+                    onChange={(_, pageNumber) =>
+                      fetAllData(
+                        pageNumber,
+                        formData,
+                        eventStatus,
+                        fromDate,
+                        toDate,
+                        filterType
+                      )
+                    }
                   />
                 </span>
               </div>

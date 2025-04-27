@@ -103,13 +103,13 @@ const ListOrder = (prop?) => {
                       </button>
                     </div>
                   </div>
-                  {/* {
-                    user.user.role === Role.Manager ? */}
-                     <div className="flex gap-2"> 
+                  <div className="flex gap-2">
                     <DatePicker
                       label="Từ ngày"
                       value={fromDate}
-                      onChange={(newValue: Dayjs | null) => setFromDate(newValue)}
+                      onChange={(newValue: Dayjs | null) =>
+                        setFromDate(newValue)
+                      }
                       format="DD/MM/YYYY" // Định dạng hiển thị ngày/tháng/năm
                       slotProps={{ textField: { size: "small" } }}
                     />
@@ -119,11 +119,8 @@ const ListOrder = (prop?) => {
                       onChange={(newValue: Dayjs | null) => setToDate(newValue)}
                       format="DD/MM/YYYY" // Định dạng hiển thị ngày/tháng/năm
                       slotProps={{ textField: { size: "small" } }}
-                    /> 
-                  </div> 
-                  {/* : ""
-                  } */}
-                 
+                    />
+                  </div>
                 </div>
                 <button
                   type="submit"
@@ -185,11 +182,15 @@ const ListOrder = (prop?) => {
                     {transactions.map((row) => (
                       <TableRow
                         key={row.storeOrderId}
-                        sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
+                        sx={{
+                          "&:last-child td, &:last-child th": { border: 0 },
+                        }}
                       >
                         <TableCell>{row.storeOrderId}</TableCell>
                         <TableCell>{row.customerName}</TableCell>
-                        <TableCell>{getTransactionTypeLabel(row.status)}</TableCell>
+                        <TableCell>
+                          {getTransactionTypeLabel(row.status)}
+                        </TableCell>
                         <TableCell>{row.subTotal}</TableCell>
                         <TableCell>
                           {dayjs(new Date(row.createDate)).format(

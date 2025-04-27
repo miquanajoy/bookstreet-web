@@ -19,7 +19,7 @@ const useCheckBillHook = (emailFilter: string = "") => {
 
   const { register, handleSubmit, watch } = useForm({
     defaultValues: {
-      transactionType: "3",
+      transactionType: "4",
     },
   });
 

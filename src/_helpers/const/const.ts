@@ -215,7 +215,7 @@ export const ROUTERS = [
     ...ROUTER.roleManager.memberShip,
     roles: [Role.Manager],
   },{
-    logo: UsersIcon,
+    logo: ShopIcon,
     ...ROUTER.roleStore.listOrder,
     roles: [Role.Store],
   },
