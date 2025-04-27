@@ -11,7 +11,6 @@ import {
   TableHead,
   TableRow,
 } from "@mui/material";
-import { useState } from "react";
 import useCheckBillHook from "./useCheckBillHook";
 import OrderDetail from "../order-info/order-info";
 
@@ -28,7 +27,6 @@ export default function CheckBillDialog({ emailFilter, onClose, fetchTransaction
   } = useCheckBillHook(emailFilter);
 
   return (
-    //   <DialogContent className="flex flex-col items-center">
     <div className="rounded-lg w-full border border-gray-200">
       {/* Header Section */}
       <div className="p-4 border-b border-gray-200 flex items-center justify-between">
@@ -41,7 +39,6 @@ export default function CheckBillDialog({ emailFilter, onClose, fetchTransaction
         <h2 className="text-lg font-semibold text-gray-800 m-0">
           Kiểm tra thanh toán
         </h2>
-        {/* Placeholder for alignment, can be removed if title should be centered */}
         <div className="w-16"></div>
       </div>
       <div className="p-4 pb-0">
@@ -52,10 +49,10 @@ export default function CheckBillDialog({ emailFilter, onClose, fetchTransaction
           Đã thanh toán: {totalOrder.payment}
         </div>
         <div className="text-sm text-gray-700 mb-1">
-          Chưa thanh toán {totalOrder.notYetpayment}
+        Chưa thanh toán cho cửa hàng: {totalOrder.notYetpayment}
         </div>
         <div className="text-sm text-gray-700">
-          Tổng số tiền chưa thanh toán: {totalOrder.totalPrice} VND
+          Tổng số tiền: {totalOrder.totalPrice} VND
         </div>
       </div>
       {/* Main Content Area (Order List) */}
@@ -72,7 +69,6 @@ export default function CheckBillDialog({ emailFilter, onClose, fetchTransaction
             />
             <span className="ml-2 text-gray-700">Đã thanh toán</span>
           </label>
-
           <label className="inline-flex items-center cursor-pointer">
             <input
               type="radio"
@@ -102,17 +98,15 @@ export default function CheckBillDialog({ emailFilter, onClose, fetchTransaction
                   >
                     <TableCell>{order.storeOrderId}</TableCell>
                     <TableCell colSpan={4}>
-                      {order.status
+                      {order.status === 4
                         ? "Đã thanh toán cho cửa hàng"
                         : "Chưa thanh toán cho cửa hàng"}
                     </TableCell>
                     <TableCell>
                       <button
-                        type="submit"
+                        type="button"
                         className="bg-gray-800 hover:bg-gray-900 text-white font-bold py-2 px-4 rounded"
-                        onClick={() => {
-                          openOrderInfo(order);
-                        }}
+                        onClick={() => openOrderInfo(order)}
                       >
                         Chi tiết
                       </button>
@@ -122,7 +116,9 @@ export default function CheckBillDialog({ emailFilter, onClose, fetchTransaction
               </TableBody>
             </Table>
           ) : (
-            "Không có đơn hàng nào"
+            <div className="text-center text-gray-500">
+              Không có đơn hàng nào
+            </div>
           )}
         </div>
       </div>
@@ -142,7 +138,7 @@ export default function CheckBillDialog({ emailFilter, onClose, fetchTransaction
         </div>
       </div>
       <Dialog
-        open={openDialogInfo}
+        open={!!openDialogInfo}
         maxWidth={"sm"}
         fullWidth={true}
         onClose={handleCloseOrderInfo}
@@ -151,7 +147,7 @@ export default function CheckBillDialog({ emailFilter, onClose, fetchTransaction
       >
         <DialogContent className="flex flex-col items-center">
           <OrderDetail
-          fetchTransactions={fetchTransactions}
+            fetchTransactions={fetchTransactions}
             orderDetail={openDialogInfo}
             handleClose={handleCloseOrderInfo}
           />

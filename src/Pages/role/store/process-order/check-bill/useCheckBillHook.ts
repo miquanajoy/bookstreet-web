@@ -19,7 +19,7 @@ const useCheckBillHook = (emailFilter: string = "") => {
 
   const { register, handleSubmit, watch } = useForm({
     defaultValues: {
-      transactionType: "4",
+      transactionType: "4", // Chuỗi "4" để khớp với radio button
     },
   });
 
@@ -30,22 +30,25 @@ const useCheckBillHook = (emailFilter: string = "") => {
     totalPrice: 0,
   });
 
-  const onchangeFilter = (data) => {
-    setOrdersFilter(orders.filter((val) => val.status == data.target.value));
+  const transactionType = watch("transactionType"); // Theo dõi giá trị transactionType
 
+  const onchangeFilter = (data) => {
+    const selectedType = data.target.value;
+    setOrdersFilter(orders.filter((val) => val.status === parseInt(selectedType)));
   };
 
-  const fetchTransactions = async (transactionType = 1) => {
+  const fetchTransactions = async () => {
     const filters = [
       {
         field: "customer.email",
         value: emailFilter,
         operand: 0,
-      },{
+      },
+      {
         field: "status",
         value: "3,4",
         operand: 0,
-        isList: true
+        isList: true,
       },
     ];
 
@@ -61,14 +64,15 @@ const useCheckBillHook = (emailFilter: string = "") => {
       if (response.success) {
         const res = response.data.list;
         setOrders(res);
-        const payment = res.filter((val) => val.status == 3);
-        setOrdersFilter(payment);
-        const notYetpayment = res.filter((val) => val.status == 4);
+        // Áp dụng bộ lọc dựa trên transactionType hiện tại
+        setOrdersFilter(
+          res.filter((val) => val.status === parseInt(transactionType))
+        );
+        const payment = res.filter((val) => val.status === 4); // Đã thanh toán
+        const notYetpayment = res.filter((val) => val.status === 3); // Chưa thanh toán
         const total = res
           .map((val) => val.subTotal)
-          .reduce((pre, next) => {
-            return pre + next;
-          });
+          .reduce((pre, next) => pre + next, 0); // Thêm giá trị mặc định 0
         setTotalOrder({
           total: res.length,
           payment: payment.length,
@@ -87,7 +91,15 @@ const useCheckBillHook = (emailFilter: string = "") => {
 
   useEffect(() => {
     fetchTransactions();
-  }, []);
+  }, [emailFilter]); // Chỉ phụ thuộc vào emailFilter
+
+  // Cập nhật ordersFilter khi transactionType thay đổi
+  // useEffect(() => {
+  //   setOrdersFilter(
+  //     orders.filter((val) => val.status === parseInt(transactionType))
+  //   );
+  // }, [transactionType, orders]);
+
   return {
     openDialogInfo,
     handleCloseOrderInfo,
