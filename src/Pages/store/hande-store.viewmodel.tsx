@@ -1,7 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import { useNavigate, useParams } from "react-router-dom";
-import axios from "axios";
 import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css";
 import { fetchWrapper } from "../../_helpers/fetch-wrapper";
 import config from "../../config";
@@ -15,8 +14,6 @@ import {
   STORE,
   STREET,
 } from "../../_helpers/const/const";
-import { Box, Modal } from "@mui/material";
-import { ModelStyle } from "../../_helpers/const/model.const";
 import { loadingService } from "../../_services/loading.service";
 
 export default function HandleStoreViewmodel(props) {

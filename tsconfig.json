@@ -4,7 +4,7 @@
       "noImplicitAny": false,
       "module": "esnext",
       "allowSyntheticDefaultImports": true,
-      "target": "es5",
+      "target": "es2015",
       "jsx": "react-jsx",
       "allowJs": true,
       "moduleResolution": "node",

@@ -12,6 +12,7 @@ import {
   PRODUCT,
   ROUTER,
   SAVEBATCH,
+  STORE,
 } from "../../_helpers/const/const";
 import { excelService, TYPE_BOOK } from "../../_services/excel.service";
 import { useFieldArray, useForm } from "react-hook-form";
@@ -33,7 +34,10 @@ import DialogDetailComponent, {
 } from "./dialog-detail.component";
 import { Dialog, DialogContent } from "@mui/material";
 import axios from "axios";
-import React from "react";
+import Select from "@mui/material/Select";
+import MenuItem from "@mui/material/MenuItem";
+import FormControl from "@mui/material/FormControl";
+import InputLabel from "@mui/material/InputLabel";
 
 export default function ShowBook() {
   const user = JSON.parse(localStorage.getItem("userInfo"));
@@ -45,6 +49,9 @@ export default function ShowBook() {
     totalPage: 0,
   });
 
+  const [selectedStore, setSelectedStore] = useState("all"); // State để lưu cửa hàng được chọn
+  const [stores, setStores] = useState([]); // Danh sách cửa hàng từ API
+
   const {
     control,
     register,
@@ -54,15 +61,36 @@ export default function ShowBook() {
     mode: "onChange",
   });
 
+  async function fetAllStore() {
+    const result = fetchWrapper.Post2GetByPaginate(
+      config.apiUrl + STORE,
+      -1,
+      {
+        filters: [],
+      },
+      -1
+    );
+    result.then((res) => {
+      const uniqueStores = res.list.map((val) => ({
+        storeId: val.storeId,
+        storeName: val.storeName,
+      }));
+      setStores(uniqueStores);
+    });
+    return result;
+  }
+
   async function deleteItem(val) {
     await fetchWrapper.delete(
       config.apiUrl + "Product/" + val.productId,
       fetAllData
     );
   }
+
   async function fetAllData(pageNumber = 1) {
     getDataByPaginator(pageNumber);
   }
+
   async function getDataByPaginator(pageNumber = 1) {
     const filter = {
       filters: [
@@ -73,11 +101,22 @@ export default function ShowBook() {
         },
       ],
     };
-    filter.filters.push({
-      field: "productName",
-      value: searchService.$SearchValue.value?.dataSearch,
-      operand: typeSearch,
-    });
+    // Thêm bộ lọc productName nếu có giá trị tìm kiếm
+    if (searchService.$SearchValue.value?.dataSearch) {
+      filter.filters.push({
+        field: "productName",
+        value: searchService.$SearchValue.value.dataSearch,
+        operand: typeSearch,
+      });
+    }
+    // Thêm bộ lọc storeId nếu không chọn "Tất cả"
+    if (selectedStore !== "all") {
+      filter.filters.push({
+        field: "storeId",
+        value: selectedStore + "",
+        operand: 0,
+      });
+    }
     const result = fetchWrapper.Post2GetByPaginate(
       config.apiUrl + PRODUCT,
       pageNumber,
@@ -86,17 +125,19 @@ export default function ShowBook() {
     result.then((res: any) => {
       res.list = res.list.map((v) => ({
         ...v,
-        authors: v?.book?.authors.join(", "),
+        authors: v?.book?.authors?.join(", "),
       }));
-
       setData(res);
     });
   }
 
+  // Gọi API khi thay đổi pathname
   useEffect(() => {
     fetAllData();
+    fetAllStore();
   }, [pathname]);
 
+  // Gọi API khi tìm kiếm
   useEffect(() => {
     const searchSub = searchService.$SearchValue.subscribe({
       next: (v) => {
@@ -107,6 +148,16 @@ export default function ShowBook() {
     });
     return () => searchSub.unsubscribe();
   }, []);
+
+  // Gọi API khi thay đổi cửa hàng
+  useEffect(() => {
+    getDataByPaginator(1);
+  }, [selectedStore]);
+
+  // Xử lý khi chọn cửa hàng từ dropdown
+  const handleStoreChange = (event) => {
+    setSelectedStore(event.target.value);
+  };
 
   // Model
   const [dataImport, setDataImport] = useState([]);
@@ -130,6 +181,7 @@ export default function ShowBook() {
   function getCsv(type) {
     excelService.getCsv(type);
   }
+
   async function importExcel(e) {
     try {
       remove();
@@ -140,7 +192,6 @@ export default function ShowBook() {
       );
 
       const convertData = responseImport
-        // .filter((val) => val.Success)
         .map((val) => {
           if (isBookScreen) {
             val.AuthorName = val.AuthorName[0];
@@ -162,7 +213,6 @@ export default function ShowBook() {
                 ? dayjs(new Date(val.PublicDay)).format("YYYY-MM-DD")
                 : dayjs(new Date()).format("YYYY-MM-DD");
           }
-          console.log("val :>> ", val);
           append(val);
         });
         setDataImport(convertData);
@@ -177,7 +227,6 @@ export default function ShowBook() {
   }
 
   async function submitCsv() {
-    // const formData = new FormData();
     const listImportImg = [];
     let valueToSubmit = [];
     getValues().author.map(async (data, index) => {
@@ -296,8 +345,6 @@ export default function ShowBook() {
               ) : (
                 <></>
               )}
-
-              {/* <TableCell align="left">Trạng thái</TableCell> */}
               <TableCell align="left" sx={{}}>
                 Mô tả
               </TableCell>
@@ -397,7 +444,6 @@ export default function ShowBook() {
                 ) : (
                   <></>
                 )}
-
                 <TableCell align="left">
                   <input
                     className="form-control h-12"
@@ -430,7 +476,6 @@ export default function ShowBook() {
                 ) : (
                   <></>
                 )}
-
                 <TableCell align="left">
                   <textarea
                     className="form-control"
@@ -460,7 +505,6 @@ export default function ShowBook() {
     };
     reader.readAsDataURL(e.target.files[0]);
   }
-  // End Model
 
   // Template role store
   function templateRoleStore(link, template) {
@@ -470,6 +514,7 @@ export default function ShowBook() {
       return template;
     }
   }
+
   return (
     <div className="m-n2">
       <div className="flex items-center justify-between mb-2 bg-slate-200 pb-3">
@@ -506,6 +551,25 @@ export default function ShowBook() {
           <></>
         )}
       </div>
+      <div className="px-6 mb-4">
+        <FormControl sx={{ minWidth: 200 }}>
+          <InputLabel id="store-filter-label">Lọc theo cửa hàng</InputLabel>
+          <Select
+            labelId="store-filter-label"
+            id="store-filter"
+            value={selectedStore}
+            label="Lọc theo cửa hàng"
+            onChange={handleStoreChange}
+          >
+            <MenuItem value="all">Tất cả</MenuItem>
+            {stores.map((store) => (
+              <MenuItem key={store.storeId} value={store.storeId}>
+                {store.storeName}
+              </MenuItem>
+            ))}
+          </Select>
+        </FormControl>
+      </div>
       <div className="grid grid-cols-5 gap-4 px-6">
         {data.list.map((val) => (
           <div
@@ -529,7 +593,6 @@ export default function ShowBook() {
               }}
               className={`${listStyle["info-icon"]} position-absolute top-0 left-0 bg-slate-400 rounded p-3 opacity-50 cursor-pointer`}
             ></button>
-
             {user.role == Role.Store ? (
               <div
                 onClick={(_: any) => {
@@ -591,20 +654,17 @@ export default function ShowBook() {
       >
         <div className="mx-[-10px]">
           <DialogContent className="relative">
-            {/* <Box sx={ModelStyle}> */}
             <div className="max-h-90vh overflow-auto">{listImportBook()}</div>
             <button
               onClick={submitCsv}
               type="button"
-              className="sticky bottom-0 mt-4  text-white bg-green-700  rounded-lg text-sm px-5 py-2.5 me-2 mb-2"
+              className="sticky bottom-0 mt-4 text-white bg-green-700 rounded-lg text-sm px-5 py-2.5 me-2 mb-2"
             >
               Nhập
             </button>
           </DialogContent>
-          {/* </Box> */}
         </div>
       </Dialog>
-
       <DialogDetailComponent />
     </div>
   );

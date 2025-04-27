@@ -12,6 +12,7 @@ import {
   PRODUCT,
   ROUTER,
   SAVEBATCH,
+  STORE,
 } from "../../_helpers/const/const";
 import { excelService, TYPE_BOOK } from "../../_services/excel.service";
 import { useFieldArray, useForm } from "react-hook-form";
@@ -35,6 +36,10 @@ import { searchService, typeSearch } from "../../_services/search.service";
 import DialogDetailComponent, {
   dialogDetailService,
 } from "./dialog-detail.component";
+import Select from "@mui/material/Select";
+import MenuItem from "@mui/material/MenuItem";
+import FormControl from "@mui/material/FormControl";
+import InputLabel from "@mui/material/InputLabel";
 
 export default function ShowSouvenir() {
   const user = JSON.parse(localStorage.getItem("userInfo"));
@@ -46,6 +51,9 @@ export default function ShowSouvenir() {
     totalPage: 0,
   });
 
+  const [selectedStore, setSelectedStore] = useState("all"); // State để lưu cửa hàng được chọn
+  const [stores, setStores] = useState([]); // Danh sách cửa hàng từ API
+
   const {
     control,
     register,
@@ -55,15 +63,36 @@ export default function ShowSouvenir() {
     mode: "onChange",
   });
 
+  async function fetAllStore() {
+    const result = fetchWrapper.Post2GetByPaginate(
+      config.apiUrl + STORE,
+      -1,
+      {
+        filters: [],
+      },
+      -1
+    );
+    result.then((res) => {
+      const uniqueStores = res.list.map((val) => ({
+        storeId: val.storeId,
+        storeName: val.storeName,
+      }));
+      setStores(uniqueStores);
+    });
+    return result;
+  }
+
   async function deleteItem(val) {
     await fetchWrapper.delete(
       config.apiUrl + "Product/" + val.productId,
       fetAllData
     );
   }
+
   async function fetAllData(pageNumber = 1) {
     getDataByPaginator(pageNumber);
   }
+
   async function getDataByPaginator(pageNumber = 1) {
     const filter = {
       filters: [
@@ -74,11 +103,22 @@ export default function ShowSouvenir() {
         },
       ],
     };
-    filter.filters.push({
-      field: "productName",
-      value: searchService.$SearchValue.value?.dataSearch,
-      operand: typeSearch,
-    });
+    // Thêm bộ lọc productName nếu có giá trị tìm kiếm
+    if (searchService.$SearchValue.value?.dataSearch) {
+      filter.filters.push({
+        field: "productName",
+        value: searchService.$SearchValue.value.dataSearch,
+        operand: typeSearch,
+      });
+    }
+    // Thêm bộ lọc storeId nếu không chọn "Tất cả"
+    if (selectedStore !== "all") {
+      filter.filters.push({
+        field: "storeId",
+        value: selectedStore + "",
+        operand: 0,
+      });
+    }
     const result = fetchWrapper.Post2GetByPaginate(
       config.apiUrl + PRODUCT,
       pageNumber,
@@ -87,18 +127,19 @@ export default function ShowSouvenir() {
     result.then((res: any) => {
       res.list = res.list.map((v) => ({
         ...v,
-        authors: v?.book?.authors.join(", "),
+        authors: v?.book?.authors?.join(", "),
       }));
-
       setData(res);
     });
   }
 
-  // Search area
+  // Gọi API khi thay đổi pathname
   useEffect(() => {
     fetAllData();
+    fetAllStore();
   }, [pathname]);
 
+  // Gọi API khi tìm kiếm
   useEffect(() => {
     const searchSub = searchService.$SearchValue.subscribe({
       next: (v) => {
@@ -109,7 +150,16 @@ export default function ShowSouvenir() {
     });
     return () => searchSub.unsubscribe();
   }, []);
-  // End Search area
+
+  // Gọi API khi thay đổi cửa hàng
+  useEffect(() => {
+    getDataByPaginator(1);
+  }, [selectedStore]);
+
+  // Xử lý khi chọn cửa hàng từ dropdown
+  const handleStoreChange = (event) => {
+    setSelectedStore(event.target.value);
+  };
 
   // Model
   const [dataImport, setDataImport] = useState([]);
@@ -129,6 +179,7 @@ export default function ShowSouvenir() {
   function getCsv(type) {
     excelService.getCsv(type);
   }
+
   async function importExcel(e) {
     try {
       remove();
@@ -139,7 +190,6 @@ export default function ShowSouvenir() {
       );
 
       const convertData = responseImport
-        // .filter((val) => val.Success)
         .map((val) => {
           if (isBookScreen) {
             val.AuthorName = val.AuthorName[0];
@@ -164,7 +214,6 @@ export default function ShowSouvenir() {
       setDataImport(convertData);
     } catch (error) {
       inputFile.current.value = "";
-
       alertService.alert({
         content: "Không thể import",
       });
@@ -172,7 +221,6 @@ export default function ShowSouvenir() {
   }
 
   async function submitCsv() {
-    // const formData = new FormData();
     const listImportImg = [];
     let valueToSubmit = [];
     getValues().author.map(async (data, index) => {
@@ -226,7 +274,6 @@ export default function ShowSouvenir() {
           publisherName: v.PublisherName,
           genreName: v.GenreName,
           authors: [v.AuthorName],
-
           urlImage,
         };
         if (!isBookScreen) {
@@ -282,7 +329,6 @@ export default function ShowSouvenir() {
               <TableCell align="left">Giá tiền</TableCell>
               <TableCell align="left">Số lượng</TableCell>
               <TableCell align="left">Danh mục</TableCell>
-
               <TableCell align="left">Mô tả</TableCell>
             </TableRow>
           </TableHead>
@@ -338,7 +384,7 @@ export default function ShowSouvenir() {
                     className="form-control"
                     type="number"
                     min={0}
-                    {...register(`author.${index}.Quantity`)}
+                    {...register(`author.${index}.Price`)}
                   />
                 </TableCell>
                 <TableCell align="left">
@@ -346,7 +392,7 @@ export default function ShowSouvenir() {
                     className="form-control"
                     type="number"
                     min={0}
-                    {...register(`author.${index}.Price`)}
+                    {...register(`author.${index}.Quantity`)}
                   />
                 </TableCell>
                 <TableCell align="left">
@@ -385,8 +431,6 @@ export default function ShowSouvenir() {
     reader.readAsDataURL(e.target.files[0]);
   }
 
-  // End Model
-
   // Template role store
   const handleClickOpenDetail = (v) => {
     dialogDetailService.showDialog(v);
@@ -399,6 +443,7 @@ export default function ShowSouvenir() {
       return template;
     }
   }
+
   return (
     <div className="m-n2">
       <div className="flex items-center justify-between mb-2 bg-slate-200 pb-3">
@@ -434,6 +479,25 @@ export default function ShowSouvenir() {
         ) : (
           <></>
         )}
+      </div>
+      <div className="px-6 mb-4">
+        <FormControl sx={{ minWidth: 200 }}>
+          <InputLabel id="store-filter-label">Lọc theo nhà sách</InputLabel>
+          <Select
+            labelId="store-filter-label"
+            id="store-filter"
+            value={selectedStore}
+            label="Lọc theo nhà sách"
+            onChange={handleStoreChange}
+          >
+            <MenuItem value="all">Tất cả</MenuItem>
+            {stores.map((store) => (
+              <MenuItem key={store.storeId} value={store.storeId}>
+                {store.storeName}
+              </MenuItem>
+            ))}
+          </Select>
+        </FormControl>
       </div>
       <div className="grid grid-cols-5 gap-4 px-6">
         {data.list.map((val) => (
@@ -513,13 +577,11 @@ export default function ShowSouvenir() {
       >
         <div className="p-6">
           <Box sx={{ ...ModelStyle, width: "65vw" }}>
-            <div className="max-h-50vh overflow-auto">
-              { listImportSouvenir()}
-            </div>
+            <div className="max-h-50vh overflow-auto">{listImportSouvenir()}</div>
             <button
               onClick={submitCsv}
               type="button"
-              className="mt-4 float-right text-white bg-green-700  rounded-lg text-sm px-5 py-2.5 me-2 mb-2"
+              className="mt-4 float-right text-white bg-green-700 rounded-lg text-sm px-5 py-2.5 me-2 mb-2"
             >
               Nhập
             </button>
