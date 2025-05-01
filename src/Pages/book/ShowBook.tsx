@@ -191,17 +191,16 @@ export default function ShowBook() {
         PRODUCT + "/" + IMPORT + "?type=" + (isBookScreen ? 1 : 2)
       );
 
-      const convertData = responseImport
-        .map((val) => {
-          if (isBookScreen) {
-            val.AuthorName = val.AuthorName[0];
-          }
-          const UrlImage =
-            val.UrlImage && val.UrlImage != "anh_mau.jpg"
-              ? URL_IMG + val.UrlImage
-              : undefined;
-          return { ...val, UrlImage };
-        });
+      const convertData = responseImport.map((val) => {
+        if (isBookScreen) {
+          val.AuthorName = val.AuthorName[0];
+        }
+        const UrlImage =
+          val.UrlImage && val.UrlImage != "anh_mau.jpg"
+            ? URL_IMG + val.UrlImage
+            : undefined;
+        return { ...val, UrlImage };
+      });
       inputFile.current.value = "";
 
       if (convertData.length) {
@@ -551,25 +550,30 @@ export default function ShowBook() {
           <></>
         )}
       </div>
-      <div className="px-6 mb-4">
-        <FormControl sx={{ minWidth: 200 }}>
-          <InputLabel id="store-filter-label">Lọc theo cửa hàng</InputLabel>
-          <Select
-            labelId="store-filter-label"
-            id="store-filter"
-            value={selectedStore}
-            label="Lọc theo cửa hàng"
-            onChange={handleStoreChange}
-          >
-            <MenuItem value="all">Tất cả</MenuItem>
-            {stores.map((store) => (
-              <MenuItem key={store.storeId} value={store.storeId}>
-                {store.storeName}
-              </MenuItem>
-            ))}
-          </Select>
-        </FormControl>
-      </div>
+      {user.role == Role.Manager ? (
+        <div className="px-6 mb-4">
+          <FormControl sx={{ minWidth: 200 }}>
+            <InputLabel id="store-filter-label">Lọc theo cửa hàng</InputLabel>
+            <Select
+              labelId="store-filter-label"
+              id="store-filter"
+              value={selectedStore}
+              label="Lọc theo cửa hàng"
+              onChange={handleStoreChange}
+            >
+              <MenuItem value="all">Tất cả</MenuItem>
+              {stores.map((store) => (
+                <MenuItem key={store.storeId} value={store.storeId}>
+                  {store.storeName}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+        </div>
+      ) : (
+        <></>
+      )}
+
       <div className="grid grid-cols-5 gap-4 px-6">
         {data.list.map((val) => (
           <div

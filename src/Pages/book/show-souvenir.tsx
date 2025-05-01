@@ -189,17 +189,16 @@ export default function ShowSouvenir() {
         PRODUCT + "/" + IMPORT + "?type=" + (isBookScreen ? 1 : 2)
       );
 
-      const convertData = responseImport
-        .map((val) => {
-          if (isBookScreen) {
-            val.AuthorName = val.AuthorName[0];
-          }
-          const UrlImage =
-            val.UrlImage && val.UrlImage != "anh_mau.jpg"
-              ? URL_IMG + val.UrlImage
-              : undefined;
-          return { ...val, UrlImage };
-        });
+      const convertData = responseImport.map((val) => {
+        if (isBookScreen) {
+          val.AuthorName = val.AuthorName[0];
+        }
+        const UrlImage =
+          val.UrlImage && val.UrlImage != "anh_mau.jpg"
+            ? URL_IMG + val.UrlImage
+            : undefined;
+        return { ...val, UrlImage };
+      });
       inputFile.current.value = "";
       handleOpen();
       convertData.forEach((val) => {
@@ -480,25 +479,29 @@ export default function ShowSouvenir() {
           <></>
         )}
       </div>
-      <div className="px-6 mb-4">
-        <FormControl sx={{ minWidth: 200 }}>
-          <InputLabel id="store-filter-label">Lọc theo nhà sách</InputLabel>
-          <Select
-            labelId="store-filter-label"
-            id="store-filter"
-            value={selectedStore}
-            label="Lọc theo nhà sách"
-            onChange={handleStoreChange}
-          >
-            <MenuItem value="all">Tất cả</MenuItem>
-            {stores.map((store) => (
-              <MenuItem key={store.storeId} value={store.storeId}>
-                {store.storeName}
-              </MenuItem>
-            ))}
-          </Select>
-        </FormControl>
-      </div>
+      {user.role == Role.Manager ? (
+        <div className="px-6 mb-4">
+          <FormControl sx={{ minWidth: 200 }}>
+            <InputLabel id="store-filter-label">Lọc theo nhà sách</InputLabel>
+            <Select
+              labelId="store-filter-label"
+              id="store-filter"
+              value={selectedStore}
+              label="Lọc theo nhà sách"
+              onChange={handleStoreChange}
+            >
+              <MenuItem value="all">Tất cả</MenuItem>
+              {stores.map((store) => (
+                <MenuItem key={store.storeId} value={store.storeId}>
+                  {store.storeName}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+        </div>
+      ) : (
+        <></>
+      )}
       <div className="grid grid-cols-5 gap-4 px-6">
         {data.list.map((val) => (
           <div
@@ -577,7 +580,9 @@ export default function ShowSouvenir() {
       >
         <div className="p-6">
           <Box sx={{ ...ModelStyle, width: "65vw" }}>
-            <div className="max-h-50vh overflow-auto">{listImportSouvenir()}</div>
+            <div className="max-h-50vh overflow-auto">
+              {listImportSouvenir()}
+            </div>
             <button
               onClick={submitCsv}
               type="button"
