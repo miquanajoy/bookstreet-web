@@ -19,7 +19,7 @@ const useCheckBillHook = (emailFilter: string = "") => {
 
   const { register, handleSubmit, watch } = useForm({
     defaultValues: {
-      transactionType: "4", // Chuỗi "4" để khớp với radio button
+      transactionType: "4", 
     },
   });
 
@@ -30,7 +30,7 @@ const useCheckBillHook = (emailFilter: string = "") => {
     totalPrice: 0,
   });
 
-  const transactionType = watch("transactionType"); // Theo dõi giá trị transactionType
+  const transactionType = watch("transactionType"); 
 
   const onchangeFilter = (data) => {
     const selectedType = data.target.value;
@@ -62,17 +62,23 @@ const useCheckBillHook = (emailFilter: string = "") => {
         }
       );
       if (response.success) {
-        const res = response.data.list;
+        let res = response.data.list;
+        res = res.sort((orderA, orderB) => {
+          const dateA: any = new Date(orderA.createDate);
+          const dateB: any = new Date(orderB.createDate);
+
+          return dateB - dateA;
+        });
         setOrders(res);
-        // Áp dụng bộ lọc dựa trên transactionType hiện tại
+        
         setOrdersFilter(
           res.filter((val) => val.status === parseInt(transactionType))
         );
-        const payment = res.filter((val) => val.status === 4); // Đã thanh toán
-        const notYetpayment = res.filter((val) => val.status === 3); // Chưa thanh toán
-        const total = res
+        const payment = res.filter((val) => val.status === 4); 
+        const notYetpayment = res.filter((val) => val.status === 3); 
+        const total = notYetpayment
           .map((val) => val.subTotal)
-          .reduce((pre, next) => pre + next, 0); // Thêm giá trị mặc định 0
+          .reduce((pre, next) => pre + next, 0); 
         setTotalOrder({
           total: res.length,
           payment: payment.length,
@@ -91,14 +97,14 @@ const useCheckBillHook = (emailFilter: string = "") => {
 
   useEffect(() => {
     fetchTransactions();
-  }, [emailFilter]); // Chỉ phụ thuộc vào emailFilter
+  }, [emailFilter]); 
 
-  // Cập nhật ordersFilter khi transactionType thay đổi
-  // useEffect(() => {
-  //   setOrdersFilter(
-  //     orders.filter((val) => val.status === parseInt(transactionType))
-  //   );
-  // }, [transactionType, orders]);
+  
+  
+  
+  
+  
+  
 
   return {
     openDialogInfo,

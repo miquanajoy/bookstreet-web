@@ -37,7 +37,7 @@ const useTransactionHistory = () => {
         }
       );
       if (response.success) {
-        const dc = response.data.list.map((val, i) => ({
+        let res = response.data.list.map((val, i) => ({
           id: i,
           ...val,
           storeName: convertAddress(
@@ -47,7 +47,13 @@ const useTransactionHistory = () => {
             kiosk
           ),
         }));
-        setTransactions(dc);
+        res = res.sort((orderA, orderB) => {
+          const dateA: any = new Date(orderA.createDate);
+          const dateB: any = new Date(orderB.createDate);
+
+          return dateB - dateA;
+        });
+        setTransactions(res);
         setTotalGroupColumns(response.data.totalGroupColumns);
       } else {
         alertService.alert({

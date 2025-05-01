@@ -16,8 +16,6 @@ class SearchService {
     const apiName = requestUrl.split(config.apiUrl);
     return apiName[1].toLowerCase() + "Name";
   }
-
-  
 }
 
 export const searchService = new SearchService();

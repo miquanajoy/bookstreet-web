@@ -52,7 +52,7 @@ export default function CheckBillDialog({ emailFilter, onClose, fetchTransaction
         Chưa thanh toán cho cửa hàng: {totalOrder.notYetpayment}
         </div>
         <div className="text-sm text-gray-700">
-          Tổng số tiền: {totalOrder.totalPrice} VND
+        Tổng số tiền chưa được thanh toán: {totalOrder.totalPrice} VND
         </div>
       </div>
       {/* Main Content Area (Order List) */}

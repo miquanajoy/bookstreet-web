@@ -156,7 +156,7 @@ const useListOrderHook = (userRole: string = "", prop?) => {
         }
       );
       if (response.success) {
-        const dataConvert = response.data.list.map((val) => ({
+        let dataConvert = response.data.list.map((val) => ({
           ...val,
           statusTxt: (() => {
             if (val.status == EnumTransactionType.payByKiosk) {
@@ -172,6 +172,12 @@ const useListOrderHook = (userRole: string = "", prop?) => {
             }
           })(),
         }));
+        dataConvert = dataConvert.sort((orderA, orderB) => {
+          const dateA: any = new Date(orderA.createDate);
+          const dateB: any = new Date(orderB.createDate);
+
+          return dateB - dateA;
+        });
         if (prop?.setOrder) {
           prop?.setOrder(dataConvert);
         }
@@ -209,7 +215,6 @@ const useListOrderHook = (userRole: string = "", prop?) => {
         return "Không xác định";
     }
   };
-
 
   return {
     transactions,

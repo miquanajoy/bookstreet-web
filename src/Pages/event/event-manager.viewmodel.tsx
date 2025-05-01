@@ -16,7 +16,7 @@ const EventManagerViewmodel = () => {
   const user = JSON.parse(localStorage.getItem("userInfo"));
 
   const [formData, setFormData] = useState<any>();
-  const [eventStatus, setEventStatus] = useState<any>(1);
+  const [eventStatus, setEventStatus] = useState<any>("1");
   const [fromDate, setFromDate] = useState<Dayjs | null>(null);
   const [toDate, setToDate] = useState<Dayjs | null>(null);
   const [filterType, setFilterType] = useState<"status" | "date" | null>("status");

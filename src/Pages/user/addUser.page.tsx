@@ -1,4 +1,4 @@
-import  { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { useNavigate, useParams } from "react-router-dom";
 import { alertService } from "../../_services/alert.service";
@@ -21,6 +21,11 @@ export default function AddUser(props) {
 
   const [selectedFile, setSelectedFile] = useState<any>();
   const [preview, setPreview] = useState();
+  const status = [{
+    key: "Pedding", value: "Chờ kích hoạt"
+  },{
+    key: "Block", value: "Đã khoá"
+  }]
 
   useEffect(() => {
     if (!selectedFile) {
@@ -63,7 +68,8 @@ export default function AddUser(props) {
       setValue("address", val.address);
       setPreview(val.avatar);
       setValue("role", val.role);
-
+      setValue("status", "Block");
+      
       setData(val);
     });
   }
@@ -207,7 +213,9 @@ export default function AddUser(props) {
                 {...register("password")}
               />
             </label>
-          ) : <></>}
+          ) : (
+            <></>
+          )}
 
           <label className="" htmlFor="avb">
             <b>Email: </b>
@@ -252,6 +260,20 @@ export default function AddUser(props) {
                 {Roles.map((v) => (
                   <option key={v} value={v}>
                     {v}
+                  </option>
+                ))}
+              </select>
+            </label>
+          ) : (
+            <></>
+          )}
+          {userId ? (
+            <label className="" htmlFor="status">
+              <b>Trạng thái: </b>
+              <select {...register("status")} id="status" className="form-control">
+                {status.map((v) => (
+                  <option key={v.key} value={v.key}>
+                    {v.value}
                   </option>
                 ))}
               </select>

@@ -16,7 +16,7 @@ export default function HomePage(props) {
   const {
     register,
     handleSubmit,
-    getValues,
+    setValue,
     formState: { errors },
   } = useForm();
   const [isShowLoading, setIsShowLoading] = useState(false);
@@ -26,6 +26,11 @@ export default function HomePage(props) {
 
   useEffect(() => {
     setRouterList(ROUTERS);
+    searchService.$SearchValue.subscribe({
+      next:(v) => {
+        setValue("search-input",v?.dataSearch);
+      }
+    })
 
     alertService.onAlert().subscribe({
       next: (v: AlertModel) => {

@@ -200,11 +200,11 @@ export const ROUTERS = [
     ...ROUTER.genre,
     roles: [Role.Manager],
   },
-  {
-    logo: CustomerPointIcon,
-    ...ROUTER.roleStore.customerPoint,
-    roles: [Role.Store],
-  },
+  // {
+  //   logo: CustomerPointIcon,
+  //   ...ROUTER.roleStore.customerPoint,
+  //   roles: [Role.Store],
+  // },
   // {
   //   logo: Address,
   //   ...ROUTER.roleAdmin.pointHistory,
