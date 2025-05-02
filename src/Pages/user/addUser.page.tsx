@@ -11,7 +11,7 @@ export default function AddUser(props) {
   const user = JSON.parse(localStorage.getItem("userInfo"));
   const Roles = [Role.Store, Role.Manager, Role.GiftStore];
 
-  const { register, handleSubmit, setValue } = useForm();
+  const { register, handleSubmit, setValue, watch } = useForm();
   const [errForm, setErrForm] = useState<any>();
   const params = useParams();
   const userId = props.userId ?? params.id;
@@ -21,11 +21,41 @@ export default function AddUser(props) {
 
   const [selectedFile, setSelectedFile] = useState<any>();
   const [preview, setPreview] = useState();
-  const status = [{
-    key: "Pedding", value: "Chờ kích hoạt"
-  },{
-    key: "Block", value: "Đã khoá"
-  }]
+
+  // Define status options with new values
+  const status = [
+    { key: 1, value: "Đang hoạt động" }, // Status 1: Active (can login)
+    { key: 2, value: "Khóa tài khoản" }, // Status 2: Locked (cannot login)
+  ];
+
+  // Watch the status field to detect changes
+  const currentStatus = watch("status");
+
+  // Call API to update status when the status changes
+  const changeStatus = () => {
+    // if (!params.id || !currentStatus || props.userId === userId) return; // Skip if not in update mode, no status, or editing current user
+
+    // // Call API to update status immediately when status changes
+    // fetchWrapper
+    //   .put(config.apiUrl + "Auth/" + params.id + "/Status", {
+    //     status: Number(currentStatus),
+    //   })
+    //   .then((statusRes) => {
+    //     if (!statusRes.success) {
+    //       alertService.alert({
+    //         content: "Cập nhật trạng thái thất bại: " + statusRes.message,
+    //       });
+    //       // Revert to previous status if update fails (optional)
+    //       setValue("status", data.status);
+    //     } else {
+    //       // Update local data to reflect the new status
+    //       setData((prev) => ({ ...prev, status: currentStatus }));
+    //       alertService.alert({
+    //         content: "Cập nhật trạng thái thành công",
+    //       });
+    //     }
+    //   });
+  }
 
   useEffect(() => {
     if (!selectedFile) {
@@ -68,8 +98,9 @@ export default function AddUser(props) {
       setValue("address", val.address);
       setPreview(val.avatar);
       setValue("role", val.role);
-      setValue("status", "Block");
-      
+      // Set the initial status value
+      setValue("status", val.status);
+
       setData(val);
     });
   }
@@ -84,6 +115,7 @@ export default function AddUser(props) {
       ...data,
       ...val,
       avatar: val.urlImage,
+      status: Number(val.status)
     };
 
     const formData = new FormData();
@@ -98,9 +130,17 @@ export default function AddUser(props) {
       dataPost.avatar = preview;
     }
 
+    // dataPost.status = undefined;
+    // If creating a new user, set default status to 1 (Active)
+    if (!params.id) {
+      dataPost.status = "1"; // Default status for new user: Active
+    }
+
+    // Update user information (excluding status update since it's handled on change)
     const connectApi = params.id
       ? fetchWrapper.put(config.apiUrl + "Auth/" + params.id, dataPost)
       : fetchWrapper.post(config.apiUrl + "Auth", dataPost);
+
     connectApi.then((res) => {
       if (res.errors) {
         let listErr = {};
@@ -112,15 +152,11 @@ export default function AddUser(props) {
           };
         }
         setErrForm(listErr);
-
         return;
       }
+
       if (res.success == true) {
-        console.log(
-          "res.data.userId ,user.userId :>> ",
-          res.data.id,
-          user.userId
-        );
+        // Update local storage if the updated user is the current user
         if (res.data.id == user.userId) {
           const currentUser = JSON.parse(localStorage.getItem("userInfo"));
           localStorage.removeItem("userInfo");
@@ -141,7 +177,7 @@ export default function AddUser(props) {
         navigate(props.userId ? "" : "/user-management", { replace: true });
       } else {
         alertService.alert({
-          content: res.title,
+          content: res.message,
         });
       }
     });
@@ -175,7 +211,7 @@ export default function AddUser(props) {
         </div>
 
         <div className="grid grid-cols-2 gap-4">
-          <label className="" htmlFor="nm">
+          <label htmlFor="nm">
             <b>Tên Tài khoản: </b>
             <input
               id="nm"
@@ -186,7 +222,7 @@ export default function AddUser(props) {
             />
             <p className="text-danger">{errForm?.Username}</p>
           </label>
-          <label className="" htmlFor="fullName">
+          <label htmlFor="fullName">
             <b>Tên đầy đủ: </b>
             <input
               id="fullName"
@@ -203,7 +239,7 @@ export default function AddUser(props) {
             <p className="text-danger">{errForm?.FullName}</p>
           </label>
           {userId ? (
-            <label className="" htmlFor="anm">
+            <label htmlFor="anm">
               <b>Mật khẩu mới: </b>
               <input
                 id="anm"
@@ -217,7 +253,7 @@ export default function AddUser(props) {
             <></>
           )}
 
-          <label className="" htmlFor="avb">
+          <label htmlFor="avb">
             <b>Email: </b>
             <input
               id="avb"
@@ -233,7 +269,7 @@ export default function AddUser(props) {
             />
             <p className="text-danger">{errForm?.Email}</p>
           </label>
-          <label className="" htmlFor="phone">
+          <label htmlFor="phone">
             <b>Điện thoại: </b>
             <input
               id="phone"
@@ -243,7 +279,7 @@ export default function AddUser(props) {
               {...register("phone")}
             />
           </label>
-          <label className="" htmlFor="addr">
+          <label htmlFor="addr">
             <b>Địa chỉ: </b>
             <input
               id="addr"
@@ -254,7 +290,7 @@ export default function AddUser(props) {
             />
           </label>
           {!props.userId ? (
-            <label className="" htmlFor="role">
+            <label htmlFor="role">
               <b>Vai trò: </b>
               <select {...register("role")} id="role" className="form-control">
                 {Roles.map((v) => (
@@ -267,10 +303,17 @@ export default function AddUser(props) {
           ) : (
             <></>
           )}
-          {userId ? (
-            <label className="" htmlFor="status">
+          {userId &&
+          user.user.role === Role.Admin &&
+          props.userId !== userId ? (
+            <label htmlFor="status">
               <b>Trạng thái: </b>
-              <select {...register("status")} id="status" className="form-control">
+              <select
+                {...register("status")}
+                id="status"
+                className="form-control"
+                onChange={changeStatus}
+              >
                 {status.map((v) => (
                   <option key={v.key} value={v.key}>
                     {v.value}
