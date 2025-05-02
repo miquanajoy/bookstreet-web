@@ -16,7 +16,6 @@ export default function HandleLocation() {
     locationName: "",
     areaId: 0,
     urlImage: "",
-
     xLocation: 0,
     yLocation: 0,
     locationImage: "",
@@ -53,7 +52,7 @@ export default function HandleLocation() {
       ...prevAreas,
       filterData: areasFilter,
     }));
-    if(!areasFilter.length) return
+    if (!areasFilter.length) return;
 
     setValue("areaId", areasFilter[0].areaId);
     drawLocation();
@@ -80,7 +79,6 @@ export default function HandleLocation() {
 
   async function fetAllData() {
     let locationsPromise: any = getOption(LOCATION);
-
     let areas: any = getOption(AREA);
     let streets: any = getOption(STREET);
     const allApiResult = await fetchWrapper.AxiosAll([
@@ -88,9 +86,9 @@ export default function HandleLocation() {
       streets,
       locationsPromise,
     ]);
-    // .then((v) => {
+
     const areasFilter = allApiResult[0].list.filter(
-      (area) => area.streetId == allApiResult[0].list[0].streetId
+      (area) => area.streetId == allApiResult[1].list[0].streetId
     );
 
     setAreas({
@@ -105,6 +103,7 @@ export default function HandleLocation() {
 
     setLocationPin(locationsPromise);
     setLocations(locationsPromise);
+
     if (!params.id) {
       return {
         ...data,
@@ -121,10 +120,6 @@ export default function HandleLocation() {
     const streetId = areas.find(
       (areaDetail) => areaDetail.areaId == result.areaId
     ).streetId;
-    // const streetId = result.locationImage
-    //   ? streets.find((street) => street.urlImage == result.locationImage)
-    //       .streetId
-    //   : streets[0].streetId;
     return {
       ...result,
       streetId,
@@ -168,8 +163,8 @@ export default function HandleLocation() {
     val.locationImage = streets.find(
       (street) => street.streetId == val.streetId
     ).urlImage;
-    let process;
 
+    let process;
     if (params.id) {
       process = fetchWrapper.put(config.apiUrl + LOCATION + "/" + params.id, {
         ...val,
@@ -193,7 +188,6 @@ export default function HandleLocation() {
           };
         }
         setErrForm(listErr);
-
         return;
       }
       alertService.alert({
@@ -247,86 +241,126 @@ export default function HandleLocation() {
 
   function drawLocation() {
     if (!imageCanvas.current) return;
-    const locationPins = locationPin.map((pin) => {
-      let streetId = areas.data.find(
-        (area) => area.areaId == pin.areaId
-      )?.streetId;
-      if (params.id && pin.locationId == params.id) {
-        streetId = areas.data.find(
-          (area) => area.areaId == getValues().areaId
-        )?.streetId;
-      }
-      return {
-        ...pin,
-        streetId,
-      };
-    });
-    locationPins
-      .filter((pin) => pin.streetId == getValues().streetId)
-      .forEach((pin) => {
-        const x = pin.xLocation * imageCanvas.current.width;
-        const y = pin.yLocation * imageCanvas.current.height;
-        const ctx = imageCanvas.current.getContext("2d");
+    const canv = imageCanvas.current;
+    const ctx = canv.getContext("2d");
 
-        ctx.beginPath();
-        ctx.arc(x, y, 5, 0, 2 * Math.PI);
-        ctx.fillStyle = "red";
-        ctx.fill();
-        ctx.closePath();
-        ctx.font = "20px Arial";
-        ctx.fillText(pin.locationName, x, y);
+    // Redraw the image first
+    const img = new Image();
+    img.src = streets.find(
+      (street) => street.streetId == getValues().streetId
+    )?.urlImage;
+
+    img.onload = () => {
+      ctx.drawImage(img, 0, 0);
+
+      // Draw all pins
+      const locationPins = locationPin.map((pin) => {
+        let streetId = areas.data.find(
+          (area) => area.areaId == pin.areaId
+        )?.streetId;
+        if (params.id && pin.locationId == params.id) {
+          streetId = areas.data.find(
+            (area) => area.areaId == getValues().areaId
+          )?.streetId;
+        }
+        return {
+          ...pin,
+          streetId,
+        };
       });
+
+      locationPins
+        .filter((pin) => pin.streetId == getValues().streetId)
+        .forEach((pin) => {
+          const x = pin.xLocation * canv.width;
+          const y = pin.yLocation * canv.height;
+
+          ctx.beginPath();
+          ctx.arc(x, y, 5, 0, 2 * Math.PI);
+          ctx.fillStyle = "red";
+          ctx.fill();
+          ctx.closePath();
+          ctx.font = "20px Arial";
+          ctx.fillText(pin.locationName, x + 10, y);
+        });
+    };
   }
 
   useEffect(drawLocation, [locationPin]);
 
   function choosePoint(event) {
-    let locationPinCurrent = locationPin.filter((val) => val.locationId);
-    const canv = imageCanvas.current.getContext("2d");
+    const canv = imageCanvas.current;
+    if (!canv) return;
+
+    const ctx = canv.getContext("2d");
     const img = new Image();
     img.src = streets.find(
       (street) => street.streetId == getValues().streetId
     )?.urlImage;
+
     loadingService.showLoading();
     img.onload = () => {
       loadingService.hiddenLoading();
 
-      imageCanvas.current.width = img.width;
-      imageCanvas.current.height = img.height;
+      canv.width = img.width;
+      canv.height = img.height;
+      ctx.drawImage(img, 0, 0);
 
-      canv.drawImage(img, 0, 0);
+      // Get the display size of the canvas
+      const rect = canv.getBoundingClientRect();
+      // Calculate the click position in display coordinates
+      const displayX = event.clientX - rect.left;
+      const displayY = event.clientY - rect.top;
 
-      const rect = imageCanvas.current.getBoundingClientRect();
-      const x = event.clientX - rect.left;
-      const y = event.clientY - rect.top;
-      const xLocation = x / imageCanvas.current.width;
-      const yLocation = y / imageCanvas.current.height;
+      // Calculate the scale factors between display size and canvas size
+      const scaleX = canv.width / rect.width;
+      const scaleY = canv.height / rect.height;
 
-      const locationPintDetail = locationPinCurrent.find(
-        (val) => val.locationId == params.id && params.id
-      );
+      // Adjust the click position to canvas coordinates
+      const x = displayX * scaleX;
+      const y = displayY * scaleY;
+
+      // Normalize coordinates to 0-1
+      const xLocation = x / canv.width;
+      const yLocation = y / canv.height;
+
+      const locationName = getValues().locationName ?? "";
       const newLocation = {
         xLocation,
         yLocation,
-        locationName: getValues().locationName ?? "",
+        locationName: locationName,
         areaId: getValues().areaId,
       };
-      if (locationPintDetail) {
-        locationPintDetail.xLocation = newLocation.xLocation;
-        locationPintDetail.yLocation = newLocation.yLocation;
-        locationPintDetail.locationName = newLocation.locationName;
-        locationPintDetail.areaId = newLocation.areaId;
+
+      const locationPinCurrent = locationPin.filter((val) => val.locationId);
+      const locationPinDetail = locationPinCurrent.find(
+        (val) => val.locationId == params.id && params.id
+      );
+
+      if (locationPinDetail) {
+        locationPinDetail.xLocation = newLocation.xLocation;
+        locationPinDetail.yLocation = newLocation.yLocation;
+        locationPinDetail.locationName = newLocation.locationName;
+        locationPinDetail.areaId = newLocation.areaId;
         setLocationPin([...locationPinCurrent]);
       } else {
         setLocationPin([...locationPinCurrent, newLocation]);
       }
+
+      // Redraw all points including the new one
+      drawLocation();
+    };
+    img.onerror = () => {
+      loadingService.hiddenLoading();
+      alertService.alert({
+        content: "Không thể tải được hình ảnh",
+      });
     };
   }
 
   function completeChoosePoint() {
     handleClose();
   }
-  // End Model
 
   return (
     <div className="container">
@@ -334,27 +368,6 @@ export default function HandleLocation() {
         onSubmit={handleSubmit(savedata)}
         className="grid grid-cols-2 gap-4 jumbotron"
       >
-        {/* <div className="flex flex-column items-center gap-2">
-          <label
-            htmlFor="imageUpload"
-            className="block h-52 w-52 bg-slate-200 bg-contain bg-no-repeat bg-center"
-            style={{ backgroundImage: "url(" + preview + ")" }}
-          ></label>
-          <input
-            type="file"
-            accept="image/png, image/jpeg"
-            onChange={onSelectFile}
-            id="imageUpload"
-            className="hidden"
-          />
-          <label
-            htmlFor="imageUpload"
-            className="block border px-2 py-1 bg-slate-200 rounded"
-          >
-            Chọn hình ảnh
-          </label>
-        </div> */}
-
         <div className="flex flex-column gap-2">
           <label className="" htmlFor="nm">
             <b>Tên vị trí: </b>
@@ -426,11 +439,10 @@ export default function HandleLocation() {
                 onClick={() => {
                   completeChoosePoint();
                 }}
-                className="bg-info text-white  rounded-lg px-3 py-0.5 ml-2"
+                className="bg-info text-white rounded-lg px-3 py-0.5 ml-2"
               >
                 Hoàn tất
               </button>
-              {/* </div> */}
             </div>
           </Box>
         </div>
