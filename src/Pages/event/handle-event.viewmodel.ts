@@ -6,9 +6,9 @@ export default function HandleEventViewmodel() {
   async function getLocation() {
     const result = await fetchWrapper.Post2GetByPaginate(
       config.apiUrl + LOCATION,
-      0,
+      -1,
       undefined,
-      0
+      -1
     );
 
     return result.list;

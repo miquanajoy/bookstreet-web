@@ -122,7 +122,7 @@ export default function EventFilter({
         <FormFilterByEventType />
         <LocalizationProvider dateAdapter={AdapterDayjs}>
           <FormLabel className="mt-2">Thời gian</FormLabel>
-          <div className="space-y-2">
+          <div className="flex flex-col gap-2 p-2">
             <DatePicker
               label="Từ ngày"
               value={fromDate}

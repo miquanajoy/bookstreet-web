@@ -185,13 +185,13 @@ export default function HandleStore(props) {
           </div>
           <div>
             <label htmlFor="bankAccountNumberid">
-              <b>Tên cửa hàng: </b>
+              <b>Số tài khoản ngân hàng: </b>
             </label>
             <input
               id="bankAccountNumberid"
               type="text"
               className="form-control"
-              placeholder="Bank Account Number"
+              placeholder="0904521699"
               {...register("bankAccountNumber")}
             />
           </div>

@@ -110,12 +110,6 @@ const EventManagerViewmodel = () => {
         }
       }
 
-      console.log("API payload:", {
-        page: pageNumber,
-        limit: 10,
-        filters,
-      });
-
       const result = await fetchWrapper.Post2GetByPaginate(
         config.apiUrl + EVENT,
         pageNumber,

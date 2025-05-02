@@ -89,6 +89,7 @@ export default function HandleStoreViewmodel(props) {
     reader.readAsDataURL(e.target.files[0]);
     setSelectedFileQr(e.target.files[0]);
   };
+
   useEffect(() => {
     if (!selectedFile) {
       setPreview(undefined);
@@ -112,6 +113,7 @@ export default function HandleStoreViewmodel(props) {
 
     return () => URL.revokeObjectURL(objectUrl);
   }, [selectedFileQr]);
+
   useEffect(() => {
     if (!locations.length || !getValues().locationId) return;
     const locationPin = locations.find(
@@ -130,7 +132,6 @@ export default function HandleStoreViewmodel(props) {
   async function fetAllData() {
     let areaPromise = getOption(AREA);
     let locationsPromise: any = getOption(LOCATION);
-
     let usersPromise: any = getOption("Auth");
     let storePrm = getOption(STORE);
     let streetPrm = getOption(STREET);
@@ -271,6 +272,7 @@ export default function HandleStoreViewmodel(props) {
 
   const imageCanvas = useRef(null);
   const [locationPin, setLocationPin] = useState([]);
+
   function showLocation() {
     loadingService.showLoading();
     handleOpen();
@@ -323,13 +325,16 @@ export default function HandleStoreViewmodel(props) {
     const streetChoose = areas.find(
       (area) => area.areaId == areaChoose
     ).streetId;
+
+    const ctx = imageCanvas.current.getContext("2d");
+
     locationPins
       .filter((pin) => pin.streetId == streetChoose)
       .forEach((pin) => {
         const x = pin.xLocation * imageCanvas.current.width;
         const y = pin.yLocation * imageCanvas.current.height;
-        const ctx = imageCanvas.current.getContext("2d");
 
+        // Draw store image
         const img = new Image(100, 100);
         img.onload = function () {
           ctx.save();
@@ -340,11 +345,18 @@ export default function HandleStoreViewmodel(props) {
           ctx.clip();
           ctx.drawImage(img, x - 50, y - 50, 100, 100);
           ctx.restore();
+
+          // Draw locationName below the image
+          ctx.font = "20px Arial";
+          ctx.fillStyle = "black";
+          ctx.textAlign = "center"; // Center the text horizontally
+          ctx.fillText(pin.locationName, x, y + 70); // Draw text below the image (50px radius + 20px offset)
         };
         img.src =
           pin.storeId == params.id ? preview ?? pin.storeImage : pin.storeImage;
       });
   }
+
   return {
     handleSubmit,
     savedata,

@@ -19,6 +19,7 @@ import { AuthorIcon } from "../../assets/icon/author";
 import { ShopIcon } from "../../assets/icon/shop";
 
 import UsersIcon from "../../assets/icon/users";
+import { GiftIcon } from "../../assets/icon/gift";
 
 export const AUTH = "Auth";
 export const STORE = "Store";
@@ -128,6 +129,11 @@ export const ROUTER = {
   },
 };
 export const ROUTERS = [
+  {
+    logo: GiftIcon,
+    ...ROUTER.roleGiftStore.gift,
+    roles: [Role.GiftStore],
+  },
   {
     logo: UserIcon,
     ...ROUTER.user,
