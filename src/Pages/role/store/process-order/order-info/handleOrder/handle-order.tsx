@@ -64,7 +64,7 @@ export default function ConfirmOrder({
       </button>
 
       <h2 className="text-center text-xl font-light text-gray-700 mb-4 tracking-wider">
-        Nhập OTP đơn hàng
+        Nhập mã nhận sách
       </h2>
 
       <input

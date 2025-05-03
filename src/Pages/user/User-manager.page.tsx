@@ -154,6 +154,9 @@ export default function ShowUserPage() {
             >
               <MenuItem value="default">Mặc định</MenuItem>
               <MenuItem value={Role.Admin}>Admin</MenuItem>
+              <MenuItem value={Role.Manager}>Manager</MenuItem>
+              <MenuItem value={Role.Store}>Store</MenuItem>
+              <MenuItem value={Role.GiftStore}>Gift store</MenuItem>
               <MenuItem value="CUSTOMER">Customer</MenuItem>
             </Select>
           </FormControl>

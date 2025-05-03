@@ -28,7 +28,8 @@ export default function AddUser(props) {
     { key: 2, value: "Khóa tài khoản" }, // Status 2: Locked (cannot login)
   ];
 
-  // Watch the status field to detect changes
+  // Watch the role and status fields to detect changes
+  const currentRole = watch("role");
   const currentStatus = watch("status");
 
   // Call API to update status when the status changes
@@ -55,7 +56,7 @@ export default function AddUser(props) {
     //       });
     //     }
     //   });
-  }
+  };
 
   useEffect(() => {
     if (!selectedFile) {
@@ -115,7 +116,7 @@ export default function AddUser(props) {
       ...data,
       ...val,
       avatar: val.urlImage,
-      status: Number(val.status)
+      status: Number(val.status),
     };
 
     const formData = new FormData();
@@ -130,10 +131,9 @@ export default function AddUser(props) {
       dataPost.avatar = preview;
     }
 
-    // dataPost.status = undefined;
     // If creating a new user, set default status to 1 (Active)
     if (!params.id) {
-      dataPost.status = "1"; // Default status for new user: Active
+      dataPost.status = 1; // Default status for new user: Active
     }
 
     // Update user information (excluding status update since it's handled on change)
@@ -238,9 +238,10 @@ export default function AddUser(props) {
             />
             <p className="text-danger">{errForm?.FullName}</p>
           </label>
-          {userId ? (
+          {/* Show password field for Manager and GiftStore roles */}
+          {(currentRole === Role.Manager || currentRole === Role.GiftStore) && (
             <label htmlFor="anm">
-              <b>Mật khẩu mới: </b>
+              <b>{userId ? "Mật khẩu mới" : "Mật khẩu"}: </b>
               <input
                 id="anm"
                 type="password"
@@ -249,8 +250,6 @@ export default function AddUser(props) {
                 {...register("password")}
               />
             </label>
-          ) : (
-            <></>
           )}
 
           <label htmlFor="avb">
