@@ -380,7 +380,7 @@ export default function PointStore() {
                 onChange={handleChange}
                 aria-label="basic tabs example"
               >
-                <Tab label="Lịch sử điểm store" id="simple-tab-1" />
+                <Tab label="Lịch sử điểm cửa hàng" id="simple-tab-1" />
                 <Tab label="Lịch sử điểm khách hàng" id="simple-tab-2" />
                 {value ? (
                   <div className="d-flex items-center px-2 basis-full">

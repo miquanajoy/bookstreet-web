@@ -28,7 +28,7 @@ function get(url) {
     method: "GET",
     headers: authHeader(url),
   };
-  return fetch(url, requestOptions).then(handleResponse);
+  return fetch(url, requestOptions).then(handleResponse).then((res) => res.data || res);
 }
 function getWithoutCall(url) {
   loadingService.showLoading();

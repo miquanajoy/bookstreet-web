@@ -208,7 +208,7 @@ const useListOrderHook = (userRole: string = "", prop?) => {
       case 2:
         return "Hủy hóa đơn";
       case 3:
-        return "Thanh toán cho store";
+        return "Thanh toán cho cửa hàng";
       case 4:
         return "Đã hoàn tiền";
       default:

@@ -4,7 +4,6 @@ import { fetchWrapper } from "../../../../../_helpers/fetch-wrapper";
 import { alertService } from "../../../../../_services";
 import { KIOS, STORE } from "../../../../../_helpers/const/const";
 
-
 interface TotalGroupColumns {
   Balance: number;
   Points: number;
@@ -29,11 +28,13 @@ const useTransactionHistory = () => {
         {
           page: 0,
           limit: 0,
-          filters: [{
-            field: "status",
-            value: '4',
-            operand: 0,
-          }]
+          filters: [
+            {
+              field: "status",
+              value: "4",
+              operand: 0,
+            },
+          ],
         }
       );
       if (response.success) {
@@ -80,6 +81,8 @@ const useTransactionHistory = () => {
         return "Rút tiền";
       case 3:
         return "Mua hàng";
+      case 4:
+        return "Đã thanh toán cho cửa hàng";
       default:
         return "Không xác định";
     }
@@ -88,11 +91,15 @@ const useTransactionHistory = () => {
   const convertAddress = (storeId, transactionType, kiosk, stores) => {
     if (transactionType == 3) {
       return (
-        stores.find((storeDt) => storeDt.storeId === storeId)?.storeName || "Thanh toán tại cửa hàng"
+        stores.find((storeDt) => storeDt.storeId === storeId)?.storeName ||
+        "Thanh toán tại cửa hàng"
       );
     }
     if (transactionType == 1) {
-      return kiosk.find((v) => v.id === storeId)?.kiosName || "Nạp tiền tại máy kiosk";
+      return (
+        kiosk.find((v) => v.id === storeId)?.kiosName ||
+        "Nạp tiền tại máy kiosk"
+      );
     }
     return "";
   };

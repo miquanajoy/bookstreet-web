@@ -45,6 +45,7 @@ const StoryHistory = () => {
               >
                 {street.map((street) => (
                   <FormControlLabel
+                    key={street.streetId}
                     value={street.streetId}
                     control={<Radio />}
                     label={street.streetName}
@@ -62,7 +63,7 @@ const StoryHistory = () => {
             <ImageList cols={4} sx={{ width: "100%" }} gap={12}>
               {bookStores.map((item) => (
                 <ImageListItem
-                  key={item.id}
+                  key={item.storeId}
                   className="m-0 pointer"
                   onClick={(_) => {
                     openDialogCreasePointHistory(item.storeId);

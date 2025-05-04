@@ -103,21 +103,21 @@ export const ROUTER = {
   },
   roleAdmin: {
     pointHistory: {
-      name: "Quản lý cấp điểm",
+      name: "cấp điểm",
       url: "/point-history",
     },
   },
   roleManager: {
     area: {
-      name: "Quản lý khu vực",
+      name: "khu vực",
       url: "/area",
     },
     location: {
-      name: "Quản lý vị trí",
+      name: "vị trí",
       url: "/location",
     },
     memberShip: {
-      name: "Quản lí đơn hàng",
+      name: "đơn hàng",
       url: "/membership",
     },
   },

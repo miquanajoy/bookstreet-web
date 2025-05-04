@@ -30,7 +30,7 @@ export default function ProrilePage() {
           onChange={handleChange}
           aria-label="basic tabs example"
         >
-          <Tab label="Cập nhật thông tin store" />
+          <Tab label="Cập nhật thông tin cửa hàng" />
           <Tab label="Cập nhật thông tin tài khoản" />
         </Tabs>
       );

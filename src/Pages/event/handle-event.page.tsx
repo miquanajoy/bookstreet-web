@@ -150,6 +150,7 @@ export default function HandleCalenderPage() {
     }
 
     let dataPost = val;
+    dataPost.storeId = userValue.user.storeId;
     dataPost.starDate = convertDate(new Date(value[0]));
     dataPost.endDate = convertDate(new Date(value[1]));
     const formData = new FormData();
