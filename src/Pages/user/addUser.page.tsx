@@ -15,7 +15,6 @@ export default function AddUser(props) {
   const [errForm, setErrForm] = useState<any>();
   const params = useParams();
   const userId = props.userId ?? params.id;
-
   const [data, setData] = useState<any>();
   const navigate = useNavigate();
 
@@ -239,7 +238,7 @@ export default function AddUser(props) {
             <p className="text-danger">{errForm?.FullName}</p>
           </label>
           {/* Show password field for Manager and GiftStore roles */}
-          {(currentRole === Role.Manager || currentRole === Role.GiftStore) && (
+          {(currentRole === Role.Manager || currentRole === Role.GiftStore || params.id == user.userId) && (
             <label htmlFor="anm">
               <b>{userId ? "Mật khẩu mới" : "Mật khẩu"}: </b>
               <input
@@ -288,7 +287,7 @@ export default function AddUser(props) {
               {...register("address")}
             />
           </label>
-          {!props.userId ? (
+          {!userId ? (
             <label htmlFor="role">
               <b>Vai trò: </b>
               <select {...register("role")} id="role" className="form-control">

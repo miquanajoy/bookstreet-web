@@ -109,15 +109,15 @@ export const ROUTER = {
   },
   roleManager: {
     area: {
-      name: "khu vực",
+      name: "Quản lý khu vực",
       url: "/area",
     },
     location: {
-      name: "vị trí",
+      name: "Quản lý vị trí",
       url: "/location",
     },
     memberShip: {
-      name: "đơn hàng",
+      name: "Quản lý đơn hàng",
       url: "/membership",
     },
   },
