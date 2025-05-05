@@ -21,17 +21,7 @@ export default function AddBook() {
   const user = JSON.parse(localStorage.getItem("userInfo"));
 
   const [data, setData] = useState<any>({
-    // productName: "",
-    // price: 10000,
-    // productTypeName: "",
     publicDay: dayjs(new Date()).format("YYYY-MM-DD"),
-    // categoryId: "",
-    // genreId: "",
-    // distributorId: "",
-    // authors: "",
-    // description: "",
-    // publisherId: "",
-    // status: 1,
   });
 
   const {
@@ -46,6 +36,7 @@ export default function AddBook() {
       return await fetAllData();
     },
   });
+
   // Router
   const navigate = useNavigate();
   const params = useParams();
@@ -222,13 +213,13 @@ export default function AddBook() {
             stores: v[4].list,
             status,
           });
-          setData(v[5]);
-          setPreview(v[5].urlImage);
+          setData(v[5].data);
+          setPreview(v[5].data.urlImage);
           return {
-            ...v[5],
-            ...v[5].book,
-            publicDay: dayjs(v[5].book?.publicDay).format("YYYY-MM-DD"),
-            authors: v[5].book?.authors.join(", "),
+            ...v[5].data,
+            ...v[5].data.book,
+            publicDay: dayjs(v[5].data.book?.publicDay).format("YYYY-MM-DD"),
+            authors: v[5].data.book?.authors.join(", "),
           };
         })
         .catch((e) => {
@@ -296,7 +287,6 @@ export default function AddBook() {
     }
     let process;
     if (params.id) {
-      // dataPost.book = data
       process = fetchWrapper.put(
         config.apiUrl + PRODUCT + "/" + params.id,
         dataPost
@@ -330,15 +320,16 @@ export default function AddBook() {
     // Prevent multiple hyphens in a row
     const noConsecutiveHyphensValue = sanitizedValue.replace(/-+/g, "-");
 
-    //Update the value in the input field.
+    // Update the value in the input field
     e.target.value = noConsecutiveHyphensValue;
 
-    //Manually trigger the input event so react-hook-form can update the value
+    // Manually trigger the input event so react-hook-form can update the value
     const event = new Event("input", { bubbles: true });
     e.target.dispatchEvent(event);
 
     setValue("isbn", noConsecutiveHyphensValue);
   };
+
   return (
     <div className="col-10 p-2">
       <form
@@ -399,17 +390,20 @@ export default function AddBook() {
                 />
               </div>
               <div>
-                <label htmlFor="editionYear">
-                  <b>Năm tái bản: </b>
+                <label htmlFor="genr">
+                  <b>Thể loại: </b>
                 </label>
-                <input
-                  id="editionYear"
-                  type="number"
+                <select
+                  {...register("genreId")}
+                  id="genr"
                   className="form-control"
-                  min={1800}
-                  defaultValue={2024}
-                  {...register("editionYear")}
-                />
+                >
+                  {options.genres.filter.map((val) => (
+                    <option key={val.genreId} value={val.genreId}>
+                      {val.genreName}
+                    </option>
+                  ))}
+                </select>
               </div>
             </div>
           ) : (
@@ -461,20 +455,32 @@ export default function AddBook() {
           </div>
           {isBookScreen ? (
             <div>
-              <label htmlFor="genr">
-                <b>Thể loại: </b>
-              </label>
-              <select
-                {...register("genreId")}
-                id="genr"
-                className="form-control"
-              >
-                {options.genres.filter.map((val) => (
-                  <option key={val.genreId} value={val.genreId}>
-                    {val.genreName}
-                  </option>
-                ))}
-              </select>
+              <div>
+                <label htmlFor="editionNumber">
+                  <b>Lần tái bản: </b>
+                </label>
+                <input
+                  id="editionNumber"
+                  type="number"
+                  min={1}
+                  defaultValue={0}
+                  className="form-control"
+                  {...register("editionNumber")}
+                />
+              </div>
+              <div>
+                <label htmlFor="editionYear">
+                  <b>Năm tái bản: </b>
+                </label>
+                <input
+                  id="editionYear"
+                  type="number"
+                  className="form-control"
+                  min={1800}
+                  defaultValue={2024}
+                  {...register("editionYear")}
+                />
+              </div>
             </div>
           ) : (
             <></>
@@ -508,20 +514,6 @@ export default function AddBook() {
                   type="date"
                   className="form-control"
                   {...register("publicDay")}
-                />
-              </div>
-
-              <div>
-                <label htmlFor="editionNumber">
-                  <b>Lần tái bản: </b>
-                </label>
-                <input
-                  id="editionNumber"
-                  type="number"
-                  min={0}
-                  defaultValue={0}
-                  className="form-control"
-                  {...register("editionNumber")}
                 />
               </div>
             </div>
@@ -572,7 +564,7 @@ export default function AddBook() {
                 <b>ISBN: </b>
               </label>
               <input
-                id="editionNumber"
+                id="isbn"
                 type="text"
                 className="form-control"
                 {...register("isbn")}
