@@ -1,0 +1,22 @@
+.link {
+    transition: all 0.2s;
+    cursor: pointer;
+}
+
+.link a {
+    color: #000;
+
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+a.active {
+    background-color: rgba(25, 118, 210, 0.08);
+}
+
+.link:hover {
+    --tw-bg-opacity: 1;
+    background-color: rgb(243 244 246 / var(--tw-bg-opacity));
+    transition: all 0.2s;
+}
