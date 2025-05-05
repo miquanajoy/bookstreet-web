@@ -67,6 +67,9 @@ export default function AddBook() {
     ],
   });
 
+  // Watch editionNumber to control the visibility of editionYear
+  const editionNumber = watch("editionNumber");
+
   useEffect(() => {
     if (!selectedFile) {
       setPreview(undefined);
@@ -389,7 +392,8 @@ export default function AddBook() {
                   {...register("authors")}
                 />
               </div>
-              <div>
+              {/* Moved Genre field here */}
+              <div className="mt-2">
                 <label htmlFor="genr">
                   <b>Thể loại: </b>
                 </label>
@@ -453,39 +457,8 @@ export default function AddBook() {
               {...register("quantity")}
             />
           </div>
-          {isBookScreen ? (
-            <div>
-              <div>
-                <label htmlFor="editionNumber">
-                  <b>Lần tái bản: </b>
-                </label>
-                <input
-                  id="editionNumber"
-                  type="number"
-                  min={0}
-                  defaultValue={0}
-                  className="form-control"
-                  {...register("editionNumber")}
-                />
-              </div>
-              <div>
-                <label htmlFor="editionYear">
-                  <b>Năm tái bản: </b>
-                </label>
-                <input
-                  id="editionYear"
-                  type="number"
-                  className="form-control"
-                  min={1800}
-                  defaultValue={2024}
-                  {...register("editionYear")}
-                />
-              </div>
-            </div>
-          ) : (
-            <></>
-          )}
         </div>
+
         <div className="flex flex-column gap-2">
           <div>
             <label htmlFor="cat">
@@ -516,6 +489,42 @@ export default function AddBook() {
                   {...register("publicDay")}
                 />
               </div>
+
+              {/* Show Edition Number and Edition Year only when creating (no params.id) */}
+              {!params.id && (
+                <>
+                  <div className="mt-2 flex gap-2">
+                    <div>
+                      <label htmlFor="editionNumber">
+                        <b>Lần tái bản: </b>
+                      </label>
+                      <input
+                        id="editionNumber"
+                        type="number"
+                        min={0}
+                        defaultValue={0}
+                        className="form-control"
+                        {...register("editionNumber")}
+                      />
+                    </div>
+                    {editionNumber > 0 && (
+                      <div>
+                        <label htmlFor="editionYear">
+                          <b>Năm tái bản: </b>
+                        </label>
+                        <input
+                          id="editionYear"
+                          type="number"
+                          className="form-control"
+                          min={1800}
+                          defaultValue={2024}
+                          {...register("editionYear")}
+                        />
+                      </div>
+                    )}
+                  </div>
+                </>
+              )}
             </div>
           ) : (
             <></>
