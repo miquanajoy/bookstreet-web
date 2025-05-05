@@ -117,7 +117,7 @@ export const ROUTER = {
       url: "/location",
     },
     memberShip: {
-      name: "đơn hàng",
+      name: "Đơn hàng",
       url: "/membership",
     },
   },

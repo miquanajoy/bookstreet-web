@@ -182,6 +182,11 @@ export default function AddUser(props) {
     });
   };
 
+  // Determine if the current user role allows editing Username and Email
+  const canEditUsernameAndEmail = userId
+    ? user.user.role === Role.Admin
+    : true;
+
   return (
     <div className="container">
       <form
@@ -210,17 +215,21 @@ export default function AddUser(props) {
         </div>
 
         <div className="grid grid-cols-2 gap-4">
-          <label htmlFor="nm">
-            <b>Tên Tài khoản: </b>
-            <input
-              id="nm"
-              type="text"
-              className="form-control"
-              placeholder=""
-              {...register("username")}
-            />
-            <p className="text-danger">{errForm?.Username}</p>
-          </label>
+          {/* Show Username field only if allowed */}
+          {canEditUsernameAndEmail && (
+            <label htmlFor="nm">
+              <b>Tên Tài khoản: </b>
+              <input
+                id="nm"
+                type="text"
+                className="form-control"
+                placeholder=""
+                {...register("username")}
+              />
+              <p className="text-danger">{errForm?.Username}</p>
+            </label>
+          )}
+
           <label htmlFor="fullName">
             <b>Tên đầy đủ: </b>
             <input
@@ -237,7 +246,8 @@ export default function AddUser(props) {
             />
             <p className="text-danger">{errForm?.FullName}</p>
           </label>
-          {/* Show password field for Manager and GiftStore roles */}
+
+          {/* Show Password field for Manager, GiftStore, or when updating the current user */}
           {(currentRole === Role.Manager || currentRole === Role.GiftStore || params.id == user.userId) && (
             <label htmlFor="anm">
               <b>{userId ? "Mật khẩu mới" : "Mật khẩu"}: </b>
@@ -251,22 +261,26 @@ export default function AddUser(props) {
             </label>
           )}
 
-          <label htmlFor="avb">
-            <b>Email: </b>
-            <input
-              id="avb"
-              type="text"
-              className="form-control"
-              placeholder=""
-              {...register("email", {
-                required: {
-                  message: "required",
-                  value: true,
-                },
-              })}
-            />
-            <p className="text-danger">{errForm?.Email}</p>
-          </label>
+          {/* Show Email field only if allowed */}
+          {canEditUsernameAndEmail && (
+            <label htmlFor="avb">
+              <b>Email: </b>
+              <input
+                id="avb"
+                type="text"
+                className="form-control"
+                placeholder=""
+                {...register("email", {
+                  required: {
+                    message: "required",
+                    value: true,
+                  },
+                })}
+              />
+              <p className="text-danger">{errForm?.Email}</p>
+            </label>
+          )}
+
           <label htmlFor="phone">
             <b>Điện thoại: </b>
             <input

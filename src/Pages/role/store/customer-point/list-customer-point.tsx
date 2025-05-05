@@ -122,7 +122,7 @@ export default function ListCustomerPoint() {
             field: "customerId",
             value: val.customerId.toString(),
             operand: 0,
-          },
+          }
         ],
       },
       -1

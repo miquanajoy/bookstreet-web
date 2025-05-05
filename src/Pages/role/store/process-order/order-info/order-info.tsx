@@ -43,7 +43,10 @@ export default function OrderDetail({
       </div>
       <div className="p-4 pb-0">
         <div className="text-sm text-gray-700 mb-1">
-          Mã đơn: {orderDetail.storeOrderId}
+          Mã đơn tại cửa hàng: {orderDetail.storeOrderId}
+        </div>
+        <div className="text-sm text-gray-700 mb-1">
+          Mã đơn: {orderDetail.orderId}
         </div>
         <div className="text-sm text-gray-700 mb-1">
           Khách hàng: {orderDetail.customerName}

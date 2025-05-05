@@ -41,12 +41,7 @@ const useTransactionHistory = () => {
         let res = response.data.list.map((val, i) => ({
           id: i,
           ...val,
-          storeName: convertAddress(
-            val.storeId,
-            val.transactionType,
-            stores,
-            kiosk
-          ),
+          
         }));
         res = res.sort((orderA, orderB) => {
           const dateA: any = new Date(orderA.createDate);
@@ -86,22 +81,6 @@ const useTransactionHistory = () => {
       default:
         return "Không xác định";
     }
-  };
-
-  const convertAddress = (storeId, transactionType, kiosk, stores) => {
-    if (transactionType == 3) {
-      return (
-        stores.find((storeDt) => storeDt.storeId === storeId)?.storeName ||
-        "Thanh toán tại cửa hàng"
-      );
-    }
-    if (transactionType == 1) {
-      return (
-        kiosk.find((v) => v.id === storeId)?.kiosName ||
-        "Nạp tiền tại máy kiosk"
-      );
-    }
-    return "";
   };
 
   return {

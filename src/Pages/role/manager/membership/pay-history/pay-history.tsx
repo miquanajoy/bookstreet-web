@@ -16,8 +16,6 @@ const CustomerHistory = () => {
     transactions,
     loading,
     error,
-    fetchTransactions,
-    totalGroupColumns,
     getTransactionTypeLabel,
   } = useTransactionHistory();
 
@@ -46,7 +44,7 @@ const CustomerHistory = () => {
                     > 
                       <TableCell>{row.storeOrderId}</TableCell>
                       <TableCell>
-                        {row.customerName}
+                        {row.storeName}
                         {/* {dayjs(row.transactionDate).format("YYYY-MM-DD HH:mm")} */}
                       </TableCell>
                       <TableCell>
