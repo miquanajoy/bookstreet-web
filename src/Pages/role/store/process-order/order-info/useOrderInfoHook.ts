@@ -20,26 +20,21 @@ const useOrderInfo = (orderDetail: any, handleClose) => {
     quantity: 0,
     price: 0,
   });
-
+  function setOrderNow(val) {
+    setOrders(val);
+  }
   const fetchTransactions = async () => {
     try {
       const response = await fetchWrapper.get(
         config.apiUrl + STORE + "/order/" + orderDetail.storeOrderId
       );
-      if (response.success) {
-        setOrders(response.data);
-        const total = {
-          quantity: response.data.length,
-          price: response.data
-            .map((val) => val.price)
-            .reduce((pre, nxt) => pre + nxt),
-        };
-        setTotalOrder(total);
-      } else {
-        alertService.alert({
-          content: response.message,
-        });
-      }
+
+      setOrderNow(response);
+      const total = {
+        quantity: response.length,
+        price: response.map((val) => val.price).reduce((pre, nxt) => pre + nxt),
+      };
+      setTotalOrder(total);
     } catch (err) {
       console.error(err);
     }

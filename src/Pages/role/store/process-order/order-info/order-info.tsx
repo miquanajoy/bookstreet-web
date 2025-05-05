@@ -12,7 +12,11 @@ import useOrderInfo from "./useOrderInfoHook";
 import ConfirmOrder from "./handleOrder/handle-order";
 import dayjs from "dayjs";
 
-export default function OrderDetail({ orderDetail, handleClose, fetchTransactions}) {
+export default function OrderDetail({
+  orderDetail,
+  handleClose,
+  fetchTransactions,
+}) {
   const {
     openDialogInfo,
     handleConfirmOpen,
@@ -45,9 +49,7 @@ export default function OrderDetail({ orderDetail, handleClose, fetchTransaction
           Khách hàng: {orderDetail.customerName}
         </div>
         <div className="text-sm text-gray-700 mb-1">
-          Thời gian: {orderDetail.customerName} -  {dayjs(new Date(orderDetail.createDate)).format(
-                                      "DD/MM/YYYY - HH:mm"
-                                    )}
+          Thời gian: {dayjs(new Date(orderDetail.createDate)).format("DD/MM/YYYY - HH:mm")}
         </div>
         <div className="text-sm text-gray-700">
           Trạng thái: {orderDetail.subTotal} VNĐ
