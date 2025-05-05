@@ -82,8 +82,8 @@ const useTransactionHistory = (initialEmail: string = "") => {
       const response = await fetchWrapper.post(
         config.apiUrl + "Customer/transactions",
         {
-          page: 0,
-          limit: 0,
+          page: -1,
+          limit: -1,
           filters,
         }
       );

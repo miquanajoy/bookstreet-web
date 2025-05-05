@@ -26,8 +26,8 @@ const useTransactionHistory = () => {
       const response = await fetchWrapper.post(
         config.apiUrl + "Store/customer-transactions",
         {
-          page: 0,
-          limit: 0,
+          page: -1,
+          limit: -1,
           filters: [
             {
               field: "status",

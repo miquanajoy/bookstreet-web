@@ -462,7 +462,7 @@ export default function AddBook() {
                 <input
                   id="editionNumber"
                   type="number"
-                  min={1}
+                  min={0}
                   defaultValue={0}
                   className="form-control"
                   {...register("editionNumber")}
