@@ -248,7 +248,7 @@ export default function AddUser(props) {
           </label>
 
           {/* Show Password field for Manager, GiftStore, or when updating the current user */}
-          {(currentRole === Role.Manager || currentRole === Role.GiftStore || params.id == user.userId) && (
+          {(currentRole === Role.Store || currentRole === Role.Manager || currentRole === Role.GiftStore || params.id == user.userId) && (
             <label htmlFor="anm">
               <b>{userId ? "Mật khẩu mới" : "Mật khẩu"}: </b>
               <input

@@ -168,7 +168,7 @@ export default function HandleStoreViewmodel(props) {
 
     usersPromise = fetall[2].list.filter((val) => {
       return (
-        (val.role == Role.Store) &&
+        (val.role == Role.Store || val.role == Role.GiftStore) &&
         (val.status === 1) &&
         (!idStore ? !listStoreHasUser.includes(val.id) : true)
       );
