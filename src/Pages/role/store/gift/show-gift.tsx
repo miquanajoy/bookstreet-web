@@ -513,7 +513,7 @@ export default function ShowGift() {
       </button>
 
       <h2 className="text-center text-xl font-light text-gray-700 mb-4 tracking-wider">
-        Nhập mã nhận quà
+        Nhập mã nhận sách
       </h2>
 
       <input

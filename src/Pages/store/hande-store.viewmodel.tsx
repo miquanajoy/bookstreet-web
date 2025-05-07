@@ -9,7 +9,6 @@ import { fileService } from "../../_services/file.service";
 import { alertService } from "../../_services/alert.service";
 import {
   AREA,
-  AUTH,
   LOCATION,
   ROUTER,
   STORE,
@@ -134,20 +133,6 @@ export default function HandleStoreViewmodel(props) {
     let areaPromise = getOption(AREA);
     let locationsPromise: any = getOption(LOCATION);
     let usersPromise: any = getOption("AUTH");
-    // let usersPromise: any = getOption("Auth", {
-    //   filters: [
-    //     {
-    //       field: "role",
-    //       value: Role.Store,
-    //       operand: 0,
-    //     },
-    //     // {
-    //     //   field: "status",
-    //     //   value: 1,
-    //     //   operand: 0,
-    //     // },
-    //   ],
-    // });
     let storePrm = getOption(STORE);
     let streetPrm = getOption(STREET);
 

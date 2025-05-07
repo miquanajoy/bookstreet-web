@@ -137,19 +137,19 @@ export default function AddBook() {
             .filter((val) => val.productTypeId == (isBookScreen ? 1 : 2))
             .map((item) => ({
               ...item,
-              categoryName: item.categoryName.trim(),
+              categoryName: item.categoryName.trim().toLowerCase(),
             }));
           const trimmedPublishers = v[1].list.map((item) => ({
             ...item,
-            publisherName: item.publisherName.trim(),
+            publisherName: item.publisherName.trim().toLowerCase(),
           }));
           const trimmedDistributors = v[2].list.map((item) => ({
             ...item,
-            distriName: item.distriName.trim(),
+            distriName: item.distriName.trim().toLowerCase(),
           }));
           const trimmedGenres = v[3].list.map((item) => ({
             ...item,
-            genreName: item.genreName.trim(),
+            genreName: item.genreName.trim().toLowerCase(),
           }));
 
           options = {
@@ -221,19 +221,19 @@ export default function AddBook() {
             .filter((val) => val.productTypeId == (isBookScreen ? 1 : 2))
             .map((item) => ({
               ...item,
-              categoryName: item.categoryName.trim(),
+              categoryName: item.categoryName.trim().toLowerCase(),
             }));
           const trimmedPublishers = v[1].list.map((item) => ({
             ...item,
-            publisherName: item.publisherName.trim(),
+            publisherName: item.publisherName.trim().toLowerCase(),
           }));
           const trimmedDistributors = v[2].list.map((item) => ({
             ...item,
-            distriName: item.distriName.trim(),
+            distriName: item.distriName.trim().toLowerCase(),
           }));
           const trimmedGenres = v[3].list.map((item) => ({
             ...item,
-            genreName: item.genreName.trim(),
+            genreName: item.genreName.trim().toLowerCase(),
           }));
 
           setOption({
@@ -251,9 +251,9 @@ export default function AddBook() {
           setPreview(v[5].data.urlImage);
 
           const trimmedAuthors = v[5].data.book?.authors
-            .map((author) => author.trim())
+            .map((author) => author.trim().toLowerCase())
             .join(", ");
-          const trimmedProductName = v[5].data.productName.trim();
+          const trimmedProductName = v[5].data.productName.trim().toLowerCase();
 
           return {
             ...v[5].data,
@@ -287,7 +287,7 @@ export default function AddBook() {
     if (isBookScreen) {
       const trimmedAuthors = val.authors
         .split(",")
-        .map((author) => author.trim())
+        .map((author) => author.trim().toLowerCase())
         .filter((author) => author.length > 0);
 
       book = {
@@ -303,7 +303,7 @@ export default function AddBook() {
       };
     }
 
-    const trimmedProductName = val.productName.trim();
+    const trimmedProductName = val.productName.trim().toLowerCase();
 
     let dataPost = {
       ...val,
@@ -375,7 +375,7 @@ export default function AddBook() {
   };
 
   const handleAuthorsChange = (e) => {
-    const value = e.target.value.trim();
+    const value = e.target.value.trim().toLowerCase();
     e.target.value = value;
 
     const event = new Event("input", { bubbles: true });
@@ -385,7 +385,7 @@ export default function AddBook() {
   };
 
   const handleProductNameChange = (e) => {
-    const value = e.target.value.trim();
+    const value = e.target.value.trim().toLowerCase();
     e.target.value = value;
 
     const event = new Event("input", { bubbles: true });

@@ -21,8 +21,6 @@ const useTransactionHistory = () => {
     setError(null);
 
     try {
-      const stores: any = await fetchWrapper.get(config.apiUrl + STORE);
-      const kiosk: any = await fetchWrapper.get(config.apiUrl + KIOS);
       const response = await fetchWrapper.post(
         config.apiUrl + "Store/customer-transactions",
         {

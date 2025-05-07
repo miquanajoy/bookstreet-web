@@ -109,6 +109,12 @@ const CustomerHistory = lazy(
   () =>
     import("../Pages/role/manager/membership/pay-history/pay-history")
 );
+
+const statistical = lazy(
+  () =>
+    import("../Pages/role/manager/membership//statistical/statistical")
+);
+
 const HandleKios = lazy(() => import("../Pages/role/admin/kios/handle-kios"));
 const PointStore = lazy(
   () => import("../Pages/role/manager/manager-point/point-store")
@@ -432,6 +438,7 @@ const routesConfig = [
           createLazyRoute("store-history", StoryHistory, [Role.Manager]),
           createLazyRoute("store-history/:id", StoreHistoryDetail, [Role.Manager]),
           createLazyRoute("customer-history", CustomerHistory, [Role.Manager]),
+          createLazyRoute("statistical", statistical, [Role.Manager]),
         ],
       },
     ],
