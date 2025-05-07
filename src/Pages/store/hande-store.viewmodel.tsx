@@ -17,7 +17,7 @@ import {
 import { loadingService } from "../../_services/loading.service";
 
 export default function HandleStoreViewmodel(props) {
-  const { register, handleSubmit, watch, getValues } = useForm({
+  const { register, handleSubmit, watch, getValues, setValue } = useForm({
     defaultValues: async () => {
       return await fetAllData();
     },
@@ -40,11 +40,11 @@ export default function HandleStoreViewmodel(props) {
     xLocation: 0,
     yLocation: 0,
     locationImage: "",
+    status: 0,
   });
 
   const navigate = useNavigate();
   const params = useParams();
-
   const idStore = props.storeId ?? params.id;
 
   const [selectedFile, setSelectedFile] = useState<any>();
@@ -55,6 +55,11 @@ export default function HandleStoreViewmodel(props) {
   const [streets, setStreets] = useState<any>([]);
   const [locations, setLocations] = useState<any>([]);
   const [users, setUsers] = useState<any>([]);
+
+  const statusOptions = [
+    { key: 0, value: "Đang hoạt động" },
+    { key: 1, value: "Khóa" },
+  ];
 
   const onSelectFile = (e) => {
     if (!e.target.files || e.target.files.length === 0) {
@@ -156,7 +161,7 @@ export default function HandleStoreViewmodel(props) {
     usersPromise = fetall[2].list.filter((val) => {
       return (
         (val.role == Role.Store || val.role == Role.GiftStore) &&
-        (val.status === 1) &&
+        val.status === 1 &&
         (!idStore ? !listStoreHasUser.includes(val.id) : true)
       );
     });
@@ -165,6 +170,7 @@ export default function HandleStoreViewmodel(props) {
       return {
         ...data,
         locationId: locationsPromise.locationId,
+        status: 0,
       };
     const result = await fetchWrapper.get(
       config.apiUrl + STORE + "/" + idStore
@@ -181,7 +187,12 @@ export default function HandleStoreViewmodel(props) {
     setPreview(result.urlImage);
     setQrPreview(result.bankQrImage);
 
-    return result;
+    setValue("status", result.status);
+
+    return {
+      ...result,
+      status: result.status,
+    };
   }
 
   function getOption(url, filter?) {
@@ -213,7 +224,6 @@ export default function HandleStoreViewmodel(props) {
       val.urlImage = preview ?? "";
     }
     const formDataQr = new FormData();
-    console.log('selectedFileQr :>> ', selectedFileQr);
     if (selectedFileQr) {
       formDataQr.append(
         "files",
@@ -231,9 +241,12 @@ export default function HandleStoreViewmodel(props) {
       val.openingHours = val.openingHours + ":00";
     }
 
+    val.status = idStore ? Number(val.status) : 0;
     let process;
     if (idStore) {
       val.storeId = Number(idStore);
+      await fetchWrapper.put(config.apiUrl + STORE + "/" + idStore + "/" + "Status", {status: val.status});
+      val.status = undefined;
       process = fetchWrapper.put(config.apiUrl + STORE + "/" + idStore, val);
     } else {
       delete val.storeId;
@@ -266,7 +279,6 @@ export default function HandleStoreViewmodel(props) {
     });
   };
 
-  // Model choose location in map
   const [open, setOpen] = useState(false);
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
@@ -335,7 +347,6 @@ export default function HandleStoreViewmodel(props) {
         const x = pin.xLocation * imageCanvas.current.width;
         const y = pin.yLocation * imageCanvas.current.height;
 
-        // Draw store image
         const img = new Image(100, 100);
         img.onload = function () {
           ctx.save();
@@ -347,11 +358,10 @@ export default function HandleStoreViewmodel(props) {
           ctx.drawImage(img, x - 50, y - 50, 100, 100);
           ctx.restore();
 
-          // Draw locationName below the image
           ctx.font = "20px Arial";
           ctx.fillStyle = "black";
-          ctx.textAlign = "center"; // Center the text horizontally
-          ctx.fillText(pin.locationName, x, y + 70); // Draw text below the image (50px radius + 20px offset)
+          ctx.textAlign = "center";
+          ctx.fillText(pin.locationName, x, y + 70);
         };
         img.src =
           pin.storeId == params.id ? preview ?? pin.storeImage : pin.storeImage;
@@ -359,6 +369,7 @@ export default function HandleStoreViewmodel(props) {
   }
 
   return {
+    idStore,
     handleSubmit,
     savedata,
     register,
@@ -375,5 +386,6 @@ export default function HandleStoreViewmodel(props) {
     selectedFileQr,
     qrPreview,
     onSelectQrFile,
+    statusOptions,
   };
 }

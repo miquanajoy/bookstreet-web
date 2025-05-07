@@ -1,9 +1,11 @@
 import { Box, Modal } from "@mui/material";
 import { ModelStyle } from "../../_helpers/const/model.const";
 import HandleStoreViewmodel from "./hande-store.viewmodel";
+import { Role } from "../../models/Role";
 
 export default function HandleStore(props) {
   const {
+    idStore,
     handleSubmit,
     savedata,
     register,
@@ -19,7 +21,11 @@ export default function HandleStore(props) {
     handleClose,
     imageCanvas,
     locations,
+    statusOptions,
   } = HandleStoreViewmodel(props);
+
+  // Lấy thông tin người dùng hiện tại
+  const user = JSON.parse(localStorage.getItem("userInfo"));
 
   return (
     <div className="container">
@@ -102,9 +108,9 @@ export default function HandleStore(props) {
                     ))}
                   </select>
                 </div>
-                <div className="h-16 d-flex items-end	pb-2">
+                <div className="h-16 d-flex items-end pb-2">
                   <div
-                    className="cursor-pointer bg-info text-white  rounded-lg px-3 py-0.5"
+                    className="cursor-pointer bg-info text-white rounded-lg px-3 py-0.5"
                     onClick={showLocation}
                   >
                     <b>Bản đồ</b>
@@ -159,6 +165,26 @@ export default function HandleStore(props) {
               />
             </div>
           </div>
+          {idStore ? (
+            <div>
+              <label htmlFor="status">
+                <b>Trạng thái: </b>
+              </label>
+              <select
+                {...register("status")}
+                id="status"
+                className="form-control"
+              >
+                {statusOptions.map((v) => (
+                  <option key={v.key} value={v.key}>
+                    {v.value}
+                  </option>
+                ))}
+              </select>
+            </div>
+          ) : (
+            <></>
+          )}
         </div>
         <div className="col-start-0 col-span-2 pl-6">
           <label htmlFor="avb">
@@ -170,7 +196,7 @@ export default function HandleStore(props) {
             rows={5}
           ></textarea>
         </div>
-        <div className="d-flex flex-col  gap-2 col-span-1">
+        <div className="d-flex flex-col gap-2 col-span-1">
           <div>
             <label htmlFor="bankName">
               <b>Tên ngân hàng: </b>
@@ -219,7 +245,7 @@ export default function HandleStore(props) {
             <div className="mt-2 p-2">
               <button
                 onClick={handleClose}
-                className="bg-info text-white  rounded-lg px-3 py-0.5"
+                className="bg-info text-white rounded-lg px-3 py-0.5"
               >
                 Close
               </button>

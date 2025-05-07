@@ -14,6 +14,7 @@ import { fetchWrapper } from "../../_helpers/fetch-wrapper";
 import config from "../../config";
 import { fileService } from "../../_services/file.service";
 import { PUBLISHER, ROUTER } from "../../_helpers/const/const";
+import { alertService } from "../../_services";
 
 export default function HandlePublisher() {
   const [data, setData] = useState<any>({
@@ -86,6 +87,7 @@ export default function HandlePublisher() {
     const dataPost = {
       publisherId: params.id,
       ...val,
+      publisherName: val.publisherName.trim(),
       urlImage: "",
     };
     const formData = new FormData();
@@ -101,16 +103,38 @@ export default function HandlePublisher() {
     }
 
     if (params.id) {
-      await fetchWrapper.put(
+      const res  = await fetchWrapper.put(
         config.apiUrl + PUBLISHER + "/" + params.id,
         dataPost
       );
+      if (res.success) {
+        alertService.alert({
+          content: "Tạo mới thành công",
+        });
+        navigate(ROUTER.publisher.url, {
+          replace: true,
+        });
+      } else {
+        alertService.alert({
+          content: "Nhà phân phối đã tồn tại"
+        });
+      }
     } else {
-      await fetchWrapper.post(config.apiUrl + PUBLISHER, dataPost);
+      const res = await fetchWrapper.post(config.apiUrl + PUBLISHER, dataPost);
+      if (res.success) {
+        alertService.alert({
+          content: "Tạo mới thành công",
+        });
+        navigate(ROUTER.publisher.url, {
+          replace: true,
+        });
+      } else {
+        alertService.alert({
+          content: "Nhà phân phối đã tồn tại"
+        });
+      }
     }
-    navigate(ROUTER.publisher.url, {
-      replace: true,
-    });
+    
   };
 
   function convertValueForEditor(val) {

@@ -287,9 +287,9 @@ export default function AddBook() {
     if (isBookScreen) {
       const trimmedAuthors = val.authors
         .split(",")
-        .map((author) => author.trim().toLowerCase())
+        .map((author) => author.trim())
         .filter((author) => author.length > 0);
-
+  
       book = {
         ...data.book,
         isbn: val.isbn,
@@ -299,12 +299,12 @@ export default function AddBook() {
         publicDay: val.publicDay,
         editionYear: val.editionYear,
         editionNumber: val.editionNumber,
-        authors: trimmedAuthors,
+        authors: trimmedAuthors, 
       };
     }
-
+  
     const trimmedProductName = val.productName.trim().toLowerCase();
-
+  
     let dataPost = {
       ...val,
       book,
@@ -342,7 +342,7 @@ export default function AddBook() {
     } else {
       process = fetchWrapper.postUpgrade(config.apiUrl + PRODUCT, dataPost);
     }
-
+  
     process
       .then((val) => {
         if (val.success) {
@@ -373,15 +373,25 @@ export default function AddBook() {
 
     setValue("isbn", noConsecutiveHyphensValue);
   };
-
+  const capitalizeName = (name: string): string => {
+    return name
+      .split(',')
+      .map((author) =>
+        author
+          .toLowerCase()
+          .replace(/(^|\s)\w/g, (letter) => letter.toUpperCase())
+      )
+      .join(', ');
+  };
   const handleAuthorsChange = (e) => {
-    const value = e.target.value.trim().toLowerCase();
-    e.target.value = value;
-
+    const value = e.target.value;
+    const capitalizedValue = capitalizeName(value); 
+    e.target.value = capitalizedValue;
+  
     const event = new Event("input", { bubbles: true });
     e.target.dispatchEvent(event);
-
-    setValue("authors", value);
+  
+    setValue("authors", capitalizedValue); 
   };
 
   const handleProductNameChange = (e) => {

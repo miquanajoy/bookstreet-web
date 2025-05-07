@@ -114,13 +114,21 @@ export default function HandleDistributorPage() {
     }
 
     process
-      .then((val) => {
-        alertService.alert({
-          content: params.id ?  "Thay đổi thành công" : "Tạo mới thành công",
-        });
-        navigate(ROUTER.distributor.url, {
-          replace: true,
-        });
+      .then((res) => {
+        if (res.success) {
+          alertService.alert({
+            content: params.id ? "Thay đổi thành công" : "Tạo mới thành công",
+          });
+          navigate(ROUTER.distributor.url, {
+            replace: true,
+          });
+        } else {
+          alertService.alert({
+            content: "Nhà phân phối đã tồn tại",
+          });
+        }
+
+        
       })
       .catch((e) => {});
   };
@@ -174,17 +182,17 @@ export default function HandleDistributorPage() {
               />
             </label>
             <div>
-            <label className=" d-block" htmlFor="biography">
-              <b>Website: </b>
-              <input
-                id="biography"
-                type="text"
-                className="form-control"
-                maxLength={300}
-                {...register("website")}
-              />
-            </label>
-          </div>
+              <label className=" d-block" htmlFor="biography">
+                <b>Website: </b>
+                <input
+                  id="biography"
+                  type="text"
+                  className="form-control"
+                  maxLength={300}
+                  {...register("website")}
+                />
+              </label>
+            </div>
             <label className="" htmlFor="anm">
               <b>Năm: </b>
               <input
@@ -197,7 +205,6 @@ export default function HandleDistributorPage() {
             </label>
           </div>
 
-      
           <div className="col-start-2 col-span-2">
             <label htmlFor="des">
               <b>Mô tả: </b>
