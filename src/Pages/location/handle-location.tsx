@@ -11,6 +11,8 @@ import Modal from "@mui/material/Modal";
 import { ModelStyle } from "../../_helpers/const/model.const";
 import { loadingService } from "../../_services/loading.service";
 
+const MINIMUM_DISTANCE = 0.65;
+
 export default function HandleLocation() {
   const [data, setData] = useState<any>({
     locationName: "",
@@ -41,7 +43,6 @@ export default function HandleLocation() {
   const [selectedFile, setSelectedFile] = useState<any>();
   const [preview, setPreview] = useState();
 
-  // Start Effect
   useEffect(() => {
     if (!getValues().streetId) return;
     const areasFilter = areas.data.filter(
@@ -57,8 +58,6 @@ export default function HandleLocation() {
     setValue("areaId", areasFilter[0].areaId);
     drawLocation();
   }, [watch("streetId")]);
-
-  // End Effect
 
   const onSelectFile = (e) => {
     if (!e.target.files || e.target.files.length === 0) {
@@ -197,7 +196,6 @@ export default function HandleLocation() {
     });
   };
 
-  // Model choose location in map
   const [open, setOpen] = useState(false);
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
@@ -244,7 +242,6 @@ export default function HandleLocation() {
     const canv = imageCanvas.current;
     const ctx = canv.getContext("2d");
 
-    // Redraw the image first
     const img = new Image();
     img.src = streets.find(
       (street) => street.streetId == getValues().streetId
@@ -253,7 +250,6 @@ export default function HandleLocation() {
     img.onload = () => {
       ctx.drawImage(img, 0, 0);
 
-      // Draw all pins
       const locationPins = locationPin.map((pin) => {
         let streetId = areas.data.find(
           (area) => area.areaId == pin.areaId
@@ -306,23 +302,38 @@ export default function HandleLocation() {
       canv.height = img.height;
       ctx.drawImage(img, 0, 0);
 
-      // Get the display size of the canvas
       const rect = canv.getBoundingClientRect();
-      // Calculate the click position in display coordinates
+
       const displayX = event.clientX - rect.left;
       const displayY = event.clientY - rect.top;
 
-      // Calculate the scale factors between display size and canvas size
       const scaleX = canv.width / rect.width;
       const scaleY = canv.height / rect.height;
 
-      // Adjust the click position to canvas coordinates
       const x = displayX * scaleX;
       const y = displayY * scaleY;
 
-      // Normalize coordinates to 0-1
       const xLocation = x / canv.width;
       const yLocation = y / canv.height;
+
+      const isTooClose = locationPin.some((pin) => {
+        if (params.id && pin.locationId == params.id) return false;
+
+        const dx = xLocation - pin.xLocation;
+        const dy = yLocation - pin.yLocation;
+        const distance = Math.sqrt(dx * dx + dy * dy);
+        return distance < MINIMUM_DISTANCE;
+      });
+
+      if (isTooClose) {
+        alertService.alert({
+          content:
+            "Điểm được chọn quá gần với một điểm hiện có. Vui lòng chọn lại.",
+        });
+
+        drawLocation();
+        return;
+      }
 
       const locationName = getValues().locationName ?? "";
       const newLocation = {
@@ -347,7 +358,6 @@ export default function HandleLocation() {
         setLocationPin([...locationPinCurrent, newLocation]);
       }
 
-      // Redraw all points including the new one
       drawLocation();
     };
     img.onerror = () => {

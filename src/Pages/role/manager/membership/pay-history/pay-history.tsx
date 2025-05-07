@@ -42,7 +42,7 @@ const CustomerHistory = () => {
                       key={row.storeOrderId}
                       sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
                     > 
-                      <TableCell>{row.storeOrderId}</TableCell>
+                      <TableCell>{row.orderId}</TableCell>
                       <TableCell>
                         {row.storeName}
                         {/* {dayjs(row.transactionDate).format("YYYY-MM-DD HH:mm")} */}

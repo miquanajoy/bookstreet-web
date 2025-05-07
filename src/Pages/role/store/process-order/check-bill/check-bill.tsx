@@ -96,7 +96,7 @@ export default function CheckBillDialog({ emailFilter, onClose, fetchTransaction
                     key={order.storeOrderId}
                     sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
                   >
-                    <TableCell>{order.storeOrderId}</TableCell>
+                    <TableCell>{order.orderId}</TableCell>
                     <TableCell colSpan={4}>
                       {order.status === 4
                         ? "Đã thanh toán cho cửa hàng"

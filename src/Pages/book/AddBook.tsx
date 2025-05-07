@@ -37,12 +37,10 @@ export default function AddBook() {
     },
   });
 
-  // Router
   const navigate = useNavigate();
   const params = useParams();
   const { pathname } = useLocation();
   const isBookScreen = pathname.includes(ROUTER.book.url);
-  // End Router
 
   const [selectedFile, setSelectedFile] = useState<any>();
   const [preview, setPreview] = useState();
@@ -67,7 +65,6 @@ export default function AddBook() {
     ],
   });
 
-  // Watch editionNumber to control the visibility of editionYear
   const editionNumber = watch("editionNumber");
 
   useEffect(() => {
@@ -122,7 +119,7 @@ export default function AddBook() {
     const stores = getOption(STORE);
     let options;
     if (!params.id) {
-      fetchWrapper
+      return await fetchWrapper
         .AxiosAll([categories, publishers, distributors, genres, stores])
         .then((v) => {
           const status = [
@@ -135,30 +132,46 @@ export default function AddBook() {
               value: "Sắp về hàng",
             },
           ];
+
+          const trimmedCategories = v[0].list
+            .filter((val) => val.productTypeId == (isBookScreen ? 1 : 2))
+            .map((item) => ({
+              ...item,
+              categoryName: item.categoryName.trim().toLowerCase(),
+            }));
+          const trimmedPublishers = v[1].list.map((item) => ({
+            ...item,
+            publisherName: item.publisherName.trim().toLowerCase(),
+          }));
+          const trimmedDistributors = v[2].list.map((item) => ({
+            ...item,
+            distriName: item.distriName.trim().toLowerCase(),
+          }));
+          const trimmedGenres = v[3].list.map((item) => ({
+            ...item,
+            genreName: item.genreName.trim().toLowerCase(),
+          }));
+
           options = {
-            categories: v[0].list.filter(
-              (val) => val.productTypeId == (isBookScreen ? 1 : 2)
-            ),
-            publishers: v[1].list,
-            distributors: v[2].list,
+            categories: trimmedCategories,
+            publishers: trimmedPublishers,
+            distributors: trimmedDistributors,
             genres: {
-              data: v[3].list,
-              filter: v[3].list.filter(
-                (genre) => genre.categoryId == v[0].list[0].categoryId
+              data: trimmedGenres,
+              filter: trimmedGenres.filter(
+                (genre) => genre.categoryId == trimmedCategories[0]?.categoryId
               ),
             },
             stores: v[4].list,
           };
           setOption({
-            categories: v[0].list.filter(
-              (val) => val.productTypeId == (isBookScreen ? 1 : 2)
-            ),
-            publishers: v[1].list,
-            distributors: v[2].list,
+            categories: trimmedCategories,
+            publishers: trimmedPublishers,
+            distributors: trimmedDistributors,
             genres: {
-              data: v[3].list,
-              filter: v[3].list.filter(
-                (genre) => genre.categoryId == v[0].list[0].categoryId
+              data: trimmedGenres,
+              filter: trimmedGenres.filter(
+                (genre) => genre.categoryId == trimmedCategories[0]?.categoryId
               ),
             },
             stores: v[4].list,
@@ -203,14 +216,32 @@ export default function AddBook() {
               value: "Sắp về hàng",
             },
           ];
+
+          const trimmedCategories = v[0].list
+            .filter((val) => val.productTypeId == (isBookScreen ? 1 : 2))
+            .map((item) => ({
+              ...item,
+              categoryName: item.categoryName.trim().toLowerCase(),
+            }));
+          const trimmedPublishers = v[1].list.map((item) => ({
+            ...item,
+            publisherName: item.publisherName.trim().toLowerCase(),
+          }));
+          const trimmedDistributors = v[2].list.map((item) => ({
+            ...item,
+            distriName: item.distriName.trim().toLowerCase(),
+          }));
+          const trimmedGenres = v[3].list.map((item) => ({
+            ...item,
+            genreName: item.genreName.trim().toLowerCase(),
+          }));
+
           setOption({
-            categories: v[0].list.filter(
-              (val) => val.productTypeId == (isBookScreen ? 1 : 2)
-            ),
-            publishers: v[1].list,
-            distributors: v[2].list,
+            categories: trimmedCategories,
+            publishers: trimmedPublishers,
+            distributors: trimmedDistributors,
             genres: {
-              data: v[3].list,
+              data: trimmedGenres,
               filter: [],
             },
             stores: v[4].list,
@@ -218,11 +249,18 @@ export default function AddBook() {
           });
           setData(v[5].data);
           setPreview(v[5].data.urlImage);
+
+          const trimmedAuthors = v[5].data.book?.authors
+            .map((author) => author.trim().toLowerCase())
+            .join(", ");
+          const trimmedProductName = v[5].data.productName.trim().toLowerCase();
+
           return {
             ...v[5].data,
             ...v[5].data.book,
             publicDay: dayjs(v[5].data.book?.publicDay).format("YYYY-MM-DD"),
-            authors: v[5].data.book?.authors.join(", "),
+            authors: trimmedAuthors,
+            productName: trimmedProductName,
           };
         })
         .catch((e) => {
@@ -247,6 +285,11 @@ export default function AddBook() {
     const genreId = Number(val.genreId);
     let book;
     if (isBookScreen) {
+      const trimmedAuthors = val.authors
+        .split(",")
+        .map((author) => author.trim().toLowerCase())
+        .filter((author) => author.length > 0);
+
       book = {
         ...data.book,
         isbn: val.isbn,
@@ -256,9 +299,11 @@ export default function AddBook() {
         publicDay: val.publicDay,
         editionYear: val.editionYear,
         editionNumber: val.editionNumber,
-        authors: val.authors.split(", "),
+        authors: trimmedAuthors,
       };
     }
+
+    const trimmedProductName = val.productName.trim().toLowerCase();
 
     let dataPost = {
       ...val,
@@ -267,7 +312,7 @@ export default function AddBook() {
       categoryId: categoryId,
       productTypeId: isBookScreen ? 1 : 2,
       productTypeName: val.productTypeName,
-      productName: val.productName,
+      productName: trimmedProductName,
       description: val.description,
       price: val.price,
       urlImage: val.urlImage,
@@ -317,20 +362,36 @@ export default function AddBook() {
   };
 
   const handleISBNChange = (e) => {
-    // Remove any character that is NOT a digit or a hyphen
     const sanitizedValue = e.target.value.replace(/[^0-9-]/g, "");
 
-    // Prevent multiple hyphens in a row
     const noConsecutiveHyphensValue = sanitizedValue.replace(/-+/g, "-");
 
-    // Update the value in the input field
     e.target.value = noConsecutiveHyphensValue;
 
-    // Manually trigger the input event so react-hook-form can update the value
     const event = new Event("input", { bubbles: true });
     e.target.dispatchEvent(event);
 
     setValue("isbn", noConsecutiveHyphensValue);
+  };
+
+  const handleAuthorsChange = (e) => {
+    const value = e.target.value.trim().toLowerCase();
+    e.target.value = value;
+
+    const event = new Event("input", { bubbles: true });
+    e.target.dispatchEvent(event);
+
+    setValue("authors", value);
+  };
+
+  const handleProductNameChange = (e) => {
+    const value = e.target.value.trim().toLowerCase();
+    e.target.value = value;
+
+    const event = new Event("input", { bubbles: true });
+    e.target.dispatchEvent(event);
+
+    setValue("productName", value);
   };
 
   return (
@@ -374,6 +435,7 @@ export default function AddBook() {
                 " name"
               }
               {...register("productName", { required: true })}
+              onChange={handleProductNameChange}
             />
             {errors.productName && <div>Trường này là bắt buộc</div>}
           </div>
@@ -390,9 +452,10 @@ export default function AddBook() {
                   className="form-control"
                   placeholder="Tác giả, tác giả, tác giả"
                   {...register("authors")}
+                  onChange={handleAuthorsChange}
                 />
               </div>
-              {/* Moved Genre field here */}
+
               <div className="mt-2">
                 <label htmlFor="genr">
                   <b>Thể loại: </b>
@@ -435,27 +498,29 @@ export default function AddBook() {
           ) : (
             <></>
           )}
-          <div>
-            <label htmlFor="anm">
-              <b>Giá: </b>
-            </label>
-            <input
-              id="anm"
-              type="number"
-              className="form-control"
-              {...register("price")}
-            />
-          </div>
-          <div>
-            <label htmlFor="quanti">
-              <b>Số lượng: </b>
-            </label>
-            <input
-              id="quanti"
-              type="number"
-              className="form-control"
-              {...register("quantity")}
-            />
+          <div className="flex gap-2">
+            <div>
+              <label htmlFor="anm">
+                <b>Giá: </b>
+              </label>
+              <input
+                id="anm"
+                type="number"
+                className="form-control"
+                {...register("price")}
+              />
+            </div>
+            <div>
+              <label htmlFor="quanti">
+                <b>Số lượng: </b>
+              </label>
+              <input
+                id="quanti"
+                type="number"
+                className="form-control"
+                {...register("quantity")}
+              />
+            </div>
           </div>
         </div>
 
@@ -490,7 +555,6 @@ export default function AddBook() {
                 />
               </div>
 
-              {/* Show Edition Number and Edition Year only when creating (no params.id) */}
               {!params.id && (
                 <>
                   <div className="mt-2 flex gap-2">
@@ -549,48 +613,54 @@ export default function AddBook() {
           ) : (
             <></>
           )}
-          {/* Status */}
-          <div>
-            <label htmlFor="status">
-              <b>Trạng thái: </b>
-            </label>
-            <select
-              {...register("status")}
-              id="status"
-              className="form-control"
-            >
-              {options.status.map((val) => (
-                <option key={val.key} value={val.key}>
-                  {val.value}
-                </option>
-              ))}
-            </select>
-          </div>
-          {/* ISBN */}
-          {isBookScreen && (
-            <div>
-              <label htmlFor="isbn">
-                <b>ISBN: </b>
-              </label>
-              <input
-                id="isbn"
-                type="text"
-                className="form-control"
-                {...register("isbn")}
-                onChange={handleISBNChange}
-              />
-            </div>
-          )}
-        </div>
 
-        <div className="col-start-2 col-span-2">
-          <label htmlFor="des">
-            <b>Mô tả: </b>
-          </label>
-          <textarea
-            className="form-control min-h-30 max-h-50"
-            {...register("description")}
-          ></textarea>
+          <div className="flex gap-2 justify-between">
+            <div className="flex-grow">
+              <label htmlFor="status">
+                <b>Trạng thái: </b>
+              </label>
+              <select
+                {...register("status")}
+                id="status"
+                className="form-control"
+              >
+                {options.status.map((val) => (
+                  <option key={val.key} value={val.key}>
+                    {val.value}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            {isBookScreen && !params.id ? (
+              <div>
+                <label htmlFor="isbn">
+                  <b>ISBN: </b>
+                </label>
+                <input
+                  id="isbn"
+                  type="text"
+                  className="form-control"
+                  {...register("isbn")}
+                  onChange={handleISBNChange}
+                />
+              </div>
+            ) : (
+              <></>
+            )}
+          </div>
+          <div>
+            <label htmlFor="des">
+              <b>Mô tả: </b>
+            </label>
+            <textarea
+              rows={3}
+              className="form-control min-h-30"
+              {...register("description")}
+            ></textarea>
+          </div>
+        </div>
+        <div className="row-span-2">
           <input type="submit" className="btn btn-success mt-12" value="Lưu" />
         </div>
       </form>

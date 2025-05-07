@@ -7,7 +7,7 @@ export default function ShowMapViewModel(props) {
   console.log("prop :>> ", props);
 
   const { mapImage, locationImg, xLocation, yLocation, text } = props.data;
-  // Model choose location in map
+  
   const [open, setOpen] = useState(false);
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
@@ -64,11 +64,11 @@ export default function ShowMapViewModel(props) {
 
       if(text) {
         ctx.font = "16px Arial";
-        ctx.fillStyle = "#000000"; // Màu chữ đen
+        ctx.fillStyle = "#000000"; 
         ctx.textAlign = "center";
         ctx.textBaseline = "top";
       }
-      ctx.fillText(text, x, y + 60); // Văn bản bên dưới hình tròn
+      ctx.fillText(text, x, y + 60); 
     };
     img.src = locationImg ?? mapImage;
   }
@@ -76,7 +76,6 @@ export default function ShowMapViewModel(props) {
   function completeChoosePoint() {
     handleClose();
   }
-  // End Model
 
   return {
     open,

@@ -72,7 +72,10 @@ export default function HandleCalenderPage() {
           ).locationId
         : undefined;
     const eventType = userValue.role === Role.Store ? 4 : undefined;
-    if (!params.id) return { ...data, locationId: locationOfStore, eventType };
+    const hostName = userValue.role === Role.Store ? userValue.user.storeName : undefined;
+
+    if (!params.id) return { ...data, locationId: locationOfStore, eventType, hostName };
+    
     const result = await fetchWrapper.get(
       config.apiUrl + EVENT + "/" + params.id
     );
@@ -94,6 +97,7 @@ export default function HandleCalenderPage() {
       mapImage: locationsFound.locationImage,
       locationId: locationOfStore,
       eventType,
+      hostName: userValue.role === Role.Store ? userValue.user.storeName : result.hostName,
     });
     setPreview(result.urlImage);
 
@@ -103,6 +107,7 @@ export default function HandleCalenderPage() {
     ]);
     if (userValue.user.role == Role.Store) {
       result.eventType = eventTypeDropdown.at(-1).eventType;
+      result.hostName = userValue.user.storeName; // Set hostName for Role.Store in edit mode
     }
     return result;
   }
@@ -120,6 +125,7 @@ export default function HandleCalenderPage() {
       mapImage: locationsFound?.locationImage,
     });
   }, [watch("locationId")]);
+
   useEffect(() => {
     if (!selectedFile) {
       setPreview(undefined);
@@ -153,6 +159,10 @@ export default function HandleCalenderPage() {
     dataPost.storeId = userValue.user.storeId;
     dataPost.starDate = convertDate(new Date(value[0]));
     dataPost.endDate = convertDate(new Date(value[1]));
+    // Set hostName to storeName if user role is Role.Store
+    if (userValue.user.role === Role.Store) {
+      dataPost.hostName = userValue.user.storeName;
+    }
     const formData = new FormData();
     if (selectedFile) {
       formData.append(
@@ -296,6 +306,8 @@ export default function HandleCalenderPage() {
             id="avb"
             type="text"
             className="form-control"
+            disabled={userValue.user.role === Role.Store}
+            value={userValue.user.role === Role.Store ? userValue.user.storeName : undefined}
             {...register("hostName", { required: "Ban tổ chức là bắt buộc" })}
           />
           {errors.hostName && (
@@ -316,6 +328,7 @@ export default function HandleCalenderPage() {
             />
           </div>
         </div>
+
         <div className="relative">
           <div>
             <label className="block mb-1" htmlFor="eventTpe">
