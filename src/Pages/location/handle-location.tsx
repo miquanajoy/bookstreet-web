@@ -11,7 +11,7 @@ import Modal from "@mui/material/Modal";
 import { ModelStyle } from "../../_helpers/const/model.const";
 import { loadingService } from "../../_services/loading.service";
 
-const MINIMUM_DISTANCE = 0.65;
+const MINIMUM_DISTANCE = 0.055;
 
 export default function HandleLocation() {
   const [data, setData] = useState<any>({
