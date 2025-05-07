@@ -168,7 +168,12 @@ async function confirmedDelete(url) {
   deleteService.hiddenDeleteAlert();
   loadingService.showLoading();
 
-  return await axios.delete(url).then((response) => {
+  return await axios.delete(url, {
+    headers: {
+      "Content-Type": "application/json",
+      ...authHeader(url) 
+    }
+  }).then((response) => {
     if (response.data.message || !response.data.success) {
       alertService.alert({
         content: response.data.message,
