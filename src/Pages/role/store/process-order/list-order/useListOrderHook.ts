@@ -99,7 +99,7 @@ const useListOrderHook = (userRole: string = "", prop?) => {
       case "Đã thanh toán tại Kiosk":
         transactionType = EnumTransactionType.payByKiosk;
         break;
-      case "Hủy hóa đơn":
+      case "Đơn hàng đã hủy":
         transactionType = EnumTransactionType.cancel;
         break;
       case "Đã xử lý đơn hàng":
@@ -206,7 +206,7 @@ const useListOrderHook = (userRole: string = "", prop?) => {
       case 1:
         return "Đã thanh toán tại Kiosk";
       case 2:
-        return "Hủy hóa đơn";
+        return "Đơn hàng đã bị hủy bởi hệ thống";
       case 3:
         return "Chưa thanh toán cho cửa hàng";
       case 4:

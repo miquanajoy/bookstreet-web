@@ -14,7 +14,7 @@ export default function MemberShipSidebar() {
             isActive ? `sidebar-link px-6 py-2` : " sidebar-link border-0 px-6 py-2"
           }
         >
-          Xem toàn bộ đơn hàng
+          Xem đơn hàng đã hoàn tất
         </NavLink>
         <NavLink
           to="/membership/store-history"

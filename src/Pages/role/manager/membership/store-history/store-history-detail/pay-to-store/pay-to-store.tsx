@@ -6,11 +6,13 @@ import config from "../../../../../../../config";
 export default function Pay2Store({ storeDetail, handleClose, orders }) {
   const navigate = useNavigate();
 
+  // Format tiền theo đơn vị VNĐ
+  const formatCurrency = (value: number) =>
+    value.toLocaleString("vi-VN", { style: "currency", currency: "VND" });
+
   const totalPrice = orders
     .map((v) => v.subTotal)
-    .reduce((pre, nxt) => {
-      return pre + nxt;
-    });
+    .reduce((pre, nxt) => pre + nxt, 0);
 
   const handleConfirm = async () => {
     const response = await fetchWrapper.post(
@@ -33,7 +35,7 @@ export default function Pay2Store({ storeDetail, handleClose, orders }) {
 
   return (
     <div className="rounded-lg w-full border border-gray-200">
-      {/* Header Section */}
+      {/* Header */}
       <div className="p-4 border-b border-gray-200 flex items-center justify-between">
         <button
           className="flex items-center text-gray-700 hover:text-black"
@@ -44,20 +46,21 @@ export default function Pay2Store({ storeDetail, handleClose, orders }) {
         <h2 className="text-lg font-semibold text-gray-800 m-0">
           Thông tin đơn hàng
         </h2>
-        {/* Placeholder for alignment, can be removed if title should be centered */}
         <div className="w-16"></div>
       </div>
+
+      {/* Nội dung */}
       <div className="p-4 pb-0">
         <div className="text-sm text-gray-700 mb-1">
           Số lượng đơn thanh toán: {orders.length}
         </div>
+        {/* ❌ Đã bỏ phần hiển thị mã đơn */}
         <div className="text-sm text-gray-700 mb-1">
-          Mã đơn: {orders.map((v) => v.storeOrderId).join(", ")}
-        </div>
-        <div className="text-sm text-gray-700 mb-1">
-          Tổng giá trị thanh toán: {totalPrice} VNĐ
+          Tổng giá trị thanh toán: {formatCurrency(totalPrice)}
         </div>
       </div>
+
+      {/* QR & Thông tin ngân hàng */}
       {storeDetail.bankQrImage &&
       storeDetail.bankAccountNumber &&
       storeDetail.bankName ? (
@@ -70,25 +73,20 @@ export default function Pay2Store({ storeDetail, handleClose, orders }) {
             className="mx-auto mb-2"
           />
           <div className="text-center">
-            Số tài khoản: {storeDetail.bankAccountNumber}
+            <b>Số tài khoản:</b> {storeDetail.bankAccountNumber}
           </div>
-          <div className="text-center">Ngân hàng: {storeDetail.bankName}</div>
+          <div className="text-center">
+            <b>Ngân hàng:</b> {storeDetail.bankName}
+          </div>
           <button
             onClick={handleConfirm}
-            className={`
-          w-64 block mx-auto px-8 py-2 mt-2
-          rounded-md border
-          focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-opacity-50
-          transition duration-150 ease-in-out
-          cursor-pointer bg-gray-500 border-gray-600 text-white hover:bg-gray-600"
-          }<
-        `}
+            className="w-64 block mx-auto px-8 py-2 mt-4 rounded-md bg-gray-600 hover:bg-gray-700 text-white font-semibold"
           >
             Hoàn tất thanh toán
           </button>
         </div>
       ) : (
-        <div className="text-center mb-2">
+        <div className="text-center mb-4 text-red-500 font-medium">
           Store này hiện chưa cập nhật thông tin ngân hàng
         </div>
       )}

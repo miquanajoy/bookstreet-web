@@ -19,9 +19,14 @@ const CustomerHistory = () => {
     getTransactionTypeLabel,
   } = useTransactionHistory();
 
+  const formatCurrency = (value: number | string) => {
+    if (!value && value !== 0) return "";
+    return Number(value).toLocaleString("vi-VN");
+  };
+
   return (
     <div className="bg-gray-100 min-h-screen">
-      <div className="container mx-auto p-4 bg-white rounded-md ">
+      <div className="container mx-auto p-4 bg-white rounded-md">
         {/* Transaction History */}
         <div className="col-span-3 border border-gray-400 rounded">
           {!loading && !error && (
@@ -41,27 +46,23 @@ const CustomerHistory = () => {
                     <TableRow
                       key={row.storeOrderId}
                       sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
-                    > 
+                    >
                       <TableCell>{row.orderId}</TableCell>
-                      <TableCell>
-                        {row.storeName}
-                        {/* {dayjs(row.transactionDate).format("YYYY-MM-DD HH:mm")} */}
-                      </TableCell>
-                      <TableCell>
-                        {getTransactionTypeLabel(row.status)}
-                      </TableCell>
+                      <TableCell>{row.storeName}</TableCell>
+                      <TableCell>{getTransactionTypeLabel(row.status)}</TableCell>
                       <TableCell>
                         {dayjs(new Date(row.createDate)).format(
                           "YYYY/MM/DD - HH:mm"
                         )}
                       </TableCell>
-                      <TableCell>{row.subTotal} VNĐ</TableCell>
-                     
+                      <TableCell>{formatCurrency(row.subTotal)} VNĐ</TableCell>
                     </TableRow>
                   ))
                 ) : (
-                  <TableRow className="w-full p-2">
-                    Không có lịch sử hiển thị
+                  <TableRow>
+                    <TableCell colSpan={5} className="text-center text-gray-500">
+                      Không có lịch sử hiển thị
+                    </TableCell>
                   </TableRow>
                 )}
               </TableBody>

@@ -177,7 +177,7 @@ const ListOrder = (prop?) => {
                   <TableHead>
                     <TableRow>
                       <TableCell>Mã đơn</TableCell>
-                      <TableCell>Khách hàng</TableCell>
+                      <TableCell>Cửa hàng</TableCell>
                       <TableCell>Trạng thái</TableCell>
                       <TableCell>Tổng giá trị đơn hàng</TableCell>
                       <TableCell>Thời gian</TableCell>
@@ -193,7 +193,7 @@ const ListOrder = (prop?) => {
                         }}
                       >
                         <TableCell>{row.storeOrderId}</TableCell>
-                        <TableCell>{row.customerName}</TableCell>
+                        <TableCell>{row.storeName}</TableCell>
                         <TableCell>
                           {getTransactionTypeLabel(row.status)}
                         </TableCell>
@@ -209,7 +209,7 @@ const ListOrder = (prop?) => {
                             className="bg-gray-800 hover:bg-gray-900 text-white font-bold py-2 px-4 rounded w-32"
                             onClick={() => openOrderDetail(row)}
                           >
-                            {row.statusTxt}
+                            {row.status === 2 ? "Chi tiết" : row.statusTxt}
                           </button>
                         </TableCell>
                       </TableRow>
@@ -221,84 +221,88 @@ const ListOrder = (prop?) => {
 
             {/* Filter Options */}
             {user.user.role !== Role.Manager ? (
-              <div className="col-span-2 ml-2 flex items-start justify-center">
-                <div className="flex flex-col">
-                  <h3 className="mb-2">Trạng thái</h3>
-                  <div className="flex flex-col pl-2 gap-1">
-                    <label className="inline-flex items-center">
-                      <input
-                        type="radio"
-                        className="form-radio h-5 w-5 text-blue-500"
-                        name="transactionType"
-                        value="all"
-                        {...register("transactionType")}
-                        onChange={() =>
-                          fetchTransactions({
-                            email: searchInputRef.current?.value || "",
-                            type: "Tất cả",
-                            fromDate: fromDate
-                              ? fromDate.format("YYYY-MM-DD")
-                              : undefined,
-                            toDate: toDate
-                              ? toDate.format("YYYY-MM-DD")
-                              : undefined,
-                          })
-                        }
-                      />
-                      <span className="ml-2 text-gray-700">Tất cả</span>
-                    </label>
-                    <label className="inline-flex items-center">
-                      <input
-                        type="radio"
-                        className="form-radio h-5 w-5 text-blue-500"
-                        name="transactionType"
-                        value="withdraw"
-                        onChange={() =>
-                          fetchTransactions({
-                            email: searchInputRef.current?.value || "",
-                            type: "Đã xử lý đơn hàng",
-                            fromDate: fromDate
-                              ? fromDate.format("YYYY-MM-DD")
-                              : undefined,
-                            toDate: toDate
-                              ? toDate.format("YYYY-MM-DD")
-                              : undefined,
-                          })
-                        }
-                      />
-                      <span className="ml-2 text-gray-700">
-                        Đã xử lý đơn hàng
-                      </span>
-                    </label>
-                    <label className="inline-flex items-center">
-                      <input
-                        type="radio"
-                        className="form-radio h-5 w-5 text-blue-500"
-                        name="transactionType"
-                        value="purchase"
-                        onChange={() =>
-                          fetchTransactions({
-                            email: searchInputRef.current?.value || "",
-                            type: "Đã thanh toán tại Kiosk",
-                            fromDate: fromDate
-                              ? fromDate.format("YYYY-MM-DD")
-                              : undefined,
-                            toDate: toDate
-                              ? toDate.format("YYYY-MM-DD")
-                              : undefined,
-                          })
-                        }
-                      />
-                      <span className="ml-2 text-gray-700">
-                        Đã thanh toán tại Kiosk
-                      </span>
-                    </label>
-                  </div>
-                </div>
-              </div>
-            ) : (
-              <></>
-            )}
+  <div className="col-span-2 ml-2 flex items-start justify-center">
+    <div className="flex flex-col">
+      <h3 className="mb-2">Trạng thái</h3>
+      <div className="flex flex-col pl-2 gap-1">
+        <label className="inline-flex items-center">
+          <input
+            type="radio"
+            className="form-radio h-5 w-5 text-blue-500"
+            name="transactionType"
+            value="all"
+            {...register("transactionType")}
+            onChange={() =>
+              fetchTransactions({
+                email: searchInputRef.current?.value || "",
+                type: "Tất cả",
+                fromDate: fromDate ? fromDate.format("YYYY-MM-DD") : undefined,
+                toDate: toDate ? toDate.format("YYYY-MM-DD") : undefined,
+              })
+            }
+          />
+          <span className="ml-2 text-gray-700">Tất cả</span>
+        </label>
+
+        <label className="inline-flex items-center">
+          <input
+            type="radio"
+            className="form-radio h-5 w-5 text-blue-500"
+            name="transactionType"
+            value="withdraw"
+            onChange={() =>
+              fetchTransactions({
+                email: searchInputRef.current?.value || "",
+                type: "Đã xử lý đơn hàng",
+                fromDate: fromDate ? fromDate.format("YYYY-MM-DD") : undefined,
+                toDate: toDate ? toDate.format("YYYY-MM-DD") : undefined,
+              })
+            }
+          />
+          <span className="ml-2 text-gray-700">Đã xử lý đơn hàng</span>
+        </label>
+
+        <label className="inline-flex items-center">
+          <input
+            type="radio"
+            className="form-radio h-5 w-5 text-blue-500"
+            name="transactionType"
+            value="purchase"
+            onChange={() =>
+              fetchTransactions({
+                email: searchInputRef.current?.value || "",
+                type: "Đã thanh toán tại Kiosk",
+                fromDate: fromDate ? fromDate.format("YYYY-MM-DD") : undefined,
+                toDate: toDate ? toDate.format("YYYY-MM-DD") : undefined,
+              })
+            }
+          />
+          <span className="ml-2 text-gray-700">Đã thanh toán tại Kiosk</span>
+        </label>
+
+        {/* ✅ THÊM MỚI: Đơn hàng đã hủy */}
+        <label className="inline-flex items-center">
+          <input
+            type="radio"
+            className="form-radio h-5 w-5 text-blue-500"
+            name="transactionType"
+            value="cancel"
+            onChange={() =>
+              fetchTransactions({
+                email: searchInputRef.current?.value || "",
+                type: "Đơn hàng đã hủy",
+                fromDate: fromDate ? fromDate.format("YYYY-MM-DD") : undefined,
+                toDate: toDate ? toDate.format("YYYY-MM-DD") : undefined,
+              })
+            }
+          />
+          <span className="ml-2 text-gray-700">Đơn hàng đã hủy</span>
+        </label>
+      </div>
+    </div>
+  </div>
+) : null}
+
             {/* Order detail */}
             <Dialog
               open={openOrderDetailDialog}
