@@ -187,6 +187,7 @@ export default function ShowGift() {
           EndDate: dayjs(new Date(val.EndDate)).format("YYYY-MM-DD"),
         });
       });
+      console.log('convertData :>> ', convertData);
       setDataImport(convertData);
     } catch (error) {
       inputFile.current.value = "";
@@ -354,7 +355,7 @@ export default function ShowGift() {
                       htmlFor={"imageUpload" + index}
                       className="block h-20 w-20 bg-slate-200 bg-contain bg-no-repeat bg-center"
                       style={{
-                        backgroundImage: "url(" + row?.UrlImage + ")",
+                        backgroundImage: "url(" + URL_IMG + row?.UrlImage + ")",
                       }}
                     >
                       <input
