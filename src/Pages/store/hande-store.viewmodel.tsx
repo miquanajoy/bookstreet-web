@@ -57,8 +57,8 @@ export default function HandleStoreViewmodel(props) {
   const [users, setUsers] = useState<any>([]);
 
   const statusOptions = [
-    { key: 0, value: "Đang hoạt động" },
-    { key: 1, value: "Khóa" },
+    { key: 0, value: "Khóa" },
+    { key: 1, value: "Đang hoạt động" },
   ];
 
   const onSelectFile = (e) => {
