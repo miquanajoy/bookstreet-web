@@ -170,16 +170,18 @@ export default function HandleDistributorPage() {
                 {...register("distriName")}
               />
             </label>
-            {/* <label className="" htmlFor="anm">
-              <b>Số nhà phân phối: </b>
+            <div>
+              <label className="" htmlFor="nm">
+                <b>SĐT nhà phân phối: </b>
+              </label>
               <input
-                id="anm"
+                id="nm"
                 type="number"
                 className="form-control"
-                placeholder=""
-                {...register("distriNumber")}
+                min="0"
+                {...register("distriNumber", { required: true })}
               />
-            </label> */}
+            </div> 
             <div>
               <label className=" d-block" htmlFor="biography">
                 <b>Website: </b>
@@ -193,7 +195,7 @@ export default function HandleDistributorPage() {
               </label>
             </div>
             <label className="" htmlFor="anm">
-              <b>Năm: </b>
+              <b>Năm thành lập: </b>
               <input
                 id="anm"
                 type="number"

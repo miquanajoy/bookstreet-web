@@ -186,18 +186,18 @@ export default function HandlePublisher() {
                 {...register("publisherName", { required: true })}
               />
             </div>
-            {/* <div>
+             <div>
               <label className="" htmlFor="nm">
-                <b>Số nhà xuất bản: </b>
+                <b>SĐT nhà xuất bản: </b>
               </label>
               <input
                 id="nm"
                 type="number"
                 className="form-control"
                 min="0"
-                {...register("publisherNumber", { required: false })}
+                {...register("publisherNumber", { required: true })}
               />
-            </div> */}
+            </div> 
             <div>
               <label className="" htmlFor="nm">
                 <b>Website: </b>
