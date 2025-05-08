@@ -395,7 +395,7 @@ export default function ShowBook() {
                   <div className="flex flex-column items-center gap-2">
                     <label
                       htmlFor={"imageUpload" + index}
-                      className="block h-12 w-12 bg-slate-200 bg-contain bg-no-repeat bg-center"
+                      className="block h-12 w-12 bg-slate-200 bg-contain bg-no-repeat bg-center cursor-pointer"
                       style={{
                         backgroundImage: "url(" + row?.UrlImage + ")",
                       }}
