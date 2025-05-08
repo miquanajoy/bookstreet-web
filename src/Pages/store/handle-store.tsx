@@ -24,8 +24,10 @@ export default function HandleStore(props) {
     statusOptions,
   } = HandleStoreViewmodel(props);
 
-  // Lấy thông tin người dùng hiện tại
+  // ✅ Lấy thông tin role người dùng hiện tại
   const user = JSON.parse(localStorage.getItem("userInfo"));
+  const role = user?.user?.role;
+  const isStore = role === Role.Store;
 
   return (
     <div className="container">
@@ -34,7 +36,6 @@ export default function HandleStore(props) {
         className="grid grid-cols-3 gap-2 jumbotron mt-4"
       >
         <div className="row-span-1 flex flex-column items-center gap-2">
-          {/* <div>Avatar</div> */}
           <label
             htmlFor="imageUpload"
             className="block h-52 w-52 bg-slate-200 bg-contain bg-no-repeat bg-center"
@@ -54,8 +55,8 @@ export default function HandleStore(props) {
             Chọn hình ảnh
           </label>
         </div>
+
         <div className="row-span-1 flex flex-column items-center gap-2">
-          {/* <div>Qr ngân hàng</div> */}
           <label
             htmlFor="imageUploadQr"
             className="block h-52 w-52 bg-slate-200 bg-contain bg-no-repeat bg-center"
@@ -75,6 +76,7 @@ export default function HandleStore(props) {
             Chọn Qr
           </label>
         </div>
+
         <div className="d-flex flex-col gap-2">
           <div>
             <label htmlFor="storeName">
@@ -89,7 +91,7 @@ export default function HandleStore(props) {
             />
           </div>
 
-          {!props.storeId ? (
+          {!props.storeId && (
             <div>
               <div className="d-flex w-full justify-between">
                 <div className="w-4/6">
@@ -117,6 +119,7 @@ export default function HandleStore(props) {
                   </div>
                 </div>
               </div>
+
               <div className="d-flex flex-col gap-2">
                 <div>
                   <label htmlFor="User">
@@ -136,9 +139,8 @@ export default function HandleStore(props) {
                 </div>
               </div>
             </div>
-          ) : (
-            <></>
           )}
+
           <div className="row">
             <div className="col-6">
               <label htmlFor="openH">
@@ -165,7 +167,9 @@ export default function HandleStore(props) {
               />
             </div>
           </div>
-          {idStore ? (
+
+          {/* ✅ Chỉ hiển thị Trạng thái nếu không phải Store */}
+          {(idStore && !isStore) && (
             <div>
               <label htmlFor="status">
                 <b>Trạng thái: </b>
@@ -182,10 +186,9 @@ export default function HandleStore(props) {
                 ))}
               </select>
             </div>
-          ) : (
-            <></>
           )}
         </div>
+
         <div className="col-start-0 col-span-2 pl-6">
           <label htmlFor="avb">
             <b>Mô tả: </b>
@@ -196,6 +199,7 @@ export default function HandleStore(props) {
             rows={5}
           ></textarea>
         </div>
+
         <div className="d-flex flex-col gap-2 col-span-1">
           <div>
             <label htmlFor="bankName">
@@ -222,6 +226,7 @@ export default function HandleStore(props) {
             />
           </div>
         </div>
+
         <div className="col-start-0 col-span-3 pl-6">
           <input
             type="submit"
@@ -230,6 +235,7 @@ export default function HandleStore(props) {
           />
         </div>
       </form>
+
       <Modal
         sx={{ paddingBottm: "0px" }}
         open={open}

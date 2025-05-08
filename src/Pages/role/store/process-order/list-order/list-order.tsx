@@ -22,6 +22,12 @@ import { Role } from "../../../../../models/Role";
 const ListOrder = (prop?) => {
   const user = JSON.parse(localStorage.getItem("userInfo"));
 
+  const formatCurrency = (value: number | string) => {
+    if (!value && value !== 0) return "";
+    return Number(value).toLocaleString("vi-VN");
+  };
+
+
   const {
     transactions,
     loading,
@@ -191,7 +197,7 @@ const ListOrder = (prop?) => {
                         <TableCell>
                           {getTransactionTypeLabel(row.status)}
                         </TableCell>
-                        <TableCell>{row.subTotal}</TableCell>
+                        <TableCell>{formatCurrency(row.subTotal)} vnđ</TableCell>
                         <TableCell>
                           {dayjs(new Date(row.createDate)).format(
                             "DD/MM/YYYY - HH:mm"

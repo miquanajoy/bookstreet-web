@@ -25,6 +25,11 @@ export default function OrderDetail({
     totalOrder,
   } = useOrderInfo(orderDetail, handleClose);
 
+  const formatCurrency = (value: number | string) => {
+    if (!value && value !== 0) return "";
+    return Number(value).toLocaleString("vi-VN");
+  };
+
   return !openDialogInfo ? (
     <div className="rounded-lg w-full border border-gray-200">
       {/* Header Section */}
@@ -77,7 +82,7 @@ export default function OrderDetail({
                 >
                   <TableCell>{order.productName}</TableCell>
                   <TableCell className="w-24">x{order.quantity}</TableCell>
-                  <TableCell>{order.price} VNĐ</TableCell>
+                  <TableCell>{formatCurrency(order.price)} VNĐ</TableCell>
                 </TableRow>
               ))}
             </TableBody>
@@ -90,7 +95,7 @@ export default function OrderDetail({
               </TableCell>
               <TableCell className="!border-b-0 border-t">
                 <div className="text-neutral-900 text-sm">
-                  {totalOrder.price} VNĐ
+                {formatCurrency(totalOrder.price)} VNĐ
                 </div>
               </TableCell>
             </TableFooter>

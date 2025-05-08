@@ -61,6 +61,11 @@ export default function ShowBook() {
     mode: "onChange",
   });
 
+  const formatCurrency = (value: number | string) => {
+    if (!value && value !== 0) return "";
+    return Number(value).toLocaleString("vi-VN");
+  };
+
   async function fetAllStore() {
     const result = fetchWrapper.Post2GetByPaginate(
       config.apiUrl + STORE,
@@ -613,7 +618,7 @@ export default function ShowBook() {
               "update/" + val.productId,
               <div className="mt-1 text-dark">
                 <h6 className="mb-0 line-clamp-2">{val.productName}</h6>
-                {val.price ? <div>Giá: {val.price} vnđ</div> : <></>}
+                {val.price ? <div>Giá: {formatCurrency(val.price)} vnđ</div> : null}
                 {isBookScreen ? (
                   <div>
                     {val?.authors ? (
