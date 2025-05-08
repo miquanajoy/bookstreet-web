@@ -186,7 +186,7 @@ export default function HandlePublisher() {
                 {...register("publisherName", { required: true })}
               />
             </div>
-            <div>
+            {/* <div>
               <label className="" htmlFor="nm">
                 <b>Số nhà xuất bản: </b>
               </label>
@@ -195,9 +195,9 @@ export default function HandlePublisher() {
                 type="number"
                 className="form-control"
                 min="0"
-                {...register("publisherNumber", { required: true })}
+                {...register("publisherNumber", { required: false })}
               />
-            </div>
+            </div> */}
             <div>
               <label className="" htmlFor="nm">
                 <b>Website: </b>
@@ -212,7 +212,7 @@ export default function HandlePublisher() {
             </div>
             <div>
               <label className="" htmlFor="nm">
-                <b>Năm: </b>
+                <b>Năm thành lập: </b>
               </label>
               <input
                 id="nm"

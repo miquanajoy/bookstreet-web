@@ -170,7 +170,7 @@ export default function HandleDistributorPage() {
                 {...register("distriName")}
               />
             </label>
-            <label className="" htmlFor="anm">
+            {/* <label className="" htmlFor="anm">
               <b>Số nhà phân phối: </b>
               <input
                 id="anm"
@@ -179,7 +179,7 @@ export default function HandleDistributorPage() {
                 placeholder=""
                 {...register("distriNumber")}
               />
-            </label>
+            </label> */}
             <div>
               <label className=" d-block" htmlFor="biography">
                 <b>Website: </b>
