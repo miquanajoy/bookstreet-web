@@ -27,7 +27,6 @@ const ListOrder = (prop?) => {
     return Number(value).toLocaleString("vi-VN");
   };
 
-
   const {
     transactions,
     loading,
@@ -38,7 +37,6 @@ const ListOrder = (prop?) => {
     toDate,
     setToDate,
     fetchTransactions,
-    totalGroupColumns,
     getTransactionTypeLabel,
     openDialog,
     handleCloseCheckBill,
@@ -85,7 +83,7 @@ const ListOrder = (prop?) => {
           )}
 
           {/* Search Bar */}
-          {user.user.role !== Role.Manager ? (
+          {user.user.role !== Role.Manager && (
             <div className="flex justify-between mb-4">
               <form
                 onSubmit={handleSearch}
@@ -116,14 +114,16 @@ const ListOrder = (prop?) => {
                       onChange={(newValue: Dayjs | null) =>
                         setFromDate(newValue)
                       }
-                      format="DD/MM/YYYY" // Định dạng hiển thị ngày/tháng/năm
+                      format="DD/MM/YYYY"
                       slotProps={{ textField: { size: "small" } }}
                     />
                     <DatePicker
                       label="Đến ngày"
                       value={toDate}
-                      onChange={(newValue: Dayjs | null) => setToDate(newValue)}
-                      format="DD/MM/YYYY" // Định dạng hiển thị ngày/tháng/năm
+                      onChange={(newValue: Dayjs | null) =>
+                        setToDate(newValue)
+                      }
+                      format="DD/MM/YYYY"
                       slotProps={{ textField: { size: "small" } }}
                     />
                   </div>
@@ -148,8 +148,6 @@ const ListOrder = (prop?) => {
                   maxWidth={"sm"}
                   fullWidth={true}
                   onClose={handleCloseCheckBill}
-                  aria-labelledby="alert-dialog-title"
-                  aria-describedby="alert-dialog-description"
                 >
                   <DialogContent className="flex flex-col items-center">
                     <CheckBillDialog
@@ -161,8 +159,6 @@ const ListOrder = (prop?) => {
                 </Dialog>
               </div>
             </div>
-          ) : (
-            <></>
           )}
 
           <div className="grid grid-cols-10 gap-4">
@@ -173,11 +169,15 @@ const ListOrder = (prop?) => {
               } border border-gray-400 rounded`}
             >
               {!loading && !error && (
-                <Table sx={{ minWidth: 650 }} aria-label="simple table">
+                <Table sx={{ minWidth: 650 }}>
                   <TableHead>
                     <TableRow>
                       <TableCell>Mã đơn</TableCell>
-                      <TableCell>Cửa hàng</TableCell>
+                      <TableCell>
+                        {user.user.role === Role.Store
+                          ? "Khách hàng"
+                          : "Cửa hàng"}
+                      </TableCell>
                       <TableCell>Trạng thái</TableCell>
                       <TableCell>Tổng giá trị đơn hàng</TableCell>
                       <TableCell>Thời gian</TableCell>
@@ -188,16 +188,20 @@ const ListOrder = (prop?) => {
                     {transactions.map((row) => (
                       <TableRow
                         key={row.storeOrderId}
-                        sx={{
-                          "&:last-child td, &:last-child th": { border: 0 },
-                        }}
+                        sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
                       >
                         <TableCell>{row.storeOrderId}</TableCell>
-                        <TableCell>{row.storeName}</TableCell>
+                        <TableCell>
+                          {user.user.role === Role.Store
+                            ? row.customerName
+                            : row.storeName}
+                        </TableCell>
                         <TableCell>
                           {getTransactionTypeLabel(row.status)}
                         </TableCell>
-                        <TableCell>{formatCurrency(row.subTotal)} vnđ</TableCell>
+                        <TableCell>
+                          {formatCurrency(row.subTotal)} vnđ
+                        </TableCell>
                         <TableCell>
                           {dayjs(new Date(row.createDate)).format(
                             "DD/MM/YYYY - HH:mm"
@@ -220,88 +224,49 @@ const ListOrder = (prop?) => {
             </div>
 
             {/* Filter Options */}
-            {user.user.role !== Role.Manager ? (
-  <div className="col-span-2 ml-2 flex items-start justify-center">
-    <div className="flex flex-col">
-      <h3 className="mb-2">Trạng thái</h3>
-      <div className="flex flex-col pl-2 gap-1">
-        <label className="inline-flex items-center">
-          <input
-            type="radio"
-            className="form-radio h-5 w-5 text-blue-500"
-            name="transactionType"
-            value="all"
-            {...register("transactionType")}
-            onChange={() =>
-              fetchTransactions({
-                email: searchInputRef.current?.value || "",
-                type: "Tất cả",
-                fromDate: fromDate ? fromDate.format("YYYY-MM-DD") : undefined,
-                toDate: toDate ? toDate.format("YYYY-MM-DD") : undefined,
-              })
-            }
-          />
-          <span className="ml-2 text-gray-700">Tất cả</span>
-        </label>
-
-        <label className="inline-flex items-center">
-          <input
-            type="radio"
-            className="form-radio h-5 w-5 text-blue-500"
-            name="transactionType"
-            value="withdraw"
-            onChange={() =>
-              fetchTransactions({
-                email: searchInputRef.current?.value || "",
-                type: "Đã xử lý đơn hàng",
-                fromDate: fromDate ? fromDate.format("YYYY-MM-DD") : undefined,
-                toDate: toDate ? toDate.format("YYYY-MM-DD") : undefined,
-              })
-            }
-          />
-          <span className="ml-2 text-gray-700">Đã xử lý đơn hàng</span>
-        </label>
-
-        <label className="inline-flex items-center">
-          <input
-            type="radio"
-            className="form-radio h-5 w-5 text-blue-500"
-            name="transactionType"
-            value="purchase"
-            onChange={() =>
-              fetchTransactions({
-                email: searchInputRef.current?.value || "",
-                type: "Đã thanh toán tại Kiosk",
-                fromDate: fromDate ? fromDate.format("YYYY-MM-DD") : undefined,
-                toDate: toDate ? toDate.format("YYYY-MM-DD") : undefined,
-              })
-            }
-          />
-          <span className="ml-2 text-gray-700">Đã thanh toán tại Kiosk</span>
-        </label>
-
-        {/* ✅ THÊM MỚI: Đơn hàng đã hủy */}
-        <label className="inline-flex items-center">
-          <input
-            type="radio"
-            className="form-radio h-5 w-5 text-blue-500"
-            name="transactionType"
-            value="cancel"
-            onChange={() =>
-              fetchTransactions({
-                email: searchInputRef.current?.value || "",
-                type: "Đơn hàng đã hủy",
-                fromDate: fromDate ? fromDate.format("YYYY-MM-DD") : undefined,
-                toDate: toDate ? toDate.format("YYYY-MM-DD") : undefined,
-              })
-            }
-          />
-          <span className="ml-2 text-gray-700">Đơn hàng đã hủy</span>
-        </label>
-      </div>
-    </div>
-  </div>
-) : null}
+            {user.user.role !== Role.Manager && (
+              <div className="col-span-2 ml-2 flex items-start justify-center">
+                <div className="flex flex-col">
+                  <h3 className="mb-2">Trạng thái</h3>
+                  <div className="flex flex-col pl-2 gap-1">
+                    {[
+                      { label: "Tất cả", value: "all" },
+                      { label: "Đã xử lý đơn hàng", value: "withdraw" },
+                      {
+                        label: "Đã thanh toán tại Kiosk",
+                        value: "purchase",
+                      },
+                      { label: "Đơn hàng đã hủy", value: "cancel" },
+                    ].map((option) => (
+                      <label className="inline-flex items-center" key={option.value}>
+                        <input
+                          type="radio"
+                          className="form-radio h-5 w-5 text-blue-500"
+                          name="transactionType"
+                          value={option.value}
+                          {...register("transactionType")}
+                          onChange={() =>
+                            fetchTransactions({
+                              email: searchInputRef.current?.value || "",
+                              type: option.label,
+                              fromDate: fromDate
+                                ? fromDate.format("YYYY-MM-DD")
+                                : undefined,
+                              toDate: toDate
+                                ? toDate.format("YYYY-MM-DD")
+                                : undefined,
+                            })
+                          }
+                        />
+                        <span className="ml-2 text-gray-700">
+                          {option.label}
+                        </span>
+                      </label>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            )}
 
             {/* Order detail */}
             <Dialog
@@ -309,8 +274,6 @@ const ListOrder = (prop?) => {
               maxWidth={"sm"}
               fullWidth={true}
               onClose={handleCloseOrderDetail}
-              aria-labelledby="alert-dialog-title"
-              aria-describedby="alert-dialog-description"
             >
               <DialogContent className="flex flex-col items-center">
                 <OrderDetail
