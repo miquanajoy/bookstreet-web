@@ -8,7 +8,6 @@ import {
   ContentState,
   convertFromHTML,
 } from "draft-js";
-import { Editor } from "react-draft-wysiwyg";
 
 import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css";
 import { fetchWrapper } from "../../_helpers/fetch-wrapper";

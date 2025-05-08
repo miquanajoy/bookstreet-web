@@ -7,11 +7,10 @@ import config from "../../config";
 import { fetchWrapper } from "../../_helpers/fetch-wrapper";
 import { fileService } from "../../_services/file.service";
 import { AREA } from "../../_helpers/const/const";
-// import { alertService, onAlert } from '../_services';
 
 export default function HandleAreaPage() {
   const navigate = useNavigate();
-  const { register, handleSubmit, setValue } = useForm();
+  const { register, handleSubmit, setValue, watch } = useForm();
   const [errForm, setErrForm] = useState<any>();
   const params = useParams();
   const [data, setData] = useState<any>();
@@ -19,6 +18,9 @@ export default function HandleAreaPage() {
 
   const [selectedFile, setSelectedFile] = useState<any>();
   const [preview, setPreview] = useState();
+
+  // Theo dõi streetId để lấy tên đường sách
+  const selectedStreetId = watch("streetId");
 
   const onSelectFile = (e) => {
     if (!e.target.files || e.target.files.length === 0) {
@@ -40,7 +42,9 @@ export default function HandleAreaPage() {
   async function fetAllData() {
     const streets = await fetchWrapper.Post2GetByPaginate(
       config.apiUrl + "Street",
-      -1, {}, -1
+      -1,
+      {},
+      -1
     );
     setStreets(streets.list);
     setValue("streetId", streets.list[0].streetId);
@@ -64,7 +68,6 @@ export default function HandleAreaPage() {
     const dataPost = {
       ...data,
       ...val,
-      // streetName: streets.find(stressDetail => stressDetail.streetId == val.streetId).streetName,
       urlImage: "",
     };
 
@@ -94,13 +97,23 @@ export default function HandleAreaPage() {
           };
         }
         setErrForm(listErr);
-
         return;
       }
-      alertService.alert({
-        content: params.id ? "Thay đổi thành công" : "Tạo mới thành công",
-      });
-      navigate("/area", { replace: true });
+      if (res.success) {
+        alertService.alert({
+          content: params.id ? "Thay đổi thành công" : "Tạo mới thành công",
+        });
+        navigate("/area", { replace: true });
+      } else {
+        // Tìm tên đường sách từ streetId được chọn
+        const selectedStreet = streets.find(
+          (street) => street.streetId == selectedStreetId
+        );
+        const streetName = selectedStreet ? selectedStreet.streetName : "không xác định";
+        alertService.alert({
+          content: `Tên khu vực đã tồn tại ở đường sách ${streetName}`,
+        });
+      }
     });
   };
 
@@ -110,27 +123,6 @@ export default function HandleAreaPage() {
         onSubmit={handleSubmit(savedata)}
         className="grid grid-cols-2 gap-4 jumbotron"
       >
-        {/* <div className="flex flex-column items-center gap-2">
-          <label
-            htmlFor="imageUpload"
-            className="block h-52 w-52 bg-slate-200 bg-contain bg-no-repeat bg-center"
-            style={{ backgroundImage: "url(" + preview + ")" }}
-          ></label>
-          <input
-            type="file"
-            accept="image/png, image/jpeg"
-            onChange={onSelectFile}
-            id="imageUpload"
-            className="hidden"
-          />
-          <label
-            htmlFor="imageUpload"
-            className="block border px-2 py-1 bg-slate-200 rounded"
-          >
-            Chọn hình ảnh
-          </label>
-        </div> */}
-
         <div className="flex flex-column gap-4">
           <label className="" htmlFor="nm">
             <b>Tên khu vực: </b>

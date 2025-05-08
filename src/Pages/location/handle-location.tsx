@@ -189,10 +189,17 @@ export default function HandleLocation() {
         setErrForm(listErr);
         return;
       }
-      alertService.alert({
-        content: params.id ? "Thay đổi thành công" : "Tạo mới thành công",
-      });
-      navigate("/location", { replace: true });
+      if (res.success) {
+        alertService.alert({
+          content: params.id ? "Thay đổi thành công" : "Tạo mới thành công",
+        });
+
+        navigate("/location", { replace: true });
+      } else {
+        alertService.alert({
+          content: " Dữ liệu có thể đã tồn tại ở Đường sách và Khu vực đang chọn",
+        });
+      }
     });
   };
 
