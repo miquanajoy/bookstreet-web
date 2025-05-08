@@ -137,19 +137,19 @@ export default function AddBook() {
             .filter((val) => val.productTypeId == (isBookScreen ? 1 : 2))
             .map((item) => ({
               ...item,
-              categoryName: item.categoryName.trim().toLowerCase(),
+              categoryName: item.categoryName.trim(),
             }));
           const trimmedPublishers = v[1].list.map((item) => ({
             ...item,
-            publisherName: item.publisherName.trim().toLowerCase(),
+            publisherName: item.publisherName.trim(),
           }));
           const trimmedDistributors = v[2].list.map((item) => ({
             ...item,
-            distriName: item.distriName.trim().toLowerCase(),
+            distriName: item.distriName.trim(),
           }));
           const trimmedGenres = v[3].list.map((item) => ({
             ...item,
-            genreName: item.genreName.trim().toLowerCase(),
+            genreName: item.genreName.trim(),
           }));
 
           options = {
@@ -221,19 +221,19 @@ export default function AddBook() {
             .filter((val) => val.productTypeId == (isBookScreen ? 1 : 2))
             .map((item) => ({
               ...item,
-              categoryName: item.categoryName.trim().toLowerCase(),
+              categoryName: item.categoryName.trim(),
             }));
           const trimmedPublishers = v[1].list.map((item) => ({
             ...item,
-            publisherName: item.publisherName.trim().toLowerCase(),
+            publisherName: item.publisherName.trim(),
           }));
           const trimmedDistributors = v[2].list.map((item) => ({
             ...item,
-            distriName: item.distriName.trim().toLowerCase(),
+            distriName: item.distriName.trim(),
           }));
           const trimmedGenres = v[3].list.map((item) => ({
             ...item,
-            genreName: item.genreName.trim().toLowerCase(),
+            genreName: item.genreName.trim(),
           }));
 
           setOption({
@@ -251,9 +251,9 @@ export default function AddBook() {
           setPreview(v[5].data.urlImage);
 
           const trimmedAuthors = v[5].data.book?.authors
-            .map((author) => author.trim().toLowerCase())
+            .map((author) => author.trim())
             .join(", ");
-          const trimmedProductName = v[5].data.productName.trim().toLowerCase();
+          const trimmedProductName = v[5].data.productName.trim();
 
           return {
             ...v[5].data,
@@ -303,7 +303,7 @@ export default function AddBook() {
       };
     }
   
-    const trimmedProductName = val.productName.trim().toLowerCase();
+    const trimmedProductName = val.productName.trim();
   
     let dataPost = {
       ...val,
@@ -376,26 +376,23 @@ export default function AddBook() {
   const capitalizeName = (name: string): string => {
     return name
       .split(',')
-      .map((author) =>
-        author
-          .toLowerCase()
-          .replace(/(^|\s)\w/g, (letter) => letter.toUpperCase())
-      )
+      // .map((author) =>
+      //   author
+      //     .replace(/(^|\s)\w/g, (letter) => letter.toUpperCase())
+      // )
       .join(', ');
   };
   const handleAuthorsChange = (e) => {
     const value = e.target.value;
-    const capitalizedValue = capitalizeName(value); 
-    e.target.value = capitalizedValue;
   
     const event = new Event("input", { bubbles: true });
     e.target.dispatchEvent(event);
   
-    setValue("authors", capitalizedValue); 
+    setValue("authors", value); 
   };
 
   const handleProductNameChange = (e) => {
-    const value = e.target.value.trim().toLowerCase();
+    const value = e.target.value;
     e.target.value = value;
 
     const event = new Event("input", { bubbles: true });

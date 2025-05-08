@@ -77,7 +77,7 @@ export default function ConfirmOrder({
       />
 
       <div className="w-full d-flex justify-center gap-4">
-        <button
+        {/* <button
           onClick={() => {
             handleConfirm(1);
           }}
@@ -91,7 +91,7 @@ export default function ConfirmOrder({
         `}
         >
           Xác nhận huỷ đơn
-        </button>
+        </button> */}
 
         <button
           disabled={!customerCode}

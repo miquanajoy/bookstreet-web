@@ -24,12 +24,26 @@ export default function OrderDetail({
     orders,
     totalOrder,
   } = useOrderInfo(orderDetail, handleClose);
-
   const formatCurrency = (value: number | string) => {
     if (!value && value !== 0) return "";
     return Number(value).toLocaleString("vi-VN");
   };
-
+  const getTransactionTypeLabel = (type: number) => {
+    switch (type) {
+      case 0:
+        return "chưa thanh toán";
+      case 1:
+        return "Đã thanh toán tại Kiosk";
+      case 2:
+        return "Đơn hàng đã bị hủy bởi hệ thống";
+      case 3:
+        return "Chưa thanh toán cho cửa hàng";
+      case 4:
+        return "Đã hoàn tiền";
+      default:
+        return "Không xác định";
+    }
+  };
   return !openDialogInfo ? (
     <div className="rounded-lg w-full border border-gray-200">
       {/* Header Section */}
@@ -60,7 +74,7 @@ export default function OrderDetail({
           Thời gian: {dayjs(new Date(orderDetail.createDate)).format("DD/MM/YYYY - HH:mm")}
         </div>
         <div className="text-sm text-gray-700">
-          Trạng thái: {orderDetail.subTotal} VNĐ
+          Trạng thái: {getTransactionTypeLabel(orderDetail.status)}
         </div>
       </div>
       {/* Main Content Area (Order List) */}

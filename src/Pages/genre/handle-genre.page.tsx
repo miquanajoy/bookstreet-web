@@ -67,17 +67,15 @@ export default function HandleGenrePage() {
 
     process
       .then((res) => {
-        if(res.success) {
+        if (res.success) {
           alertService.alert({
-            content: params.id ?  "Thay đổi thành công" : "Tạo mới thành công",
+            content: params.id ? "Thay đổi thành công" : "Tạo mới thành công",
           });
-          navigate(ROUTER.genre.url, {
-            replace: true,
-          });
+  
+          navigate(ROUTER.genre.url, { replace: true });
         } else {
-          if(res.message === "Duplicate data maybe in GenreName;")
           alertService.alert({
-            content: "Genre đã tồn tại"
+            content: " Dữ liệu có thể đã tồn tại ở Đường sách và Khu vực đang chọn",
           });
         }
       })

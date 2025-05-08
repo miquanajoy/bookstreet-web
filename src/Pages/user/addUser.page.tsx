@@ -33,28 +33,7 @@ export default function AddUser(props) {
 
   // Call API to update status when the status changes
   const changeStatus = () => {
-    // if (!params.id || !currentStatus || props.userId === userId) return; // Skip if not in update mode, no status, or editing current user
-
-    // // Call API to update status immediately when status changes
-    // fetchWrapper
-    //   .put(config.apiUrl + "Auth/" + params.id + "/Status", {
-    //     status: Number(currentStatus),
-    //   })
-    //   .then((statusRes) => {
-    //     if (!statusRes.success) {
-    //       alertService.alert({
-    //         content: "Cập nhật trạng thái thất bại: " + statusRes.message,
-    //       });
-    //       // Revert to previous status if update fails (optional)
-    //       setValue("status", data.status);
-    //     } else {
-    //       // Update local data to reflect the new status
-    //       setData((prev) => ({ ...prev, status: currentStatus }));
-    //       alertService.alert({
-    //         content: "Cập nhật trạng thái thành công",
-    //       });
-    //     }
-    //   });
+    // Logic hiện tại không được sử dụng, nhưng giữ lại để tương thích với mã cũ
   };
 
   useEffect(() => {
@@ -98,7 +77,6 @@ export default function AddUser(props) {
       setValue("address", val.address);
       setPreview(val.avatar);
       setValue("role", val.role);
-      // Set the initial status value
       setValue("status", val.status);
 
       setData(val);
@@ -135,7 +113,7 @@ export default function AddUser(props) {
       dataPost.status = 1; // Default status for new user: Active
     }
 
-    // Update user information (excluding status update since it's handled on change)
+    // Update user information
     const connectApi = params.id
       ? fetchWrapper.put(config.apiUrl + "Auth/" + params.id, dataPost)
       : fetchWrapper.post(config.apiUrl + "Auth", dataPost);
@@ -247,8 +225,8 @@ export default function AddUser(props) {
             <p className="text-danger">{errForm?.FullName}</p>
           </label>
 
-          {/* Show Password field for Manager, GiftStore, or when updating the current user */}
-          {(currentRole === Role.Store || currentRole === Role.Manager || currentRole === Role.GiftStore || params.id == user.userId) && (
+          {/* Show Password field only for Manager, GiftStore, or when updating the current user */}
+          {(currentRole === Role.Manager || currentRole === Role.GiftStore || params.id == user.userId) && (
             <label htmlFor="anm">
               <b>{userId ? "Mật khẩu mới" : "Mật khẩu"}: </b>
               <input

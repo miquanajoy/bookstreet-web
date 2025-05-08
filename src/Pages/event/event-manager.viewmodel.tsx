@@ -16,7 +16,7 @@ const EventManagerViewmodel = () => {
   const user = JSON.parse(localStorage.getItem("userInfo"));
 
   const [formData, setFormData] = useState<any>();
-  const [eventStatus, setEventStatus] = useState<any>("1");
+  const [eventStatus, setEventStatus] = useState<any>("1"); // Mặc định là "Đang diễn ra"
   const [fromDate, setFromDate] = useState<Dayjs | null>(null);
   const [toDate, setToDate] = useState<Dayjs | null>(null);
   const [filterType, setFilterType] = useState<"status" | "date" | null>("status");
@@ -106,8 +106,35 @@ const EventManagerViewmodel = () => {
             );
             break;
           default:
+            // Mặc định là "Đang diễn ra" nếu eventStatus không xác định
+            filters.push(
+              {
+                field: "starDate",
+                value: currentDate,
+                operand: 5,
+              },
+              {
+                field: "endDate",
+                value: currentDate,
+                operand: 3,
+              }
+            );
             break;
         }
+      } else {
+        // Áp dụng bộ lọc "Đang diễn ra" nếu không có filterType hoặc eventStatus
+        filters.push(
+          {
+            field: "starDate",
+            value: currentDate,
+            operand: 5,
+          },
+          {
+            field: "endDate",
+            value: currentDate,
+            operand: 3,
+          }
+        );
       }
 
       const result = await fetchWrapper.Post2GetByPaginate(
@@ -117,10 +144,10 @@ const EventManagerViewmodel = () => {
           filters,
         }
       );
-        setData({
-          list: result.list,
-          totalPage: result.totalPage,
-        });
+      setData({
+        list: result.list,
+        totalPage: result.totalPage,
+      });
       return result;
     },
     []

@@ -41,10 +41,12 @@ export default function EventFilter({
 
   const handleReset = () => {
     setFormData(undefined);
-    setEventStatus(undefined);
+    setEventStatus("1"); // Đặt trạng thái về "Đang diễn ra"
     setFromDate(null);
     setToDate(null);
     setFilterType("status");
+    // Gọi lại API với trạng thái mặc định là "Đang diễn ra"
+    fetAllData(1, undefined, "1", null, null, "status");
   };
 
   const FormFilterByEventType = () => {
