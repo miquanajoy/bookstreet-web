@@ -129,7 +129,7 @@ export default function HandleStore(props) {
                   >
                     {users.map((v) => (
                       <option key={v.id} value={v.id}>
-                        {v.fullName}
+                        {v.email}
                       </option>
                     ))}
                   </select>

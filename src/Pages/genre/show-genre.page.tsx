@@ -1,16 +1,25 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { alertService } from "../../_services/alert.service";
 import { fetchWrapper } from "../../_helpers/fetch-wrapper";
 import config from "../../config";
-import {
-  GENRE,
-} from "../../_helpers/const/const";
+import { GENRE } from "../../_helpers/const/const";
 import ListComponent from "../../Components/list.component";
-import { SearchModel, searchService, typeSearch } from "../../_services/search.service";
+import {
+  SearchModel,
+  searchService,
+  typeSearch,
+} from "../../_services/search.service";
+import { Role } from "../../models/Role";
 
 export default function ShowGenrePage() {
   const navigate = useNavigate();
+  const { pathname } = useLocation();
+
+  // ✅ Lấy role và xác định có phải là Store không
+  const user = JSON.parse(localStorage.getItem("userInfo"));
+  const role = user?.user?.role;
+  const isStore = role === Role.Store;
 
   const headers = [
     {
@@ -23,19 +32,18 @@ export default function ShowGenrePage() {
     },
   ];
 
-  const { pathname } = useLocation();
-
   const [data, setData] = useState({
     list: [],
     totalPage: 0,
   });
 
   function deleteItem(id) {
-    fetchWrapper.delete(
-      config.apiUrl + GENRE + "/" + id,
-      fetAllData
-    );
+    if (isStore) {
+      alertService.alert({ content: "Bạn không có quyền xóa thể loại." });
+      return;
+    }
 
+    fetchWrapper.delete(config.apiUrl + GENRE + "/" + id, fetAllData);
   }
 
   async function fetAllData(pageNumber = 1) {
@@ -52,10 +60,8 @@ export default function ShowGenrePage() {
         ],
       }
     );
+
     result.then((res) => {
-      const convertData = res.list.map(v => {
-        return v
-      })
       const convertedData = res.list.map((val) => {
         let p = [];
         p.push({ id: val.genreId });
@@ -67,40 +73,42 @@ export default function ShowGenrePage() {
         }
         return p;
       });
+
       setData({
         list: convertedData,
         totalPage: res.totalPage,
       });
     });
-    return result
+
+    return result;
   }
 
   useEffect(() => {
     fetAllData();
   }, [pathname]);
 
-    // Search area
-    useEffect(() => {
-      const searchSub = searchService.$SearchValue.subscribe({
-        next: (v: SearchModel) => {
-          if (v?.isClickSearch) {
-            fetAllData();
-          }
-        },
-      });
-      return () => searchSub.unsubscribe();
-    }, []);
-    // End Search area
-    
+  // Search area
+  useEffect(() => {
+    const searchSub = searchService.$SearchValue.subscribe({
+      next: (v: SearchModel) => {
+        if (v?.isClickSearch) {
+          fetAllData();
+        }
+      },
+    });
+    return () => searchSub.unsubscribe();
+  }, []);
+
   return (
     <ListComponent
       title="Quản lý thể loại"
-      buttonName="Tạo thể loại"
+      buttonName={isStore ? undefined : "Tạo thể loại"} // ✅ Ẩn nút nếu là Store
       deleteItem={deleteItem}
       header={headers}
       data={data.list}
       totalPage={data.totalPage}
       handleChange={fetAllData}
-    ></ListComponent>
+      isStore={isStore} // ✅ Truyền xuống ListComponent để ẩn cột Sửa/Xóa
+    />
   );
 }

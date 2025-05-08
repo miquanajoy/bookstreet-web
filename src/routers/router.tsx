@@ -221,7 +221,7 @@ const routesConfig = [
       </AuthGuard>
     ),
     children: [
-      createLazyRoute("", PublisheranagerPage, [Role.Manager]),
+      createLazyRoute("", PublisheranagerPage, [Role.Manager, Role.Store]),
       createLazyRoute("create", HandlePublisher, [Role.Manager]),
       createLazyRoute("update/:id", HandlePublisher, [Role.Manager]),
     ],
@@ -307,7 +307,7 @@ const routesConfig = [
       </AuthGuard>
     ),
     children: [
-      createLazyRoute("", ShowGenrePage, [Role.Manager]),
+      createLazyRoute("", ShowGenrePage, [Role.Manager, Role.Store]),
       createLazyRoute("create", HandleGenrePage, [Role.Manager]),
       createLazyRoute("update/:id", HandleGenrePage, [Role.Manager]),
     ],
@@ -323,7 +323,7 @@ const routesConfig = [
       </AuthGuard>
     ),
     children: [
-      createLazyRoute("", ShowDistributor, [Role.Manager]),
+      createLazyRoute("", ShowDistributor, [Role.Manager, Role.Store]),
       createLazyRoute("create", HandleDistributorPage, [Role.Manager]),
       createLazyRoute("update/:id", HandleDistributorPage, [Role.Manager]),
     ],
@@ -337,7 +337,7 @@ const routesConfig = [
       </AuthGuard>
     ),
     children: [
-      createLazyRoute("", ShowCategoryPage, [Role.Manager]),
+      createLazyRoute("", ShowCategoryPage, [Role.Manager, Role.Store]),
       createLazyRoute("create", HandleCategoryPage, [Role.Manager]),
       createLazyRoute("update/:id", HandleCategoryPage, [Role.Manager]),
     ],

@@ -12,6 +12,7 @@ import {
   typeSearch,
 } from "../../_services/search.service";
 import { ROUTER } from "../../_helpers/const/const";
+import { Role } from "../../models/Role";
 
 export default function PublisheranagerPage() {
   const [data, setData] = useState({
@@ -19,9 +20,17 @@ export default function PublisheranagerPage() {
     totalPage: 0,
   });
 
-  // const headers = ["publisherId", "name", "description", "action"];
+  // ✅ Lấy role từ localStorage và kiểm tra
+  const user = JSON.parse(localStorage.getItem("userInfo"));
+  const role = user?.user?.role;
+  const isStore = role === Role.Store;
 
   function deleteItem(val) {
+    if (isStore) {
+      alertService.alert({ content: "Bạn không có quyền xoá nhà xuất bản." });
+      return;
+    }
+
     fetchWrapper.delete(
       config.apiUrl + "Publisher/" + val.publisherId,
       fetAllData
@@ -72,41 +81,60 @@ export default function PublisheranagerPage() {
     <div className="">
       <div className="flex items-center justify-between mb-2 bg-slate-200 pb-3">
         <div className="d-flex justify-end gap-2 w-full bg-white px-6 py-3">
-          <Link to="create">
-            <button className="bg-info text-white rounded-lg px-3 py-0.5">
-              Tạo nhà xuất bản
-            </button>
-          </Link>
+          {!isStore && (
+            <Link to="create">
+              <button className="bg-info text-white rounded-lg px-3 py-0.5">
+                Tạo nhà xuất bản
+              </button>
+            </Link>
+          )}
         </div>
       </div>
+
       <div className="grid grid-cols-5 gap-4 px-6">
         {data.list.map((val) => (
           <div
             key={val.publisherId}
             className={`${listStyle["book-detail"]} position-relative`}
           >
-            <Link to={"update/" + val.publisherId}>
+            {!isStore ? (
+              <Link to={"update/" + val.publisherId}>
+                <div
+                  className="h-52 bg-contain bg-no-repeat bg-center"
+                  style={{ backgroundImage: `url('${val.urlImage}')` }}
+                ></div>
+              </Link>
+            ) : (
               <div
                 className="h-52 bg-contain bg-no-repeat bg-center"
                 style={{ backgroundImage: `url('${val.urlImage}')` }}
               ></div>
-            </Link>
-            <div
-              onClick={(event: any) => {
-                deleteItem(val);
-              }}
-              className={`${listStyle["trash-box"]} position-absolute top-0 right-0 bg-slate-400 rounded px-2 py-1 opacity-50 hover:!opacity-100`}
-            >
-              <Trash />
-            </div>
-            <Link to={"update/" + val.publisherId}>
+            )}
+
+            {!isStore && (
+              <div
+                onClick={() => deleteItem(val)}
+                className={`${listStyle["trash-box"]} position-absolute top-0 right-0 bg-slate-400 rounded px-2 py-1 opacity-50 hover:!opacity-100`}
+              >
+                <Trash />
+              </div>
+            )}
+
+            {!isStore ? (
+              <Link to={"update/" + val.publisherId}>
+                <div className="px-2">
+                  <h6 className="text-dark">{val.publisherName}</h6>
+                </div>
+              </Link>
+            ) : (
               <div className="px-2">
                 <h6 className="text-dark">{val.publisherName}</h6>
               </div>
-            </Link>
+            )}
           </div>
         ))}
       </div>
+
       {data.totalPage ? (
         <div className="flex justify-center">
           <span>
@@ -116,9 +144,7 @@ export default function PublisheranagerPage() {
             />
           </span>
         </div>
-      ) : (
-        <></>
-      )}
+      ) : null}
     </div>
   );
 }

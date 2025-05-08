@@ -167,7 +167,7 @@ export const ROUTERS = [
   {
     logo: PublisherIcon,
     ...ROUTER.publisher,
-    roles: [Role.Manager],
+    roles: [Role.Manager, Role.Store],
   },
   {
     logo: EventIcon,
@@ -194,17 +194,17 @@ export const ROUTERS = [
   {
     logo: DistributorIcon,
     ...ROUTER.distributor,
-    roles: [Role.Manager],
+    roles: [Role.Manager, Role.Store],
   },
   {
     logo: CategoryIcon,
     ...ROUTER.category,
-    roles: [Role.Manager],
+    roles: [Role.Manager, Role.Store],
   },
   {
     logo: GenreIcon,
     ...ROUTER.genre,
-    roles: [Role.Manager],
+    roles: [Role.Manager,  Role.Store],
   },
   // {
   //   logo: CustomerPointIcon,

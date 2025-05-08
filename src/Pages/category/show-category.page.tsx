@@ -10,9 +10,16 @@ import {
   searchService,
   typeSearch,
 } from "../../_services/search.service";
+import { Role } from "../../models/Role";
 
 export default function ShowCategoryPage() {
   const navigate = useNavigate();
+  const { pathname } = useLocation();
+
+  // ✅ Lấy role và xác định có phải là Store không
+  const user = JSON.parse(localStorage.getItem("userInfo"));
+  const role = user?.user?.role;
+  const isStore = role === Role.Store;
 
   const headers = [
     {
@@ -25,14 +32,17 @@ export default function ShowCategoryPage() {
     },
   ];
 
-  const { pathname } = useLocation();
-
   const [data, setData] = useState({
     list: [],
     totalPage: 0,
   });
 
   function deleteItem(id) {
+    if (isStore) {
+      alertService.alert({ content: "Bạn không có quyền xóa danh mục." });
+      return;
+    }
+
     fetchWrapper.delete(config.apiUrl + CATEGORY + "/" + id, fetAllData);
   }
 
@@ -51,9 +61,6 @@ export default function ShowCategoryPage() {
       }
     );
     result.then((res) => {
-      const convertData = res.list.map((v) => {
-        return v;
-      });
       const convertedData = res.list.map((val) => {
         let p = [];
         p.push({ id: val.categoryId });
@@ -70,14 +77,13 @@ export default function ShowCategoryPage() {
         totalPage: res.totalPage,
       });
     });
-    return result
+    return result;
   }
 
   useEffect(() => {
     fetAllData();
   }, [pathname]);
 
-  // Search area
   useEffect(() => {
     const searchSub = searchService.$SearchValue.subscribe({
       next: (v: SearchModel) => {
@@ -88,17 +94,17 @@ export default function ShowCategoryPage() {
     });
     return () => searchSub.unsubscribe();
   }, []);
-  // End Search area
 
   return (
     <ListComponent
       title="Quản lý danh mục"
-      buttonName="Tạo danh mục"
+      buttonName={isStore ? undefined : "Tạo danh mục"} // ✅ Ẩn nút nếu là Store
       deleteItem={deleteItem}
       header={headers}
       data={data.list}
       totalPage={data.totalPage}
       handleChange={fetAllData}
-    ></ListComponent>
+      isStore={isStore} // ✅ Truyền xuống để ẩn cột hành động
+    />
   );
 }
