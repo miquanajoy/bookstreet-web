@@ -56,6 +56,8 @@ export default function ShowBook() {
     control,
     register,
     getValues,
+    setValue,
+    reset,
     formState: { errors },
   } = useForm({
     mode: "onChange",
@@ -101,7 +103,7 @@ export default function ShowBook() {
       filters: [
         {
           field: "productTypeId",
-          value: isBookScreen ? "1" : "2",
+          value: "1",
           operand: 0,
         },
       ],
@@ -261,7 +263,8 @@ export default function ShowBook() {
 
         const postData = {
           ...v,
-          AuthorName: v.AuthorName.split(", "),
+          // AuthorName: v.AuthorName?.length ? v.AuthorName.split(", ")  : "",
+          AuthorName: Array.isArray(v.AuthorName) ? v.AuthorName : v.AuthorName.split(", "),
           urlImage,
         };
         if (!isBookScreen) {
@@ -270,33 +273,73 @@ export default function ShowBook() {
         return postData;
       });
     });
+    valueToSubmit.forEach(v => {
+      v.ProductTypeId = "1"
+    })
     const resp = await fetchWrapper.post(
       config.apiUrl + PRODUCT + "/" + SAVEBATCH,
       valueToSubmit
     );
+
     if (resp.success) {
       alertService.alert({
         content: `${resp.data.successCount} Bản ghi tạo thành công`,
       });
-      if (!resp.data.successCount) {
-        for (let index = 0; index < resp.data.results.length; index++) {
-          const val = resp.data.results[index];
-          if (val.message) {
-            alertService.alert({
-              content: val.message,
-            });
-            closeModelImport();
-            return;
-          }
-        }
+
+      // Map resp.data.results theo định dạng responseImport
+      const updatedDataImport = resp.data.results.map((result, index) => {
+        const data = result.data;
+        return {
+          ISBN: data?.isbn,
+          ProductName: data.productName,
+          Quantity: data.quantity,
+          Price: data.price,
+          CategoryName: data.categoryName,
+          GenreName: data.genreName,
+          AuthorName: data.authorName,
+          DistributorName: data.distributorName,
+          PublisherName: data.publisherName,
+          PublicDay: data.publicDay,
+          Description: data.description,
+          UrlImage: data.urlImage,
+          SortOrder: index + 1,
+          Error: result.message,
+          ProductTypeId: "1",
+          Success: result.success,
+        };
+      });
+
+      // Cập nhật dataImport để hiển thị trong modal
+      reset();
+      setDataImport(updatedDataImport);
+      updatedDataImport.forEach((val, index) => {
+      setValue(`author.${index}.UrlImage`, val.UrlImage);
+
+      //   if (isBookScreen) {
+      //     val.PublicDay =
+      //       val.PublicDay != "Invalid Date" && val.PublicDay
+      //         ? dayjs(new Date(val.PublicDay)).format("YYYY-MM-DD")
+      //         : dayjs(new Date()).format("YYYY-MM-DD");
+      //   }
+      //   setValue(`author.${index}`, val);
+      });
+
+      // Không đóng modal nếu có bản ghi thất bại
+      if (resp.data.failCount > 0) {
+        return; // Giữ modal mở
       }
-      closeModelImport();
-    }
-    if (!resp.success || resp.success == 400) {
+
+      // Đóng modal và reset nếu tất cả thành công
+      if (resp.data.successCount > 0) {
+        closeModelImport();
+      }
+    } else {
+      // Xử lý lỗi tổng thể
       alertService.alert({
         content: resp.message,
       });
     }
+
     await fetAllData(1);
   }
 
@@ -304,6 +347,30 @@ export default function ShowBook() {
     handleClose();
     setDataImport([]);
     inputFile.current.value = "";
+  }
+
+  function onSelectFile(e, index) {
+    if (!e.target.files || e.target.files.length === 0) {
+      return;
+    }
+    let reader = new FileReader();
+    let base64String;
+    reader.onload = function () {
+      base64String = reader.result;
+      const currentDataImport = JSON.parse(JSON.stringify(getValues().author));
+      currentDataImport[index].UrlImage = base64String;
+      setDataImport(currentDataImport);
+    };
+    reader.readAsDataURL(e.target.files[0]);
+  }
+
+  // Template role store
+  function templateRoleStore(link, template) {
+    if (user.role == Role.Store) {
+      return <Link to={link}>{template}</Link>;
+    } else {
+      return template;
+    }
   }
 
   const listImportBook = () => {
@@ -372,6 +439,12 @@ export default function ShowBook() {
                     type="text"
                     {...register(`author.${index}.ISBN`, {
                       required: true,
+                      onChange: (e) => {
+                        const value = e.target.value;
+                        if (value.length > 20) {
+                          setValue(`author.${index}.ISBN`, value.slice(0, 20)); // Cắt chuỗi về 20 ký tự
+                        }
+                      },
                     })}
                   />
                 </TableCell>
@@ -494,30 +567,6 @@ export default function ShowBook() {
       </TableContainer>
     );
   };
-
-  function onSelectFile(e, index) {
-    if (!e.target.files || e.target.files.length === 0) {
-      return;
-    }
-    let reader = new FileReader();
-    let base64String;
-    reader.onload = function () {
-      base64String = reader.result;
-      const currentDataImport = JSON.parse(JSON.stringify(getValues().author));
-      currentDataImport[index].UrlImage = base64String;
-      setDataImport(currentDataImport);
-    };
-    reader.readAsDataURL(e.target.files[0]);
-  }
-
-  // Template role store
-  function templateRoleStore(link, template) {
-    if (user.role == Role.Store) {
-      return <Link to={link}>{template}</Link>;
-    } else {
-      return template;
-    }
-  }
 
   return (
     <div className="m-n2">
@@ -670,6 +719,13 @@ export default function ShowBook() {
               className="sticky bottom-0 mt-4 text-white bg-green-700 rounded-lg text-sm px-5 py-2.5 me-2 mb-2"
             >
               Nhập
+            </button>
+            <button
+              onClick={closeModelImport}
+              type="button"
+              className="sticky bottom-0 mt-4 text-white bg-red-700 rounded-lg text-sm px-5 py-2.5 me-2 mb-2"
+            >
+              Đóng
             </button>
           </DialogContent>
         </div>
