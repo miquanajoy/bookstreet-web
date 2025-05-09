@@ -46,26 +46,26 @@ export default function HandleLocation() {
   useEffect(() => {
     const streetId = getValues().streetId;
     if (!streetId) return;
-  
+
     const areasFilter = areas.data.filter(
       (area) => area.streetId == streetId
     );
-  
+
     setAreas((prevAreas) => ({
       ...prevAreas,
       filterData: areasFilter,
     }));
-  
+
     const currentAreaId = getValues().areaId;
-  
+
     // ✅ Nếu đang tạo mới hoặc không có areaId thì set mặc định
     if ((!params.id || !currentAreaId) && areasFilter.length > 0) {
       setValue("areaId", areasFilter[0].areaId);
     }
-  
+
     drawLocation();
   }, [watch("streetId")]);
-  
+
 
   const onSelectFile = (e) => {
     if (!e.target.files || e.target.files.length === 0) {
@@ -406,8 +406,15 @@ export default function HandleLocation() {
                   message: "required",
                   value: true,
                 },
+                onChange: (e) => {
+                  const value = e.target.value
+                    .replace(/\s/g, "") // Xóa khoảng trắng
+                    .toUpperCase(); // Viết hoa toàn bộ
+                  setValue("locationName", value);
+                },
               })}
             />
+
           </label>
           <label className="" htmlFor="street">
             <b>Đường sách </b>
