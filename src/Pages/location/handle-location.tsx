@@ -44,20 +44,28 @@ export default function HandleLocation() {
   const [preview, setPreview] = useState();
 
   useEffect(() => {
-    if (!getValues().streetId) return;
+    const streetId = getValues().streetId;
+    if (!streetId) return;
+  
     const areasFilter = areas.data.filter(
-      (area) => area.streetId == getValues().streetId
+      (area) => area.streetId == streetId
     );
-
+  
     setAreas((prevAreas) => ({
       ...prevAreas,
       filterData: areasFilter,
     }));
-    if (!areasFilter.length) return;
-
-    setValue("areaId", areasFilter[0].areaId);
+  
+    const currentAreaId = getValues().areaId;
+  
+    // ✅ Nếu đang tạo mới hoặc không có areaId thì set mặc định
+    if ((!params.id || !currentAreaId) && areasFilter.length > 0) {
+      setValue("areaId", areasFilter[0].areaId);
+    }
+  
     drawLocation();
   }, [watch("streetId")]);
+  
 
   const onSelectFile = (e) => {
     if (!e.target.files || e.target.files.length === 0) {
