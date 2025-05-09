@@ -22,7 +22,7 @@ export default function HandleGift() {
   const [data, setData] = useState<any>({
     giftName: "",
     description: "",
-    starDate: dayjs(new Date()).format("YYYY-MM-DD"),
+    startDate: dayjs(new Date()).format("YYYY-MM-DD"),
     endDate: dayjs(new Date()).format("YYYY-MM-DD"),
     urlImage: "",
     point: 0,
@@ -88,7 +88,7 @@ export default function HandleGift() {
     return {
       ...result,
       endDate: dayjs(result.endDate).format("YYYY-MM-DD"),
-      starDate: dayjs(result.starDate).format("YYYY-MM-DD"),
+      startDate: dayjs(result.startDate).format("YYYY-MM-DD"),
     };
   }
 
@@ -186,7 +186,7 @@ export default function HandleGift() {
               id="pub"
               type="date"
               className="form-control"
-              {...register("starDate", { valueAsDate: true })}
+              {...register("startDate", { valueAsDate: true })}
             />
           </div>
         </div>

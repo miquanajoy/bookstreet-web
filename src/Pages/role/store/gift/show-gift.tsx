@@ -183,7 +183,7 @@ export default function ShowGift() {
       convertData.forEach((val) => {
         append({
           ...val,
-          starDate: dayjs(new Date(val.starDate)).format("YYYY-MM-DD"),
+          startDate: dayjs(new Date(val.startDate)).format("YYYY-MM-DD"),
           EndDate: dayjs(new Date(val.EndDate)).format("YYYY-MM-DD"),
         });
       });
@@ -231,7 +231,7 @@ export default function ShowGift() {
         return {
           giftName: v.GiftName,
           description: v.Description,
-          starDate: v.starDate,
+          startDate: v.startDate,
           endDate: v.EndDate,
           point: v.Point,
           quantity: v.Quantity,
@@ -392,7 +392,7 @@ export default function ShowGift() {
                   <input
                     className="form-control"
                     type="date"
-                    {...register(`gift.${index}.starDate`)}
+                    {...register(`gift.${index}.startDate`)}
                   />
                 </TableCell>
                 <TableCell align="left">
