@@ -31,6 +31,11 @@ export default function EventManagerPage() {
     <>
       <div className="flex items-center justify-between mb-2 bg-slate-200 pb-3">
         <div className="d-flex justify-end gap-2 w-full bg-white px-6 py-3">
+          <Link to="ongoing">
+            <button className="bg-info text-white rounded-lg px-3 py-0.5 mr-2">
+            Check-in
+            </button>
+          </Link>
           <Link to="create">
             <button className="bg-info text-white rounded-lg px-3 py-0.5">
               Tạo sự kiện

@@ -23,6 +23,7 @@ export default function HandleCalenderPage() {
   const [mapValue, setMapValue] = useState({});
   const [value, setValueInint] = useState([null, null]);
   const [locations, setLocation] = useState([]);
+  const [isReadOnly, setIsReadOnly] = useState(false);
 
   const { getLocation } = HandleEventViewmodel();
   const isDisableLocation = () => {
@@ -61,6 +62,19 @@ export default function HandleCalenderPage() {
   const [selectedFile, setSelectedFile] = useState<any>();
   const [preview, setPreview] = useState();
 
+  const checkEventStatus = (startDate: string, endDate: string) => {
+    const now = new Date();
+    const start = new Date(startDate);
+    const end = new Date(endDate);
+    
+    if (now >= start && now <= end) {
+      return 'ongoing'; // Đang diễn ra
+    } else if (now > end) {
+      return 'ended'; // Đã kết thúc
+    }
+    return 'upcoming'; // Sắp diễn ra
+  };
+
   async function fetAllData() {
     const locations = await getLocation();
 
@@ -79,6 +93,11 @@ export default function HandleCalenderPage() {
     const result = await fetchWrapper.get(
       config.apiUrl + EVENT + "/" + params.id
     );
+
+    // Check event status and set readonly
+    const eventStatus = checkEventStatus(result.starDate, result.endDate);
+    setIsReadOnly(eventStatus === 'ongoing' || eventStatus === 'ended');
+
     const locationsFound = locations.find(
       (locationDetail) => locationDetail.locationId === result.locationId
     );
@@ -226,13 +245,14 @@ export default function HandleCalenderPage() {
             onChange={onSelectFile}
             id="imageUpload"
             className="hidden"
+            disabled={isReadOnly}
           />
           {errors.urlImage && (
             <span className="text-red-500">Vui lòng chọn hình ảnh</span>
           )}
           <label
             htmlFor="imageUpload"
-            className="block border px-2 py-1 bg-slate-200 rounded"
+            className={`block border px-2 py-1 bg-slate-200 rounded ${isReadOnly ? 'opacity-50 cursor-not-allowed' : ''}`}
           >
             Chọn hình ảnh
           </label>
@@ -247,6 +267,7 @@ export default function HandleCalenderPage() {
             type="text"
             className="form-control mb-2"
             {...register("title", { required: "Tên sự kiện là bắt buộc" })}
+            disabled={isReadOnly}
           />
           {errors.title && (
             <span className="text-red-500">
@@ -259,7 +280,7 @@ export default function HandleCalenderPage() {
           </label>
           <div className="flex items-center gap-4 mb-2">
             <select
-              disabled={isDisableLocation()}
+              disabled={isDisableLocation() || isReadOnly}
               {...register("locationId", {
                 required: "Vị trí là bắt buộc",
                 min: { value: 1, message: "Vui lòng chọn một vị trí" },
@@ -292,6 +313,7 @@ export default function HandleCalenderPage() {
             type="text"
             className="form-control mb-2"
             {...register("purpose", { required: "Mục đích là bắt buộc" })}
+            disabled={isReadOnly}
           />
           {errors.purpose && (
             <span className="text-red-500">
@@ -306,7 +328,7 @@ export default function HandleCalenderPage() {
             id="avb"
             type="text"
             className="form-control"
-            disabled={userValue.user.role === Role.Store}
+            disabled={userValue.user.role === Role.Store || isReadOnly}
             value={userValue.user.role === Role.Store ? userValue.user.storeName : undefined}
             {...register("hostName", { required: "Ban tổ chức là bắt buộc" })}
           />
@@ -325,6 +347,7 @@ export default function HandleCalenderPage() {
               type="text"
               className="form-control"
               {...register("urlVideo")}
+              disabled={isReadOnly}
             />
           </div>
         </div>
@@ -335,7 +358,7 @@ export default function HandleCalenderPage() {
               <b>Dạng sự kiện: </b>
             </label>
             <select
-              disabled={userValue.user.role == Role.Store}
+              disabled={userValue.user.role == Role.Store || isReadOnly}
               {...register("eventType", {
                 required: "Loại sự kiện là bắt buộc",
                 min: { value: 0, message: "Vui lòng chọn loại sự kiện" },
@@ -377,6 +400,7 @@ export default function HandleCalenderPage() {
                     dayjs(newValue[1]).format("YYYY-MM-DD HH:mm"),
                   ]);
                 }}
+                disabled={isReadOnly}
               />
             </DemoContainer>
           </LocalizationProvider>
@@ -388,14 +412,17 @@ export default function HandleCalenderPage() {
             <textarea
               className="form-control min-h-30 max-h-50 mb-2"
               {...register("description")}
+              disabled={isReadOnly}
             ></textarea>
           </div>
 
-          <input
-            type="submit"
-            className="btn btn-dark absolute bottom-0"
-            value="Lưu"
-          />
+          {!isReadOnly && (
+            <input
+              type="submit"
+              className="btn btn-dark absolute bottom-0"
+              value="Lưu"
+            />
+          )}
         </div>
       </form>
     </div>

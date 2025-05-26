@@ -36,7 +36,7 @@ const useMembershipHook = () => {
     if (eventStatus) {
       if (eventStatus > 0) {
         filters.push({
-          field: "startDate",
+          field: "starDate",
           value: currentDate,
           operand: 4,
         }, {
@@ -47,7 +47,7 @@ const useMembershipHook = () => {
         // return event.starDate < currentDate && event.endDate > currentDate;
       } else {
         filters.push({
-          field: "startDate",
+          field: "starDate",
           value: currentDate,
           operand: 2,
         });

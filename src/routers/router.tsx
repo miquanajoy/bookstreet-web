@@ -131,6 +131,8 @@ const ListOrderPage = lazy(
   () => import("../Pages/role/store/process-order/list-order/list-order")
 );
 
+const OngoingEventsPage = lazy(() => import("../Pages/event/ongoing-events.page"));
+
 const user = JSON.parse(localStorage.getItem("userInfo"));
 const afterLogin = () => {
   switch (user?.user?.role) {
@@ -236,10 +238,8 @@ const routesConfig = [
     children: [
       createLazyRoute("", EventManagerPage, [Role.Manager, Role.Store]),
       createLazyRoute("create", HandleCalenderPage, [Role.Manager, Role.Store]),
-      createLazyRoute("update/:id", HandleCalenderPage, [
-        Role.Manager,
-        Role.Store,
-      ]),
+      createLazyRoute("update/:id", HandleCalenderPage, [Role.Manager, Role.Store]),
+      createLazyRoute("ongoing", OngoingEventsPage, [Role.Manager, Role.Store]),
     ],
   },
   // Store

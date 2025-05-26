@@ -17,12 +17,13 @@ import { fetchWrapper } from "../../../../_helpers/fetch-wrapper";
 import config from "../../../../config";
 import { alertService } from "../../../../_services";
 import { fileService } from "../../../../_services/file.service";
+import { Roles } from "../../../../models/Role";
 
 export default function HandleGift() {
   const [data, setData] = useState<any>({
     giftName: "",
     description: "",
-    startDate: dayjs(new Date()).format("YYYY-MM-DD"),
+    starDate: dayjs(new Date()).format("YYYY-MM-DD"),
     endDate: dayjs(new Date()).format("YYYY-MM-DD"),
     urlImage: "",
     point: 0,
@@ -38,6 +39,8 @@ export default function HandleGift() {
       return await fetAllData();
     },
   });
+  const user = JSON.parse(localStorage.getItem("userInfo"));
+
   // Router
   const navigate = useNavigate();
   const params = useParams();
@@ -88,7 +91,7 @@ export default function HandleGift() {
     return {
       ...result,
       endDate: dayjs(result.endDate).format("YYYY-MM-DD"),
-      startDate: dayjs(result.startDate).format("YYYY-MM-DD"),
+      starDate: dayjs(result.starDate).format("YYYY-MM-DD"),
     };
   }
 
@@ -113,7 +116,7 @@ export default function HandleGift() {
 
     process
       .then((res) => {
-        console.log('res :>> ', res);
+        console.log("res :>> ", res);
         if (res.success) {
           alertService.alert({
             content: params.id ? "Thay đổi thành công" : "Tạo mới thành công",
@@ -129,7 +132,7 @@ export default function HandleGift() {
         });
       })
       .catch((e) => {
-        console.log('e :>> ', e);
+        console.log("e :>> ", e);
         alertService.alert({
           content: "Can't success, pls try again",
         });
@@ -186,7 +189,7 @@ export default function HandleGift() {
               id="pub"
               type="date"
               className="form-control"
-              {...register("startDate", { valueAsDate: true })}
+              {...register("starDate", { valueAsDate: true })}
             />
           </div>
         </div>
