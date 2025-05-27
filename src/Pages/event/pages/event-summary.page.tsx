@@ -1,13 +1,13 @@
 import React, { useState } from 'react';
 import { Link } from "react-router-dom";
-import { AVATARDEFAULT } from "../../_helpers/const/const";
-import listStyle from "../../styles/listStyle.module.scss";
+import { AVATARDEFAULT } from "../../../_helpers/const/const";
+import listStyle from "../../../styles/listStyle.module.scss";
 import { Pagination } from "@mui/material";
 import dayjs from "dayjs";
-import EventManagerViewmodel from "./event-manager.viewmodel";
-import EventParticipants from './components/EventParticipants';
+import EventManagerViewmodel from "../event-manager.viewmodel";
+import EventSummaryDialog from '../components/EventSummaryDialog';
 
-export default function OngoingEventsPage() {
+export default function EventSummaryPage() {
   const {
     data,
     fetAllData,
@@ -16,21 +16,21 @@ export default function OngoingEventsPage() {
   } = EventManagerViewmodel();
 
   const [selectedEventId, setSelectedEventId] = useState<number | null>(null);
-  const [showParticipants, setShowParticipants] = useState(false);
+  const [showSummary, setShowSummary] = useState(false);
 
   React.useEffect(() => {
-    // Set status to "Đang diễn ra" (1) and fetch data
-    setEventStatus("1");
-    fetAllData(1, undefined, "1");
+    // Set status to "Đã kết thúc" (2) and fetch data
+    setEventStatus("2");
+    fetAllData(1, undefined, "2");
   }, []);
 
   const handleEventClick = (eventId: number) => {
     setSelectedEventId(eventId);
-    setShowParticipants(true);
+    setShowSummary(true);
   };
 
-  const handleCloseParticipants = () => {
-    setShowParticipants(false);
+  const handleCloseSummary = () => {
+    setShowSummary(false);
     setSelectedEventId(null);
   };
 
@@ -84,16 +84,16 @@ export default function OngoingEventsPage() {
             <span>
               <Pagination
                 count={data.totalPage}
-                onChange={(_, pageNumber) => fetAllData(pageNumber, undefined, "1")}
+                onChange={(_, pageNumber) => fetAllData(pageNumber, undefined, "2")}
               />
             </span>
           </div>
         )}
       </div>
 
-      <EventParticipants
-        open={showParticipants}
-        onClose={handleCloseParticipants}
+      <EventSummaryDialog
+        open={showSummary}
+        onClose={handleCloseSummary}
         eventId={selectedEventId}
       />
     </>

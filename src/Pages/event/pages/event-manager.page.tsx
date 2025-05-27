@@ -1,13 +1,14 @@
-import listStyle from "../../styles/listStyle.module.scss";
-import { AVATARDEFAULT, EVENT } from "../../_helpers/const/const";
 import dayjs from "dayjs";
 import EventFilter from "./event-filter.page";
 import { Link } from "react-router-dom";
-import { Trash } from "../../assets/icon/trash";
 import { Pagination } from "@mui/material";
-import DialogDetailCalenderComponent from "./dialog-detail.component";
-import { EditIcon } from "../../assets/icon/edit";
-import EventManagerViewmodel from "./event-manager.viewmodel";
+import EventManagerViewmodel from "../event-manager.viewmodel";
+import { Role } from "../../../models/Role";
+import { AVATARDEFAULT } from "../../../_helpers/const/const";
+import { EditIcon } from "../../../assets/icon/edit";
+import { Trash } from "../../../assets/icon/trash";
+import DialogDetailCalenderComponent from "../components/dialog-detail.component";
+import listStyle from "../../../styles/listStyle.module.scss";
 
 export default function EventManagerPage() {
   const {
@@ -25,17 +26,27 @@ export default function EventManagerPage() {
     setToDate,
     filterType,
     setFilterType,
+    user,
   } = EventManagerViewmodel();
 
   return (
     <>
       <div className="flex items-center justify-between mb-2 bg-slate-200 pb-3">
         <div className="d-flex justify-end gap-2 w-full bg-white px-6 py-3">
-          <Link to="ongoing">
-            <button className="bg-info text-white rounded-lg px-3 py-0.5 mr-2">
-            Check-in
-            </button>
-          </Link>
+          {user.role === Role.Manager && (
+            <>
+              <Link to="ongoing">
+                <button className="bg-info text-white rounded-lg px-3 py-0.5 mr-2">
+                  Check-in
+                </button>
+              </Link>
+              <Link to="summary">
+                <button className="bg-info text-white rounded-lg px-3 py-0.5 mr-2">
+                  Tổng kết sự kiện
+                </button>
+              </Link>
+            </>
+          )}
           <Link to="create">
             <button className="bg-info text-white rounded-lg px-3 py-0.5">
               Tạo sự kiện

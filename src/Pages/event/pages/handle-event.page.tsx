@@ -1,22 +1,23 @@
 import React, { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { useNavigate, useParams } from "react-router-dom";
-import { alertService } from "../../_services/alert.service";
-import { fileService } from "../../_services/file.service";
-import { fetchWrapper } from "../../_helpers/fetch-wrapper";
-import config from "../../config";
-import { EVENT, LOCATION, ROUTER } from "../../_helpers/const/const";
+import HandleEventViewmodel from "../handle-event.viewmodel";
+import { Role } from "../../../models/Role";
 
 import dayjs from "dayjs";
 import { DemoContainer } from "@mui/x-date-pickers/internals/demo";
 import { LocalizationProvider } from "@mui/x-date-pickers-pro/LocalizationProvider";
 import { AdapterDayjs } from "@mui/x-date-pickers-pro/AdapterDayjs";
 import { DateTimeRangePicker } from "@mui/x-date-pickers-pro/DateTimeRangePicker";
-import { eventTypeDropdown } from "../../models/event.model";
-import ShowMapComponent from "../../Components/map/show-map/showMap.component";
-import { Role } from "../../models/Role";
-import convertDate from "../../_helpers/converts/convertDate";
-import HandleEventViewmodel from "./handle-event.viewmodel";
+import { fetchWrapper } from "../../../_helpers/fetch-wrapper";
+import config from "../../../config";
+import { EVENT, ROUTER } from "../../../_helpers/const/const";
+import { eventTypeDropdown } from "../../../models/event.model";
+import { alertService } from "../../../_services";
+import convertDate from "../../../_helpers/converts/convertDate";
+import { fileService } from "../../../_services/file.service";
+import ShowMapComponent from "../../../Components/map/show-map/showMap.component";
+import EventParticipantInfo from "../components/EventParticipantInfo";
 
 export default function HandleCalenderPage() {
   const userValue = JSON.parse(localStorage.getItem("userInfo"));
@@ -24,6 +25,7 @@ export default function HandleCalenderPage() {
   const [value, setValueInint] = useState([null, null]);
   const [locations, setLocation] = useState([]);
   const [isReadOnly, setIsReadOnly] = useState(false);
+  const [eventStatus, setEventStatus] = useState('');
 
   const { getLocation } = HandleEventViewmodel();
   const isDisableLocation = () => {
@@ -95,8 +97,9 @@ export default function HandleCalenderPage() {
     );
 
     // Check event status and set readonly
-    const eventStatus = checkEventStatus(result.starDate, result.endDate);
-    setIsReadOnly(eventStatus === 'ongoing' || eventStatus === 'ended');
+    const status = checkEventStatus(result.starDate, result.endDate);
+    setEventStatus(status);
+    setIsReadOnly(status === 'ongoing' || status === 'ended');
 
     const locationsFound = locations.find(
       (locationDetail) => locationDetail.locationId === result.locationId
@@ -425,6 +428,13 @@ export default function HandleCalenderPage() {
           )}
         </div>
       </form>
+
+      {params.id && eventStatus === 'ongoing' && (
+        <EventParticipantInfo
+          eventId={parseInt(params.id)}
+          show={true}
+        />
+      )}
     </div>
   );
 }

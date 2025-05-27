@@ -51,7 +51,7 @@ const createLazyRoute = (
 // Lazy load các component
 const AddUser = lazy(() => import("../Pages/user/addUser.page"));
 const HandleCalenderPage = lazy(
-  () => import("../Pages/event/handle-event.page")
+  () => import("../Pages/event/pages/handle-event.page")
 );
 const HandlePublisher = lazy(
   () => import("../Pages/publisher/handle-publisher.page")
@@ -124,14 +124,15 @@ const ListBrowseScores = lazy(
 );
 const ProrilePage = lazy(() => import("../Pages/user/profile.page"));
 const EventManagerPage = lazy(
-  () => import("../Pages/event/event-manager.page")
+  () => import("../Pages/event/pages/event-manager.page")
 );
 
 const ListOrderPage = lazy(
   () => import("../Pages/role/store/process-order/list-order/list-order")
 );
 
-const OngoingEventsPage = lazy(() => import("../Pages/event/ongoing-events.page"));
+const OngoingEventsPage = lazy(() => import("../Pages/event/pages/ongoing-events.page"));
+const EventSummaryPage = lazy(() => import("../Pages/event/pages/event-summary.page"));
 
 const user = JSON.parse(localStorage.getItem("userInfo"));
 const afterLogin = () => {
@@ -240,6 +241,7 @@ const routesConfig = [
       createLazyRoute("create", HandleCalenderPage, [Role.Manager, Role.Store]),
       createLazyRoute("update/:id", HandleCalenderPage, [Role.Manager, Role.Store]),
       createLazyRoute("ongoing", OngoingEventsPage, [Role.Manager, Role.Store]),
+      createLazyRoute("summary", EventSummaryPage, [Role.Manager]),
     ],
   },
   // Store

@@ -1,6 +1,5 @@
 import { useEffect, useState, useCallback } from "react";
 import { fetchWrapper } from "../../_helpers/fetch-wrapper";
-import { calenderDetailService } from "./dialog-detail.component";
 import config from "../../config";
 import { EVENT } from "../../_helpers/const/const";
 import {
@@ -11,6 +10,7 @@ import {
 import convertDate from "../../_helpers/converts/convertDate";
 import dayjs, { Dayjs } from "dayjs";
 import { debounce } from "lodash";
+import { calenderDetailService } from "./components/dialog-detail.component";
 
 const EventManagerViewmodel = () => {
   const user = JSON.parse(localStorage.getItem("userInfo"));
@@ -200,6 +200,7 @@ const EventManagerViewmodel = () => {
     setToDate,
     filterType,
     setFilterType,
+    user
   };
 };
 
