@@ -18,12 +18,13 @@ import config from "../../../../config";
 import { alertService } from "../../../../_services";
 import { fileService } from "../../../../_services/file.service";
 import { Roles } from "../../../../models/Role";
+import { URL_IMG } from "../../../../_helpers/const/csv.const";
 
 export default function HandleGift() {
   const [data, setData] = useState<any>({
     giftName: "",
     description: "",
-    starDate: dayjs(new Date()).format("YYYY-MM-DD"),
+    startDate: dayjs(new Date()).format("YYYY-MM-DD"),
     endDate: dayjs(new Date()).format("YYYY-MM-DD"),
     urlImage: "",
     point: 0,
@@ -85,17 +86,29 @@ export default function HandleGift() {
     const result = await fetchWrapper.get(
       config.apiUrl + GIFT + "/" + params.id
     );
+    result.urlImage = URL_IMG + result.urlImage;
     setData(result);
     setPreview(result.urlImage);
 
     return {
       ...result,
       endDate: dayjs(result.endDate).format("YYYY-MM-DD"),
-      starDate: dayjs(result.starDate).format("YYYY-MM-DD"),
+      startDate: dayjs(result.startDate).format("YYYY-MM-DD"),
     };
   }
 
   const savedata = async (val) => {
+    // Validate endDate > startDate
+    const startDate = dayjs(val.startDate);
+    const endDate = dayjs(val.endDate);
+    
+    if (!endDate.isAfter(startDate)) {
+      alertService.alert({
+        content: "Ngày kết thúc phải lớn hơn ngày bắt đầu",
+      });
+      return;
+    }
+
     const formData = new FormData();
     if (selectedFile) {
       formData.append(
@@ -103,7 +116,7 @@ export default function HandleGift() {
         new Blob([selectedFile], { type: "image/png" }),
         selectedFile.name
       );
-      val.urlImage = await fileService.postFile(formData);
+      val.urlImage = await fileService.postFile2(formData);
     } else {
       val.urlImage = preview ?? "";
     }
@@ -116,20 +129,18 @@ export default function HandleGift() {
 
     process
       .then((res) => {
-        console.log("res :>> ", res);
         if (res.success) {
           alertService.alert({
             content: params.id ? "Thay đổi thành công" : "Tạo mới thành công",
+          });
+          navigate(ROUTER.roleGiftStore.gift.url, {
+            replace: true,
           });
         } else {
           alertService.alert({
             content: res.message,
           });
         }
-
-        navigate(ROUTER.roleGiftStore.gift.url, {
-          replace: true,
-        });
       })
       .catch((e) => {
         console.log("e :>> ", e);
@@ -189,7 +200,7 @@ export default function HandleGift() {
               id="pub"
               type="date"
               className="form-control"
-              {...register("starDate", { valueAsDate: true })}
+              {...register("startDate", { valueAsDate: true })}
             />
           </div>
         </div>

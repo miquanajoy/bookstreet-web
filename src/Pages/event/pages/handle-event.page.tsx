@@ -22,7 +22,6 @@ import EventParticipantInfo from "../components/EventParticipantInfo";
 export default function HandleCalenderPage() {
   const userValue = JSON.parse(localStorage.getItem("userInfo"));
   const [mapValue, setMapValue] = useState({});
-  const [value, setValueInint] = useState([null, null]);
   const [locations, setLocation] = useState([]);
   const [isReadOnly, setIsReadOnly] = useState(false);
   const [eventStatus, setEventStatus] = useState('');
@@ -79,8 +78,8 @@ export default function HandleCalenderPage() {
 
   async function fetAllData() {
     const locations = await getLocation();
-
     setLocation(locations);
+    
     const locationOfStore =
       userValue.role === Role.Store
         ? locations.find(
@@ -90,7 +89,16 @@ export default function HandleCalenderPage() {
     const eventType = userValue.role === Role.Store ? 4 : undefined;
     const hostName = userValue.role === Role.Store ? userValue.user.storeName : undefined;
 
-    if (!params.id) return { ...data, locationId: locationOfStore, eventType, hostName };
+    if (!params.id) {
+      return { 
+        ...data, 
+        locationId: locationOfStore, 
+        eventType, 
+        hostName,
+        starDate: dayjs().format("YYYY-MM-DDTHH:mm"),
+        endDate: dayjs().add(1, 'day').format("YYYY-MM-DDTHH:mm")
+      };
+    }
     
     const result = await fetchWrapper.get(
       config.apiUrl + EVENT + "/" + params.id
@@ -123,15 +131,16 @@ export default function HandleCalenderPage() {
     });
     setPreview(result.urlImage);
 
-    setValueInint([
-      dayjs(result.starDate).format("YYYY-MM-DD HH:mm"),
-      dayjs(result.endDate).format("YYYY-MM-DD HH:mm"),
-    ]);
     if (userValue.user.role == Role.Store) {
       result.eventType = eventTypeDropdown.at(-1).eventType;
-      result.hostName = userValue.user.storeName; // Set hostName for Role.Store in edit mode
+      result.hostName = userValue.user.storeName;
     }
-    return result;
+
+    return {
+      ...result,
+      starDate: dayjs(result.starDate).format("YYYY-MM-DDTHH:mm"),
+      endDate: dayjs(result.endDate).format("YYYY-MM-DDTHH:mm"),
+    };
   }
 
   useEffect(() => {
@@ -170,21 +179,29 @@ export default function HandleCalenderPage() {
   };
 
   const savedata = async (val) => {
-    if (!value[0] || !value[1]) {
+    // Validate dates
+    const startDate = dayjs(val.starDate);
+    const endDate = dayjs(val.endDate);
+    const tomorrow = dayjs().add(1, 'day').startOf('day');
+    
+    if (!endDate.isAfter(startDate)) {
       alertService.alert({
-        content: "Vui lòng chọn thời gian bắt đầu và kết thúc",
+        content: "Ngày kết thúc phải lớn hơn ngày bắt đầu",
+      });
+      return;
+    }
+
+    if (endDate.isBefore(tomorrow)) {
+      alertService.alert({
+        content: "Ngày kết thúc phải lớn hơn ngày hiện tại ít nhất 1 ngày",
       });
       return;
     }
 
     let dataPost = val;
     dataPost.storeId = userValue.user.storeId;
-    dataPost.starDate = convertDate(new Date(value[0]));
-    dataPost.endDate = convertDate(new Date(value[1]));
-    // Set hostName to storeName if user role is Role.Store
-    if (userValue.user.role === Role.Store) {
-      dataPost.hostName = userValue.user.storeName;
-    }
+    // No need to convert dates as they're already in the correct format from the input
+    
     const formData = new FormData();
     if (selectedFile) {
       formData.append(
@@ -383,46 +400,75 @@ export default function HandleCalenderPage() {
             )}
           </div>
 
-          <div className="row">
-            <div className="col-6">
-              <b>Ngày bắt đầu:</b>
-              <div>{value[0]}</div>
-            </div>
-            <div className="col-6">
-              <b>Ngày kết thúc:</b>
-              <div>{value[1]}</div>
-            </div>
-          </div>
-          <LocalizationProvider dateAdapter={AdapterDayjs}>
-            <DemoContainer components={["DateTimeRangePicker"]}>
-              <DateTimeRangePicker
-                localeText={{ start: "Check-in", end: "Check-out" }}
-                onChange={(newValue) => {
-                  setValueInint([
-                    dayjs(newValue[0]).format("YYYY-MM-DD HH:mm"),
-                    dayjs(newValue[1]).format("YYYY-MM-DD HH:mm"),
-                  ]);
-                }}
+          <div className="flex gap-4 mb-2">
+            <div className="flex-1">
+              <label className="block mb-1" htmlFor="startDate">
+                <b>Ngày bắt đầu: </b>
+              </label>
+              <input
+                id="startDate"
+                type="datetime-local"
+                className="form-control"
+                {...register("starDate", { required: true })}
                 disabled={isReadOnly}
               />
-            </DemoContainer>
-          </LocalizationProvider>
+            </div>
+            <div className="flex-1">
+              <label className="block mb-1" htmlFor="endDate">
+                <b>Ngày kết thúc: </b>
+              </label>
+              <input
+                id="endDate"
+                type="datetime-local"
+                className="form-control"
+                {...register("endDate", { required: true })}
+                disabled={isReadOnly}
+              />
+            </div>
+          </div>
 
           <div>
-            <label className="block mb-1 mt-2" htmlFor="des">
+            <label className="block mb-1" htmlFor="des">
               <b>Mô tả: </b>
             </label>
             <textarea
-              className="form-control min-h-30 max-h-50 mb-2"
+              rows={4}
+              className="form-control"
               {...register("description")}
               disabled={isReadOnly}
             ></textarea>
           </div>
 
+          {watch("eventType") != 4 && ( // 4 là event type "Sự kiện giảm giá"
+            <div className="mt-2">
+              <label className="block mb-1" htmlFor="maxParticipants">
+                <b>Số lượng người tham gia tối đa: </b>
+              </label>
+              <input
+                id="maxParticipants"
+                type="number"
+                min="1"
+                className="form-control mb-2"
+                {...register("maxParticipants", {
+                  min: {
+                    value: 1,
+                    message: "Số lượng người tham gia phải lớn hơn 0"
+                  }
+                })}
+                disabled={isReadOnly}
+              />
+              {errors.maxParticipants && (
+                <span className="text-red-500">
+                  {errors.maxParticipants.message as string}
+                </span>
+              )}
+            </div>
+          )}
+
           {!isReadOnly && (
             <input
               type="submit"
-              className="btn btn-dark absolute bottom-0"
+              className="btn btn-dark mt-2"
               value="Lưu"
             />
           )}

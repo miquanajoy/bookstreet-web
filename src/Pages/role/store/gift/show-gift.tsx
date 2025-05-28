@@ -63,7 +63,7 @@ export default function ShowGift() {
     setValue,
   } = useForm();
   const searchInputRef = useRef<HTMLInputElement>(null);
-  const [selectedCustomer, setSelectedCustomer] = useState(null); 
+  const [selectedCustomer, setSelectedCustomer] = useState(null);
   const [data, setData] = useState({
     list: [],
     totalPage: 0,
@@ -118,7 +118,6 @@ export default function ShowGift() {
     fetAllData();
   }, [pathname]);
 
- 
   useEffect(() => {
     const searchSub = searchService.$SearchValue.subscribe({
       next: (v: SearchModel) => {
@@ -133,9 +132,7 @@ export default function ShowGift() {
   const [dataImport, setDataImport] = useState([]);
 
   const handleOpen = () => setOpenImport(true);
-  function checkAmount() {
-   
-  }
+  function checkAmount() {}
   const { fields, append, remove } = useFieldArray({
     control,
     name: "gift",
@@ -171,23 +168,20 @@ export default function ShowGift() {
         GIFT + "/" + IMPORT
       );
 
-      const convertData = responseImport
-       
-        .map((val) => {
-          return {
-            ...val,
-          };
-        });
+      const convertData = responseImport.map((val) => {
+        return {
+          ...val,
+        };
+      });
       inputFile.current.value = "";
       handleOpen();
       convertData.forEach((val) => {
         append({
           ...val,
-          starDate: dayjs(new Date(val.starDate)).format("YYYY-MM-DD"),
+          StartDate: dayjs(new Date(val.StartDate)).format("YYYY-MM-DD"),
           EndDate: dayjs(new Date(val.EndDate)).format("YYYY-MM-DD"),
         });
       });
-      console.log('convertData :>> ', convertData);
       setDataImport(convertData);
     } catch (error) {
       inputFile.current.value = "";
@@ -217,7 +211,6 @@ export default function ShowGift() {
       }
     });
     await axios.all(listImportImg).then((val) => {
-      console.log("val :>> ", val);
       valueToSubmit = getValues().gift.map((v, index) => {
         let urlImage = val[index];
         if (typeof v.UrlImage != "object") {
@@ -231,7 +224,7 @@ export default function ShowGift() {
         return {
           giftName: v.GiftName,
           description: v.Description,
-          starDate: v.starDate,
+          startDate: v.StartDate,
           endDate: v.EndDate,
           point: v.Point,
           quantity: v.Quantity,
@@ -239,12 +232,21 @@ export default function ShowGift() {
         };
       });
     });
-    await fetchWrapper.post(
+    const res = await fetchWrapper.post(
       config.apiUrl + GIFT + "/" + SAVEBATCH,
       valueToSubmit
     );
-    await closeModelImport();
-    await fetAllData(1);
+    if (res.success) {
+      await closeModelImport();
+      await fetAllData(1);
+      alertService.alert({
+        content: "Import quà tặng thành công",
+      });
+    } else {
+      alertService.alert({
+        content: res.message,
+      });
+    }
   }
   const handleCloseImport = () => setOpenImport(false);
 
@@ -259,7 +261,7 @@ export default function ShowGift() {
     setOpenImport(false);
     setOpenPoint(false);
     setSelectedValue(value);
-    setisFormOtp(false)
+    setisFormOtp(false);
   };
   function onSelectFile(e, index) {
     if (!e.target.files || e.target.files.length === 0) {
@@ -279,7 +281,7 @@ export default function ShowGift() {
   const savedata = () => {
     let dataPost = {
       giftId: dataDetail.id,
-     
+
       emailOrUsername: selectedCustomer.email,
       quantity: Number(getValues().quantity),
     };
@@ -294,8 +296,8 @@ export default function ShowGift() {
           alertService.alert({
             content: val.message,
           });
-          setisFormOtp(true)
-          setExchangeGift(val.data)
+          setisFormOtp(true);
+          setExchangeGift(val.data);
 
           fetAllData();
         } else {
@@ -392,7 +394,7 @@ export default function ShowGift() {
                   <input
                     className="form-control"
                     type="date"
-                    {...register(`gift.${index}.starDate`)}
+                    {...register(`gift.${index}.StartDate`)}
                   />
                 </TableCell>
                 <TableCell align="left">
@@ -421,10 +423,7 @@ export default function ShowGift() {
     return (
       <div className="p-6">
         <h2 className="mb-4 text-center">Đổi quà</h2>
-        <div
-         
-          className="d-flex flex-column gap-2 col-6 mx-auto"
-        >
+        <div className="d-flex flex-column gap-2 col-6 mx-auto">
           <div className="relative flex-grow">
             <Autocomplete
               options={customer}
@@ -441,12 +440,11 @@ export default function ShowGift() {
                   {...params}
                   label="Tìm kiếm khách hàng (theo email)"
                   variant="outlined"
-                  fullWidth 
+                  fullWidth
                 />
               )}
             />
           </div>
-          
 
           <div>
             <label htmlFor="vd">
@@ -474,7 +472,7 @@ export default function ShowGift() {
       </div>
     );
   }
-  
+
   const [customerCode, setCustomerCode] = useState();
 
   const handleInputChange = (event) => {
@@ -484,10 +482,10 @@ export default function ShowGift() {
   const handleConfirm = async () => {
     const response = await fetchWrapper.post(
       config.apiUrl + "Store/exchange-gift/verify-otp",
-      
+
       {
         ...exchangeGift,
-        "otp": customerCode,
+        otp: customerCode,
       }
     );
     if (response.success) {
@@ -495,7 +493,7 @@ export default function ShowGift() {
       alertService.alert({
         content: "Đã hoàn tất đơn hàng",
       });
-      fetAllData()
+      fetAllData();
     } else {
       alertService.alert({
         content: response.message,
@@ -505,31 +503,33 @@ export default function ShowGift() {
   function FormOTP(props: any) {
     return (
       <div>
-      <button
-        onClick={() =>{handleClose(undefined)}}
-        className="absolute top-3 right-3 text-gray-500 hover:text-gray-800 text-2xl font-semibold"
-        aria-label="Đóng"
-      >
-        ×
-      </button>
-
-      <h2 className="text-center text-xl font-light text-gray-700 mb-4 tracking-wider">
-        Nhập mã nhận sách
-      </h2>
-
-      <input
-        type="text"
-        value={customerCode}
-        onChange={handleInputChange}
-        placeholder="Nhập mã nhận quà tại đây"
-        className="w-64 mx-auto d-block px-4 py-2 border border-gray-400 rounded-md mb-3 text-center text-gray-800 focus:outline-none focus:ring-2 focus:ring-gray-400 focus:border-transparent"
-      />
-
-      <div className="w-full d-flex justify-center gap-4">
         <button
-          disabled={!customerCode}
-          onClick={handleConfirm}
-          className={`
+          onClick={() => {
+            handleClose(undefined);
+          }}
+          className="absolute top-3 right-3 text-gray-500 hover:text-gray-800 text-2xl font-semibold"
+          aria-label="Đóng"
+        >
+          ×
+        </button>
+
+        <h2 className="text-center text-xl font-light text-gray-700 mb-4 tracking-wider">
+          Nhập mã nhận sách
+        </h2>
+
+        <input
+          type="text"
+          value={customerCode}
+          onChange={handleInputChange}
+          placeholder="Nhập mã nhận quà tại đây"
+          className="w-64 mx-auto d-block px-4 py-2 border border-gray-400 rounded-md mb-3 text-center text-gray-800 focus:outline-none focus:ring-2 focus:ring-gray-400 focus:border-transparent"
+        />
+
+        <div className="w-full d-flex justify-center gap-4">
+          <button
+            disabled={!customerCode}
+            onClick={handleConfirm}
+            className={`
           w-64 block mx-auto px-8 py-2
           rounded-md border
           focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-opacity-50
@@ -541,11 +541,11 @@ export default function ShowGift() {
               : "bg-gray-500 border-gray-600 text-white hover:bg-gray-600"
           }
         `}
-        >
-          Xác nhận hoàn thành
-        </button>
+          >
+            Xác nhận hoàn thành
+          </button>
+        </div>
       </div>
-    </div>
     );
   }
   return (
@@ -594,7 +594,7 @@ export default function ShowGift() {
                 className="h-40 bg-contain bg-no-repeat bg-center"
                 style={{
                   backgroundImage: `url(${
-                    val.urlImage ? val.urlImage : AVATARDEFAULT
+                    val.urlImage ? URL_IMG + val.urlImage : AVATARDEFAULT
                   })`,
                 }}
               ></div>
@@ -650,11 +650,15 @@ export default function ShowGift() {
         className="z-1"
       >
         <Box sx={{ ...ModelStyle, width: "50%" }}>
-          {isFormOtp ? <FormOTP /> :  <DialogUptoPoint
-            selectedValue={selectedValue}
-            open={openPoint}
-            onClose={handleClose}
-          />}
+          {isFormOtp ? (
+            <FormOTP />
+          ) : (
+            <DialogUptoPoint
+              selectedValue={selectedValue}
+              open={openPoint}
+              onClose={handleClose}
+            />
+          )}
         </Box>
       </Modal>
 

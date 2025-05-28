@@ -11,10 +11,12 @@ import { alertService } from "../../../_services";
 import config from "../../../config";
 
 interface Participant {
+  id: number;
   participantName: string;
   email: string;
   phone?: string;
   eventparticipationsId: number;
+  attended?: boolean;
 }
 
 interface EventParticipantsProps {
@@ -136,7 +138,7 @@ export default function EventParticipants({
       const response = await fetchWrapper.post(
         `${config.apiUrl}Event/MarkAsParticipated`,
         {
-          eventparticipationsId: selectedParticipant?.eventparticipationsId
+          id: selectedParticipant?.id
         }
       );
       
@@ -160,18 +162,20 @@ export default function EventParticipants({
     }
   };
 
-  const filteredParticipants = participants.filter(
-    (participant) =>
-      participant.participantName
-        ?.toLowerCase()
-        .includes(searchTerm.toLowerCase()) ||
-      participant.email?.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const filteredParticipants = participants
+    .filter(participant => !participant.attended)
+    .filter(
+      (participant) =>
+        participant.participantName
+          ?.toLowerCase()
+          .includes(searchTerm.toLowerCase()) ||
+        participant.email?.toLowerCase().includes(searchTerm.toLowerCase())
+    );
 
   return (
     <>
       <Dialog open={open} onClose={onClose} maxWidth="md" fullWidth>
-        <DialogTitle>Danh sách người tham gia</DialogTitle>
+        <DialogTitle>Danh sách người tham gia chưa check-in</DialogTitle>
         <DialogContent>
           <Box sx={{ mb: 2, mt: 1 }}>
             <TextField
