@@ -1,16 +1,16 @@
 import { useEffect, useState, useCallback } from "react";
-import { fetchWrapper } from "../../_helpers/fetch-wrapper";
-import config from "../../config";
-import { EVENT } from "../../_helpers/const/const";
+import { fetchWrapper } from "../../../_helpers/fetch-wrapper";
+import config from "../../../config";
+import { EVENT } from "../../../_helpers/const/const";
 import {
   SearchModel,
   searchService,
   typeSearch,
-} from "../../_services/search.service";
-import convertDate from "../../_helpers/converts/convertDate";
+} from "../../../_services/search.service";
+import convertDate from "../../../_helpers/converts/convertDate";
 import dayjs, { Dayjs } from "dayjs";
 import { debounce } from "lodash";
-import { calenderDetailService } from "./components/dialog-detail.component";
+import { calenderDetailService } from "../components/dialog-detail.component";
 
 const EventManagerViewmodel = () => {
   const user = JSON.parse(localStorage.getItem("userInfo"));

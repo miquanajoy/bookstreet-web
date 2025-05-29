@@ -4,7 +4,7 @@ import { AVATARDEFAULT } from "../../../_helpers/const/const";
 import listStyle from "../../../styles/listStyle.module.scss";
 import { Pagination } from "@mui/material";
 import dayjs from "dayjs";
-import EventManagerViewmodel from "../event-manager.viewmodel";
+import EventManagerViewmodel from "./event-manager.viewmodel";
 import EventParticipants from '../components/EventParticipants';
 
 export default function OngoingEventsPage() {

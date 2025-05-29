@@ -2,7 +2,7 @@ import dayjs from "dayjs";
 import EventFilter from "./event-filter.page";
 import { Link } from "react-router-dom";
 import { Pagination } from "@mui/material";
-import EventManagerViewmodel from "../event-manager.viewmodel";
+import EventManagerViewmodel from "./event-manager.viewmodel";
 import { Role } from "../../../models/Role";
 import { AVATARDEFAULT } from "../../../_helpers/const/const";
 import { EditIcon } from "../../../assets/icon/edit";

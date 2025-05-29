@@ -1,6 +1,6 @@
-import { LOCATION } from "../../_helpers/const/const";
-import { fetchWrapper } from "../../_helpers/fetch-wrapper";
-import config from "../../config";
+import { LOCATION } from "../../../_helpers/const/const";
+import { fetchWrapper } from "../../../_helpers/fetch-wrapper";
+import config from "../../../config";
 
 export default function HandleEventViewmodel() {
   async function getLocation() {

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { useNavigate, useParams } from "react-router-dom";
-import HandleEventViewmodel from "../handle-event.viewmodel";
+import HandleEventViewmodel from "./handle-event.viewmodel";
 import { Role } from "../../../models/Role";
 
 import dayjs from "dayjs";

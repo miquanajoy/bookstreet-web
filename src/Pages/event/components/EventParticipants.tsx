@@ -17,6 +17,7 @@ interface Participant {
   phone?: string;
   eventparticipationsId: number;
   attended?: boolean;
+  participationCode: string;
 }
 
 interface EventParticipantsProps {
@@ -56,9 +57,9 @@ function OTPDialog({
           ×
         </button>
 
-        <h2 className="text-center text-xl font-light text-gray-700 mb-4 tracking-wider">
+        {/* <h2 className="text-center text-xl font-light text-gray-700 mb-4 tracking-wider">
           Nhập mã OTP check-in cho {participantName}
-        </h2>
+        </h2> */}
 
         <input
           type="text"
@@ -71,7 +72,7 @@ function OTPDialog({
         <div className="w-full d-flex justify-center gap-4">
           <button
             disabled={!otp}
-            onClick={handleConfirm}
+            
             className={`
             w-64 block mx-auto px-8 py-2
             rounded-md border
@@ -101,7 +102,8 @@ export default function EventParticipants({
   const [participants, setParticipants] = useState<Participant[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [loading, setLoading] = useState(false);
-  const [selectedParticipant, setSelectedParticipant] = useState<Participant | null>(null);
+  const [selectedParticipant, setSelectedParticipant] =
+    useState<Participant | null>(null);
 
   const fetchParticipants = async () => {
     try {
@@ -133,17 +135,21 @@ export default function EventParticipants({
     setSelectedParticipant(participant);
   };
 
-  const handleOTPConfirm = async (otp: string) => {
+  const handleOTPConfirm = async (id: number) => {
     try {
       const response = await fetchWrapper.post(
         `${config.apiUrl}Event/MarkAsParticipated`,
         {
-          id: selectedParticipant?.id
+          id: id,
         }
       );
-      
+
       alertService.alert({
-        content: response.message || (response.success ? "Cập nhật thành công" : "Cập nhật không thành công")
+        content:
+          response.message ||
+          (response.success
+            ? "Cập nhật thành công"
+            : "Cập nhật không thành công"),
       });
 
       if (response.success) {
@@ -155,7 +161,7 @@ export default function EventParticipants({
     } catch (error) {
       console.error("Error marking participant as attended:", error);
       alertService.alert({
-        content: "Có lỗi xảy ra khi check-in"
+        content: "Có lỗi xảy ra khi check-in",
       });
       // Also close the dialog on error
       setSelectedParticipant(null);
@@ -163,7 +169,7 @@ export default function EventParticipants({
   };
 
   const filteredParticipants = participants
-    .filter(participant => !participant.attended)
+    .filter((participant) => !participant.attended)
     .filter(
       (participant) =>
         participant.participantName
@@ -186,7 +192,7 @@ export default function EventParticipants({
               onChange={(e) => setSearchTerm(e.target.value)}
             />
           </Box>
-          
+
           {loading ? (
             <div className="text-center py-4">Đang tải...</div>
           ) : filteredParticipants.length > 0 ? (
@@ -198,12 +204,18 @@ export default function EventParticipants({
                 >
                   <div>
                     <div className="font-medium">
-                      {participant.participantName}
+                      Mã check-in: {participant.participationCode}
                     </div>
-                    <div className="text-gray-600">{participant.email}</div>
+                    <div>
+                      Tên người tham gia: {participant.participantName}
+                    </div>
+
+                    <div className="text-gray-600">
+                      Email: {participant.email}
+                    </div>
                   </div>
                   <button
-                    onClick={() => handleCheckIn(participant)}
+                    onClick={() => handleOTPConfirm(participant.id)}
                     className="bg-gray-800 hover:bg-gray-900 text-white font-bold py-2 px-4 rounded"
                   >
                     Check-in
@@ -219,12 +231,7 @@ export default function EventParticipants({
         </DialogContent>
       </Dialog>
 
-      <OTPDialog
-        open={!!selectedParticipant}
-        onClose={() => setSelectedParticipant(null)}
-        onConfirm={handleOTPConfirm}
-        participantName={selectedParticipant?.participantName || ""}
-      />
+     
     </>
   );
 }

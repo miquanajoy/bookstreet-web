@@ -1,101 +1,115 @@
-import React, { useState } from 'react';
-import { Link } from "react-router-dom";
-import { AVATARDEFAULT } from "../../../_helpers/const/const";
-import listStyle from "../../../styles/listStyle.module.scss";
-import { Pagination } from "@mui/material";
+import { useEffect, useState } from "react";
+import { fetchWrapper } from "../../../_helpers/fetch-wrapper";
+import { EVENT } from "../../../_helpers/const/const";
+import config from "../../../config";
 import dayjs from "dayjs";
-import EventManagerViewmodel from "../event-manager.viewmodel";
-import EventSummaryDialog from '../components/EventSummaryDialog';
+import { Dialog, DialogContent, DialogTitle } from "@mui/material";
+import convertDate from "../../../_helpers/converts/convertDate";
+
+interface ParticipantStats {
+  totalRegistered: number;
+  totalAttended: number;
+}
 
 export default function EventSummaryPage() {
-  const {
-    data,
-    fetAllData,
-    eventStatus,
-    setEventStatus,
-  } = EventManagerViewmodel();
+  const [completedEvents, setCompletedEvents] = useState<any[]>([]);
+  const [selectedEvent, setSelectedEvent] = useState<any>(null);
+  const [participantStats, setParticipantStats] = useState<ParticipantStats | null>(null);
+  const [open, setOpen] = useState(false);
 
-  const [selectedEventId, setSelectedEventId] = useState<number | null>(null);
-  const [showSummary, setShowSummary] = useState(false);
+  const fetchCompletedEvents = async () => {
+    const currentDate = convertDate(new Date());
+    const result = await fetchWrapper.Post2GetByPaginate(config.apiUrl + EVENT, 1, {
+      filters: [
+        {
+          field: "endDate",
+          value: currentDate,
+          operand: 4, // Less than current date (completed events)
+        },
+      ],
+    });
+    setCompletedEvents(result.list || []);
+  };
 
-  React.useEffect(() => {
-    // Set status to "Đã kết thúc" (2) and fetch data
-    setEventStatus("2");
-    fetAllData(1, undefined, "2");
+  const fetchParticipantStats = async (eventId: string) => {
+    try {
+      const participants = await fetchWrapper.get(
+        `${config.apiUrl}${EVENT}/Participants/${eventId}`
+      );
+      
+      const stats = {
+        totalRegistered: participants.length,
+        totalAttended: participants.filter((p: any) => p.attended).length,
+      };
+      
+      setParticipantStats(stats);
+    } catch (error) {
+      console.error("Error fetching participant stats:", error);
+      setParticipantStats({ totalRegistered: 0, totalAttended: 0 });
+    }
+  };
+
+  const handleEventClick = async (event: any) => {
+    setSelectedEvent(event);
+    await fetchParticipantStats(event.id);
+    setOpen(true);
+  };
+
+  const handleClose = () => {
+    setOpen(false);
+    setSelectedEvent(null);
+    setParticipantStats(null);
+  };
+
+  useEffect(() => {
+    fetchCompletedEvents();
   }, []);
 
-  const handleEventClick = (eventId: number) => {
-    setSelectedEventId(eventId);
-    setShowSummary(true);
-  };
-
-  const handleCloseSummary = () => {
-    setShowSummary(false);
-    setSelectedEventId(null);
-  };
-
   return (
-    <>
-      <div className="flex items-center justify-between mb-2 bg-slate-200 pb-3">
-        <div className="d-flex justify-end gap-2 w-full bg-white px-6 py-3">
-          <Link to="/event-management">
-            <button className="bg-info text-white rounded-lg px-3 py-0.5">
-              Quay lại
-            </button>
-          </Link>
-        </div>
-      </div>
-
-      <div className="grid grid-cols-3 gap-4 px-6">
-        {data.list.map((val) => (
+    <div className="p-4">
+      <h2 className="text-2xl font-bold mb-4">Sự kiện đã kết thúc</h2>
+      <div className="grid grid-cols-3 gap-4">
+        {completedEvents.map((event) => (
           <div
-            key={val.id}
-            className={`${listStyle["book-detail"]} position-relative cursor-pointer`}
-            onClick={() => handleEventClick(val.id)}
+            key={event.id}
+            className="border rounded-lg p-4 cursor-pointer hover:bg-gray-50"
+            onClick={() => handleEventClick(event)}
           >
-            <div>
-              <div
-                className="h-40 bg-cover bg-no-repeat bg-center"
-                style={{
-                  backgroundImage: `url(${val.urlImage || AVATARDEFAULT})`,
-                }}
-              ></div>
-            </div>
-
-            <div className="mt-1 text-dark">
-              <h6 className="mb-2 line-clamp-2 h-10">{val.title}</h6>
-              <div className="mb-2">Tại: {val.locationName}</div>
-              <div className="h-5">
-                Bắt đầu: <span className="ml-1"></span>
-                {dayjs(new Date(val.starDate)).format("HH:mm - YYYY/MM/DD")}
-              </div>
-              <div className="mb-2 h-5">
-                Kết thúc: <span className="ml-[0.5px]"></span>
-                {dayjs(new Date(val.endDate)).format("HH:mm - YYYY/MM/DD")}
-              </div>
+            <h3 className="font-semibold mb-2">{event.title}</h3>
+            <div className="text-sm text-gray-600">
+              <p>Tại: {event.locationName}</p>
+              <p>
+                Bắt đầu:
+                {dayjs(new Date(event.starDate)).format("HH:mm - YYYY/MM/DD")}
+              </p>
+              <p>
+                Kết thúc:
+                {dayjs(new Date(event.endDate)).format("HH:mm - YYYY/MM/DD")}
+              </p>
             </div>
           </div>
         ))}
       </div>
 
-      <div className="mt-2 p-2">
-        {data.totalPage > 0 && (
-          <div className="flex justify-center">
-            <span>
-              <Pagination
-                count={data.totalPage}
-                onChange={(_, pageNumber) => fetAllData(pageNumber, undefined, "2")}
-              />
-            </span>
-          </div>
-        )}
-      </div>
-
-      <EventSummaryDialog
-        open={showSummary}
-        onClose={handleCloseSummary}
-        eventId={selectedEventId}
-      />
-    </>
+      <Dialog open={open} onClose={handleClose} maxWidth="sm" fullWidth>
+        <DialogTitle>
+          <div className="font-bold">{selectedEvent?.title}</div>
+        </DialogTitle>
+        <DialogContent>
+          {participantStats && (
+            <div className="py-4">
+              <div className="mb-3">
+                <span className="font-semibold">Tổng số người đăng ký tham gia sự kiện:</span>
+                {participantStats.totalRegistered}
+              </div>
+              <div>
+                <span className="font-semibold">Tổng số người tham gia sự kiện:</span>
+                {participantStats.totalAttended}
+              </div>
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
+    </div>
   );
 } 
