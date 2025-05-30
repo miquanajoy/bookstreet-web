@@ -9,6 +9,9 @@ import {
 import { fetchWrapper } from "../../../_helpers/fetch-wrapper";
 import config from "../../../config";
 import dayjs from "dayjs";
+import utc from "dayjs/plugin/utc"; // Import UTC plugin
+
+dayjs.extend(utc); // Enable UTC plugin
 
 interface Participant {
   id: number;
@@ -97,7 +100,7 @@ export default function EventParticipantInfo({
                     {participant.attended ? "Đã check-in" : "Chưa check-in"}
                   </TableCell>
                   <TableCell>
-                    {dayjs(participant.createdAt).format("DD/MM/YYYY HH:mm")}
+                    {dayjs.utc(participant.createdAt).format("DD/MM/YYYY HH:mm")} {/* Use UTC */}
                   </TableCell>
                 </TableRow>
               ))}
@@ -111,4 +114,4 @@ export default function EventParticipantInfo({
       )}
     </div>
   );
-} 
+}

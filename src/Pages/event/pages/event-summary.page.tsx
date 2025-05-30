@@ -33,13 +33,17 @@ export default function EventSummaryPage() {
 
   const fetchParticipantStats = async (eventId: string) => {
     try {
-      const participants = await fetchWrapper.get(
-        `${config.apiUrl}${EVENT}/Participants/${eventId}`
+      const participants = await fetchWrapper.post(
+        `${config.apiUrl}${EVENT}/Participants/${eventId}`,
+        {
+          page: -1,
+          limit: -1,
+        }
       );
       
       const stats = {
-        totalRegistered: participants.length,
-        totalAttended: participants.filter((p: any) => p.attended).length,
+        totalRegistered: participants.data.list.length,
+        totalAttended: participants.data.list.filter((p: any) => p.attended).length,
       };
       
       setParticipantStats(stats);
