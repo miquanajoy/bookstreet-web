@@ -279,6 +279,7 @@ export default function ShowBook() {
     valueToSubmit.forEach(v => {
       v.ProductTypeId = "1"
     })
+    // Gửi lên backend để tạo mới nhiều sách cùng lúc
     const resp = await fetchWrapper.post(
       config.apiUrl + PRODUCT + "/" + SAVEBATCH,
       valueToSubmit
@@ -289,7 +290,7 @@ export default function ShowBook() {
         content: `${resp.data.successCount} Bản ghi tạo thành công`,
       });
 
-      // Map resp.data.results theo định dạng responseImport
+      // Map resp.data.results theo định dạng responseImport để biết kết quả từng dòng, để biết dòng nào thành công/thất bại
       const updatedDataImport = resp.data.results.map((result, index) => {
         const data = result.data;
         return {
@@ -316,17 +317,17 @@ export default function ShowBook() {
 
       // Cập nhật dataImport để hiển thị trong modal
       reset();
-      setDataImport(updatedDataImport);
+      setDataImport(updatedDataImport);  // Hiện lại bảng nếu có lỗi
       updatedDataImport.forEach((val, index) => {
-      setValue(`author.${index}.UrlImage`, val.UrlImage);
+        setValue(`author.${index}.UrlImage`, val.UrlImage);
 
-      //   if (isBookScreen) {
-      //     val.PublicDay =
-      //       val.PublicDay != "Invalid Date" && val.PublicDay
-      //         ? dayjs(new Date(val.PublicDay)).format("YYYY-MM-DD")
-      //         : dayjs(new Date()).format("YYYY-MM-DD");
-      //   }
-      //   setValue(`author.${index}`, val);
+        //   if (isBookScreen) {
+        //     val.PublicDay =
+        //       val.PublicDay != "Invalid Date" && val.PublicDay
+        //         ? dayjs(new Date(val.PublicDay)).format("YYYY-MM-DD")
+        //         : dayjs(new Date()).format("YYYY-MM-DD");
+        //   }
+        //   setValue(`author.${index}`, val);
       });
 
       // Không đóng modal nếu có bản ghi thất bại
@@ -545,10 +546,10 @@ export default function ShowBook() {
                         value = 100;
                         setValue(`author.${index}.DiscountPercentage`, 100);
                       } else if (value < 0) {
-                         value = 0;
+                        value = 0;
                         setValue(`author.${index}.DiscountPercentage`, 0);
                       } else {
-                         setValue(`author.${index}.DiscountPercentage`, value);
+                        setValue(`author.${index}.DiscountPercentage`, value);
                       }
                       // Recalculate price
                       const original = getValues().author[index].OriginalPrice ?? 0;
@@ -693,9 +694,8 @@ export default function ShowBook() {
               <div
                 className="h-60 bg-contain bg-no-repeat bg-center"
                 style={{
-                  backgroundImage: `url(${
-                    val.urlImage ? val.urlImage : AVATARDEFAULT
-                  })`,
+                  backgroundImage: `url(${val.urlImage ? val.urlImage : AVATARDEFAULT
+                    })`,
                 }}
               ></div>
             )}
