@@ -191,12 +191,12 @@ export default function HandleCalenderPage() {
       return;
     }
 
-    if (endDate.isBefore(tomorrow)) {
-      alertService.alert({
-        content: "Ngày kết thúc phải lớn hơn ngày hiện tại ít nhất 1 ngày",
-      });
-      return;
-    }
+    // if (endDate.isBefore(tomorrow)) {
+    //   alertService.alert({
+    //     content: "Ngày kết thúc phải lớn hơn ngày hiện tại ít nhất 1 ngày",
+    //   });
+    //   return;
+    // }
 
     let dataPost = val;
     dataPost.storeId = userValue.user.storeId;
@@ -439,7 +439,7 @@ export default function HandleCalenderPage() {
             ></textarea>
           </div>
 
-          {watch("eventType") != 4 && ( // 4 là event type "Sự kiện giảm giá"
+    
             <div className="mt-2">
               <label className="block mb-1" htmlFor="maxParticipants">
                 <b>Số lượng người tham gia tối đa: </b>
@@ -463,7 +463,7 @@ export default function HandleCalenderPage() {
                 </span>
               )}
             </div>
-          )}
+       
 
           {!isReadOnly && (
             <input
