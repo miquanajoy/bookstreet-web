@@ -96,6 +96,15 @@ export default function HandleGift() {
       startDate: dayjs(result.startDate).format("YYYY-MM-DD"),
     };
   }
+  function checkUrlImg(url) {
+    if (url?.includes("https://fptbs01.azurewebsites.net/api/File/image/https")) {
+      return url.replace("/https://fptbs01.azurewebsites.net/api/File/image", "");
+    }
+    if (!url?.includes("data:")) {
+      return url + "?type=5";
+    }
+    return url;
+}
 
   const savedata = async (val) => {
     // Validate endDate > startDate
@@ -159,7 +168,7 @@ export default function HandleGift() {
           <label
             htmlFor="imageUpload"
             className="block h-52 w-52 bg-slate-200 bg-contain bg-no-repeat bg-center"
-            style={{ backgroundImage: "url(" + preview + ")" }}
+            style={{ backgroundImage: "url(" + checkUrlImg(preview) + ")" }}
           ></label>
           <input
             type="file"

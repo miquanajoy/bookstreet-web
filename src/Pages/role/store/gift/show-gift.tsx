@@ -76,7 +76,20 @@ export default function ShowGift() {
   async function deleteItem(val) {
     await fetchWrapper.delete(config.apiUrl + GIFT + "/" + val.id, fetAllData);
   }
-
+  function checkUrlImg(url) {
+    if (
+      url.includes("https://fptbs01.azurewebsites.net/api/File/image/https")
+    ) {
+      return url.replace(
+        "/https://fptbs01.azurewebsites.net/api/File/image",
+        ""
+      );
+    }
+    if (!url?.includes("data:")) {
+      return url + "?type=5";
+    }
+    return url;
+  }
   async function fetAllData(pageNumber = 1) {
     const customers = await fetchWrapper.Post2GetByPaginate(
       config.apiUrl + CUSTOMER,
@@ -171,6 +184,7 @@ export default function ShowGift() {
       const convertData = responseImport.map((val) => {
         return {
           ...val,
+          UrlImage: URL_IMG + val.UrlImage,
         };
       });
       inputFile.current.value = "";
@@ -236,7 +250,7 @@ export default function ShowGift() {
       config.apiUrl + GIFT + "/" + SAVEBATCH,
       valueToSubmit
     );
-    if (res.success) {
+    if (res.success && res.data.failCount === 0) {
       await closeModelImport();
       await fetAllData(1);
       alertService.alert({
@@ -244,7 +258,7 @@ export default function ShowGift() {
       });
     } else {
       alertService.alert({
-        content: res.message,
+        content: "Import không thành công, vui lòng kiểm tra lại dữ liệu",
       });
     }
   }
@@ -271,13 +285,13 @@ export default function ShowGift() {
     let base64String;
     reader.onload = function () {
       base64String = reader.result;
+
       const currentDataImport = JSON.parse(JSON.stringify(getValues().gift));
       currentDataImport[index].UrlImage = base64String;
       setDataImport(currentDataImport);
     };
     reader.readAsDataURL(e.target.files[0]);
   }
-
   const savedata = () => {
     let dataPost = {
       giftId: dataDetail.id,
@@ -312,7 +326,7 @@ export default function ShowGift() {
   };
   const [openImportDIalog, setOpenImport] = useState(false);
 
-  const listImportBook = () => {
+  const listImportGift = () => {
     return (
       <TableContainer sx={{ maxHeight: 440 }} component={Paper}>
         <Table stickyHeader sx={{ minWidth: 440 }} aria-label="simple table">
@@ -357,7 +371,8 @@ export default function ShowGift() {
                       htmlFor={"imageUpload" + index}
                       className="block h-20 w-20 bg-slate-200 bg-contain bg-no-repeat bg-center"
                       style={{
-                        backgroundImage: "url(" + URL_IMG + row?.UrlImage + ")",
+                        backgroundImage: "url(" + row?.UrlImage + ")",
+                        // backgroundImage: `url(${row?.UrlImage && row.UrlImage.startsWith('data:') ? row.UrlImage : row?.UrlImage ? URL_IMG + row?.UrlImage : AVATARDEFAULT})`,
                       }}
                     >
                       <input
@@ -401,7 +416,15 @@ export default function ShowGift() {
                   <input
                     className="form-control"
                     type="date"
-                    {...register(`gift.${index}.EndDate`)}
+                    {...register(`gift.${index}.EndDate`, {
+                      validate: (value) => {
+                        const startDate = getValues(`gift.${index}.StartDate`);
+                        return (
+                          dayjs(value).isAfter(dayjs(startDate)) ||
+                          "Ngày kết thúc phải lớn hơn ngày bắt đầu"
+                        );
+                      },
+                    })}
                   />
                 </TableCell>
 
@@ -594,7 +617,9 @@ export default function ShowGift() {
                 className="h-40 bg-contain bg-no-repeat bg-center"
                 style={{
                   backgroundImage: `url(${
-                    val.urlImage ? URL_IMG + val.urlImage : AVATARDEFAULT
+                    val.urlImage
+                      ? checkUrlImg(URL_IMG + val.urlImage)
+                      : AVATARDEFAULT
                   })`,
                 }}
               ></div>
@@ -670,7 +695,7 @@ export default function ShowGift() {
       >
         <div className="p-6">
           <Box sx={ModelStyle}>
-            <div className="max-h-50vh overflow-auto">{listImportBook()}</div>
+            <div className="max-h-50vh overflow-auto">{listImportGift()}</div>
             <button
               onClick={submitCsv}
               type="button"
