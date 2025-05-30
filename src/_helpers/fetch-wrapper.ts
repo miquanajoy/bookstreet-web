@@ -26,9 +26,10 @@ function get(url) {
   loadingService.showLoading();
   const requestOptions = {
     method: "GET",
-    headers: authHeader(url),
+    headers: authHeader(url), // Lấy token nếu có
   };
-  return fetch(url, requestOptions).then(handleResponse).then((res) => res.data || res);
+  return fetch(url, requestOptions).then(handleResponse).then((res) => res.data || res); // Nếu có .data thì trả về, không thì trả luôn res
+  // Xử lý kết quả (parse JSON, báo lỗi nếu có)
 }
 function getWithoutCall(url) {
   loadingService.showLoading();
@@ -36,7 +37,7 @@ function getWithoutCall(url) {
     method: "GET",
     headers: authHeader(url),
   };
-  return axios.get(url, requestOptions);
+  return axios.get(url, requestOptions);// Trả về promise của axios, xử lý tiếp .then ngoài component
 }
 
 function Post2GetByPaginate(
