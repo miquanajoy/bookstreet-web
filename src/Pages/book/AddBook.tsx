@@ -66,6 +66,8 @@ export default function AddBook() {
   });
 
   const editionNumber = watch("editionNumber");
+  const originalPrice = watch("originalPrice");
+  const discountPercentage = watch("discountPercentage");
 
   useEffect(() => {
     if (!selectedFile) {
@@ -78,6 +80,12 @@ export default function AddBook() {
 
     return () => URL.revokeObjectURL(objectUrl);
   }, [selectedFile]);
+
+  useEffect(() => {
+    const calculatedPrice = originalPrice * (1 - (discountPercentage ?? 0) / 100);
+    const roundedPrice = Math.ceil(calculatedPrice);
+    setValue("price", roundedPrice);
+  }, [originalPrice, discountPercentage]);
 
   useEffect(() => {
     if (!getValues().categoryId) return;
@@ -314,7 +322,9 @@ export default function AddBook() {
       productTypeName: val.productTypeName,
       productName: trimmedProductName,
       description: val.description,
-      price: val.price,
+      price: Number(val.price),
+      originalPrice: Number(val.originalPrice),
+      discountPercentage: Number(val.discountPercentage),
       urlImage: val.urlImage,
       status: Number(val.status),
       storeId: user.user.storeId,
@@ -508,15 +518,57 @@ export default function AddBook() {
           <div className="flex gap-2">
             <div>
               <label htmlFor="anm">
-                <b>Giá: </b>
+                <b>Giá bán: </b>
               </label>
               <input
                 id="anm"
                 type="number"
                 className="form-control"
                 {...register("price")}
+                disabled
               />
             </div>
+            <div>
+              <label htmlFor="originalPrice">
+                <b>Giá gốc: </b>
+              </label>
+              <input
+                id="originalPrice"
+                type="number"
+                className="form-control"
+                {...register("originalPrice")}
+                onChange={(e) => {
+                  const value = Number(e.target.value);
+                  if (value < 0) {
+                    setValue("originalPrice", 0);
+                  } else {
+                    setValue("originalPrice", value);
+                  }
+                }}
+                disabled={Boolean(params.id)}
+              />
+            </div>
+            <div>
+              <label htmlFor="discountPercentage">
+                <b>Giảm giá (%): </b>
+              </label>
+                <input
+                  id="discountPercentage"
+                  type="number"
+                  className="form-control"
+                  {...register("discountPercentage", { max: 100 })}
+                  onChange={(e) => {
+                    let value = Number(e.target.value);
+                    if (value < 0) {
+                      value = 0;
+                    } else if (value > 100) {
+                      value = 100;
+                    }
+                    setValue("discountPercentage", value);
+                  }}
+                />
+            </div>
+          </div>
             <div>
               <label htmlFor="quanti">
                 <b>Số lượng: </b>
@@ -528,7 +580,6 @@ export default function AddBook() {
                 {...register("quantity")}
               />
             </div>
-          </div>
         </div>
 
         <div className="flex flex-column gap-2">

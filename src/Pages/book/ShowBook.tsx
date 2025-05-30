@@ -266,6 +266,9 @@ export default function ShowBook() {
           // AuthorName: v.AuthorName?.length ? v.AuthorName.split(", ")  : "",
           AuthorName: Array.isArray(v.AuthorName) ? v.AuthorName : v.AuthorName.split(", "),
           urlImage,
+          Price: Number(v.Price),
+          OriginalPrice: Number(v.OriginalPrice),
+          DiscountPercentage: Number(v.DiscountPercentage),
         };
         if (!isBookScreen) {
           delete postData.book;
@@ -294,6 +297,8 @@ export default function ShowBook() {
           ProductName: data.productName,
           Quantity: data.quantity,
           Price: data.price,
+          OriginalPrice: data.originalPrice,
+          DiscountPercentage: data.discountPercentage,
           CategoryName: data.categoryName,
           GenreName: data.genreName,
           AuthorName: data.authorName,
@@ -388,7 +393,13 @@ export default function ShowBook() {
                 Số lượng
               </TableCell>
               <TableCell sx={{}} align="left">
-                Giá tiền
+                Giá bán
+              </TableCell>
+              <TableCell sx={{}} align="left">
+                Giá gốc
+              </TableCell>
+              <TableCell sx={{}} align="left">
+                Giảm giá (%)
               </TableCell>
               {isBookScreen ? (
                 <TableCell sx={{}} align="left">
@@ -501,6 +512,49 @@ export default function ShowBook() {
                     type="number"
                     min={0}
                     {...register(`author.${index}.Price`)}
+                    disabled
+                  />
+                </TableCell>
+                <TableCell align="left">
+                  <input
+                    className="form-control"
+                    type="number"
+                    {...register(`author.${index}.OriginalPrice`, { min: 0 })}
+                    onChange={(e) => {
+                      const value = Number(e.target.value);
+                      if (value < 0) {
+                        setValue(`author.${index}.OriginalPrice`, 0);
+                      } else {
+                        setValue(`author.${index}.OriginalPrice`, value);
+                      }
+                      // Recalculate price
+                      const discount = getValues().author[index].DiscountPercentage ?? 0;
+                      const calculatedPrice = value * (1 - discount / 100);
+                      setValue(`author.${index}.Price`, Math.ceil(calculatedPrice));
+                    }}
+                  />
+                </TableCell>
+                <TableCell align="left">
+                  <input
+                    className="form-control"
+                    type="number"
+                    {...register(`author.${index}.DiscountPercentage`, { max: 100 })}
+                    onChange={(e) => {
+                      let value = Number(e.target.value);
+                      if (value > 100) {
+                        value = 100;
+                        setValue(`author.${index}.DiscountPercentage`, 100);
+                      } else if (value < 0) {
+                         value = 0;
+                        setValue(`author.${index}.DiscountPercentage`, 0);
+                      } else {
+                         setValue(`author.${index}.DiscountPercentage`, value);
+                      }
+                      // Recalculate price
+                      const original = getValues().author[index].OriginalPrice ?? 0;
+                      const calculatedPrice = original * (1 - value / 100);
+                      setValue(`author.${index}.Price`, Math.ceil(calculatedPrice));
+                    }}
                   />
                 </TableCell>
                 <TableCell align="left">

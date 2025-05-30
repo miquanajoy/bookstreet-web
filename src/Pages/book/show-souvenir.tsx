@@ -59,6 +59,7 @@ export default function ShowSouvenir() {
     register,
     getValues,
     formState: { errors },
+    setValue,
   } = useForm({
     mode: "onChange",
   });
@@ -325,7 +326,9 @@ export default function ShowSouvenir() {
             <TableRow>
               <TableCell> Tên đồ lưu niệm (*)</TableCell>
               <TableCell align="left">Hình ảnh</TableCell>
-              <TableCell align="left">Giá tiền</TableCell>
+              <TableCell align="left">Giá bán</TableCell>
+              <TableCell align="left">Giá gốc</TableCell>
+              <TableCell align="left">Giảm giá</TableCell>
               <TableCell align="left">Số lượng</TableCell>
               <TableCell align="left">Danh mục</TableCell>
               <TableCell align="left">Mô tả</TableCell>
@@ -384,6 +387,50 @@ export default function ShowSouvenir() {
                     type="number"
                     min={0}
                     {...register(`author.${index}.Price`)}
+                    disabled
+                  />
+                </TableCell>
+                <TableCell align="left">
+                  <input
+                    className="form-control"
+                    type="number"
+                    min={0}
+                    {...register(`author.${index}.OriginalPrice`, { min: 0 })}
+                    onChange={(e) => {
+                      const value = Number(e.target.value);
+                      if (value < 0) {
+                        setValue(`author.${index}.OriginalPrice`, 0);
+                      } else {
+                        setValue(`author.${index}.OriginalPrice`, value);
+                      }
+                      // Recalculate price
+                      const discount = getValues().author[index].DiscountPercentage ?? 0;
+                      const calculatedPrice = value * (1 - discount / 100);
+                      setValue(`author.${index}.Price`, Math.ceil(calculatedPrice));
+                    }}
+                  />
+                </TableCell>
+                <TableCell align="left">
+                  <input
+                    className="form-control"
+                    type="number"
+                    {...register(`author.${index}.DiscountPercentage`, { max: 100 })}
+                    onChange={(e) => {
+                      let value = Number(e.target.value);
+                      if (value > 100) {
+                        value = 100;
+                        setValue(`author.${index}.DiscountPercentage`, 100);
+                      } else if (value < 0) {
+                        value = 0;
+                        setValue(`author.${index}.DiscountPercentage`, 0);
+                      } else {
+                        setValue(`author.${index}.DiscountPercentage`, value);
+                      }
+                      // Recalculate price
+                      const original = getValues().author[index].OriginalPrice ?? 0;
+                      const calculatedPrice = original * (1 - value / 100);
+                      setValue(`author.${index}.Price`, Math.ceil(calculatedPrice));
+                    }}
                   />
                 </TableCell>
                 <TableCell align="left">

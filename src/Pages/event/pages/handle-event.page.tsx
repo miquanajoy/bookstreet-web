@@ -400,7 +400,7 @@ export default function HandleCalenderPage() {
             )}
           </div>
 
-          <div className="flex gap-4 mb-2">
+          <div className="flex flex-col gap-4 mb-2">
             <div className="flex-1">
               <label className="block mb-1" htmlFor="startDate">
                 <b>Ngày bắt đầu: </b>
