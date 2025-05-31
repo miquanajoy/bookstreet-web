@@ -320,6 +320,8 @@ export default function ShowBook() {
       setDataImport(updatedDataImport);  // Hiện lại bảng nếu có lỗi
       updatedDataImport.forEach((val, index) => {
         setValue(`author.${index}.UrlImage`, val.UrlImage);
+        setValue(`author.${index}.Price`, Number(val.Price || 0));
+
 
         //   if (isBookScreen) {
         //     val.PublicDay =
@@ -512,7 +514,9 @@ export default function ShowBook() {
                     className="form-control"
                     type="number"
                     min={0}
-                    {...register(`author.${index}.Price`)}
+                    {...register(`author.${index}.Price`, {
+                      valueAsNumber: true // ✅ Đảm bảo dữ liệu là number
+                    })}
                     disabled
                   />
                 </TableCell>
